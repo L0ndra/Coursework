@@ -43,11 +43,11 @@
     <Compile Include="Builder\INetworkBuilder.cs" />
     <Compile Include="Builder\NetworkBuilder.cs" />
     <Compile Include="ChannelType.cs" />
-    <Compile Include="Exceptions\ConnectionException.cs" />
+    <Compile Include="Exceptions\ChannelException.cs" />
     <Compile Include="INetwork.cs" />
     <Compile Include="Network.cs" />
     <Compile Include="Node.cs" />
-    <Compile Include="Connection.cs" />
+    <Compile Include="Channel.cs" />
     <Compile Include="ConnectionType.cs" />
     <Compile Include="Exceptions\NodeException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

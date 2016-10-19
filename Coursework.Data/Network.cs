@@ -7,39 +7,54 @@ namespace Coursework.Data
     public class Network : INetwork
     {
         private readonly IList<Node> _nodes;
-        private readonly IList<Connection> _connections;
+        private readonly IList<Channel> _channels;
         public Node[] Nodes => _nodes.ToArray();
-        public Connection[] Connections => _connections.ToArray();
+        public Channel[] Channels => _channels.ToArray();
 
         public Network()
         {
             _nodes = new List<Node>();
-            _connections = new List<Connection>();
+            _channels = new List<Channel>();
         }
 
         public void AddNode(Node node)
         {
-            ThrowExceptionIfNodeExists(node.Id);
+            ThrowExceptionIfNodeCannotBeCreated(node);
 
             _nodes.Add(node);
         }
 
-        public void AddConnection(Connection connection)
+        public void AddChannel(Channel channel)
         {
-            ThrowExceptionIfConnectionExists(connection.StartNodeId, connection.EndNodeId);
-            ThrowExceptionIfNodeNotExists(connection.StartNodeId);
-            ThrowExceptionIfNodeNotExists(connection.EndNodeId);
-            ThrowExceptionIfPriceIsIncorrect(connection.Price);
-            ThrowExceptionIfErrorChanceIsIncorrect(connection.ErrorChance);
+            ThrowExceptionIfChannelCannotBeCreated(channel);
 
-            _connections.Add(connection);
+            _channels.Add(channel);
+        }
+
+        public bool IsChannelExists(uint firstNodeId, uint secondNodeId)
+        {
+            return Channels.Any(c => c.FirstNodeId == firstNodeId && c.SecondNodeId == secondNodeId
+                                     || c.FirstNodeId == secondNodeId && c.SecondNodeId == firstNodeId);
+        }
+
+        private void ThrowExceptionIfChannelCannotBeCreated(Channel channel)
+        {
+            ThrowExceptionIfNodeNotExists(channel.FirstNodeId);
+            ThrowExceptionIfNodeNotExists(channel.SecondNodeId);
+            ThrowExceptionIfPriceIsIncorrect(channel.Price);
+            ThrowExceptionIfErrorChanceIsIncorrect(channel.ErrorChance);
+        }
+
+        private void ThrowExceptionIfNodeCannotBeCreated(Node node)
+        {
+            ThrowExceptionIfNodeExists(node.Id);
         }
 
         private void ThrowExceptionIfErrorChanceIsIncorrect(double errorChance)
         {
             if (errorChance < 0.0 || errorChance > 1.0)
             {
-                throw new ConnectionException("Error chance is in incorrect range");
+                throw new ChannelException("Error chance is in incorrect range");
             }
         }
 
@@ -47,11 +62,11 @@ namespace Coursework.Data
         {
             if (price <= 0)
             {
-                throw new ConnectionException("Price is less or equal to 0");
+                throw new ChannelException("Price is less or equal to 0");
             }
         }
 
-        private void ThrowExceptionIfNodeNotExists(int nodeId)
+        private void ThrowExceptionIfNodeNotExists(uint nodeId)
         {
             if (_nodes.All(n => n.Id != nodeId))
             {
@@ -59,19 +74,11 @@ namespace Coursework.Data
             }
         }
 
-        private void ThrowExceptionIfNodeExists(int nodeId)
+        private void ThrowExceptionIfNodeExists(uint nodeId)
         {
             if (_nodes.Any(n => n.Id == nodeId))
             {
                 throw new NodeException("Node is already exists");
-            }
-        }
-
-        private void ThrowExceptionIfConnectionExists(int startNodeId, int endNodeId)
-        {
-            if (_connections.Any(c => c.StartNodeId == startNodeId && c.EndNodeId == endNodeId))
-            {
-                throw new ConnectionException("Connection is already exists");
             }
         }
     }

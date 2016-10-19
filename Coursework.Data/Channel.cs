@@ -1,12 +1,12 @@
 ﻿namespace Coursework.Data
 {
-    public class Connection
+    public class Channel
     {
         public int Price { get; set; }
         public double ErrorChance { get; set; }
-        public int StartNodeId { get; set; }
-        public int EndNodeId { get; set; }
-        public ConnectionType NodeLinkType { get; set; }
+        public uint FirstNodeId { get; set; }
+        public uint SecondNodeId { get; set; }
+        public ConnectionType ConnectionType { get; set; }
         public ChannelType ChannelType { get; set; }
     }
 }

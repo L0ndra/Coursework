@@ -2,6 +2,6 @@
 {
     public class Node
     {
-        public int Id { get; set; }
+        public uint Id { get; set; }
     }
 }
