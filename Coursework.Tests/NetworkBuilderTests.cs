@@ -9,36 +9,49 @@ namespace Coursework.Tests
     public class NetworkBuilderTests
     {
         private INetworkBuilder _networkBuilder;
-        private uint _nodeCount;
-        private double _networkPower;
+        private const int TimesToCreateNetwork = 1000;
+        private readonly int[] _availablePrices = { 2, 4, 7, 8, 11, 15, 17, 20, 24, 25, 28 };
 
         [SetUp]
         public void Setup()
         {
-            _nodeCount = 5;
-            _networkPower = 2.5;
-            _networkBuilder = new NetworkBuilder(_nodeCount, _networkPower);
         }
 
         [Test]
-        public void BuildShouldCreateNetworkWithConcreteNumberOfNodesWithLinks()
+        [TestCase((uint)5, 2.0, 0.9)]
+        [TestCase((uint)20, 2.0, 0.9)]
+        [TestCase((uint)20, 19.0, 19.0)]
+        [TestCase((uint)10, 1.0, 0.9)]
+        public void BuildShouldCreateCorrectNetworkSpecifiedNumberOfTimesWithSpecifiedParameters(uint nodeCount, double networkPower, double eps)
         {
-            // Arrange
-            _networkBuilder = new NetworkBuilder(_nodeCount, _networkPower);
+            for (var i = 0; i < TimesToCreateNetwork; i++)
+            {
+                // Arrange
+                _networkBuilder = new NetworkBuilder(nodeCount, networkPower);
 
-            // Act
-            var network = _networkBuilder.Build();
+                // Act
+                var network = _networkBuilder.Build();
+                var currentPower = network.Channels.Length * 2 / (double)nodeCount;
+                var isAllPricesIsAvailable = network.Channels
+                    .Select(c => c.Price)
+                    .All(p => _availablePrices.Contains(p));
 
-            // Assert
-            var group = network.Channels
-                .GroupBy(c => c.FirstNodeId)
-                .Select(g => new { Id = g.Key, Count = g.Count() })
-                .ToArray();
+                // Assert
+                Assert.That(network.Nodes.Length, Is.EqualTo(nodeCount));
+                Assert.That(network.Channels.Length, Is.GreaterThan(0));
+                Assert.That(isAllPricesIsAvailable, Is.True);
+                Assert.That(Math.Abs(currentPower - networkPower), Is.LessThanOrEqualTo(eps));
 
-            Assert.That(network.Nodes.Length, Is.EqualTo(_nodeCount));
-            Assert.That(network.Channels.Length, Is.GreaterThan(0));
-            Assert.That(Math.Abs(group.Sum(g => g.Count) / (double)_nodeCount - _networkPower),
-                Is.LessThanOrEqualTo(_nodeCount / 2.0));
+                LogResult(i, networkPower, currentPower);
+            }
+        }
+
+        private static void LogResult(int testNumber, double networkPower, double currentPower)
+        {
+            Console.WriteLine($"Test {testNumber}: ");
+            Console.WriteLine($"\tcurrent power = {currentPower};");
+            Console.WriteLine($"\tspecified power = {networkPower}");
+            Console.WriteLine($"\tdifference ABS = {Math.Abs(networkPower - currentPower)}");
         }
     }
 }

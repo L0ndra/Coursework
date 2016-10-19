@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Coursework.Data.Entities;
 
 namespace Coursework.Data.Builder
 {
@@ -45,11 +46,14 @@ namespace Coursework.Data.Builder
 
         private void CreateChannels()
         {
-            var maxChannelsCount = (int)_networkPower * 2;
+            var roundedPower = (int)Math.Ceiling(_networkPower);
 
             foreach (var node in _network.Nodes)
             {
-                var numberOfChannels = _random.Next(maxChannelsCount) + 1;
+                var currentChannelsNumber = _network.Channels
+                    .Count(c => c.SecondNodeId == node.Id);
+
+                var numberOfChannels = _random.Next(roundedPower) + 1 - currentChannelsNumber;
 
                 var maxChannelsCountInNode = Enumerable
                     .Range(0, _network.Nodes.Length)
@@ -69,22 +73,22 @@ namespace Coursework.Data.Builder
 
         private void GenerateChannel(uint currentNodeId)
         {
-            uint? toNode = null;
+            uint? destinationNodeId = null;
 
-            while (toNode == null)
+            while (destinationNodeId == null)
             {
-                toNode = (uint)_random.Next(_network.Nodes.Length);
+                destinationNodeId = (uint)_random.Next(_network.Nodes.Length);
 
-                if (toNode == currentNodeId || _network.IsChannelExists(currentNodeId, toNode.Value))
+                if (destinationNodeId == currentNodeId || _network.IsChannelExists(currentNodeId, destinationNodeId.Value))
                 {
-                    toNode = null;
+                    destinationNodeId = null;
                     continue;
                 }
 
                 var channel = new Channel
                 {
                     FirstNodeId = currentNodeId,
-                    SecondNodeId = toNode.Value,
+                    SecondNodeId = destinationNodeId.Value,
                     ChannelType = ChannelType.Ground,
                     ConnectionType = ConnectionType.Duplex,
                     ErrorChance = _random.NextDouble(),

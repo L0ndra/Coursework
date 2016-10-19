@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Coursework.Data;
+using Coursework.Data.Entities;
 using Coursework.Data.Exceptions;
 using NUnit.Framework;
 

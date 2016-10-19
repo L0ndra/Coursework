@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Coursework.Data.Entities;
 using Coursework.Data.Exceptions;
 
 namespace Coursework.Data

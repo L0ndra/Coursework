@@ -1,4 +1,4 @@
-﻿namespace Coursework.Data
+﻿namespace Coursework.Data.Entities
 {
     public class Node
     {

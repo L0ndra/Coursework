@@ -1,4 +1,6 @@
-﻿namespace Coursework.Data
+﻿using Coursework.Data.Entities;
+
+namespace Coursework.Data
 {
     public interface INetwork
     {
