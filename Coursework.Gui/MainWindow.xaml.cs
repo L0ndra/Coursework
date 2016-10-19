@@ -2,14 +2,15 @@
 using System.Windows;
 using System.Windows.Input;
 using Coursework.Data;
-using Coursework.Data.Drawers;
+using Coursework.Gui.Drawers;
+using MahApps.Metro.Controls;
 
 namespace Coursework.Gui
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : MetroWindow
     {
         private readonly INetwork _network;
         private readonly INetworkDrawer _networkDrawer;

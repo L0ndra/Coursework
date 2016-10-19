@@ -4,8 +4,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using AutoMapper;
+using Coursework.Data;
+using Coursework.Data.Entities;
+using Coursework.Gui.Dto;
 
-namespace Coursework.Data.Drawers
+namespace Coursework.Gui.Drawers
 {
     public class ChannelDrawer : IComponentDrawer
     {
@@ -20,6 +24,8 @@ namespace Coursework.Data.Drawers
 
                 var line = CreateLine(Canvas.GetLeft(firstUiElement), Canvas.GetLeft(secondUiElement),
                     Canvas.GetTop(firstUiElement), Canvas.GetTop(secondUiElement));
+
+                line.Tag = Mapper.Map<Channel, ChannelDto>(channel);
 
                 panel.Children.Add(line);
             }

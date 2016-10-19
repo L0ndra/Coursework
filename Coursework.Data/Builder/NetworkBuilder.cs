@@ -102,13 +102,8 @@ namespace Coursework.Data.Builder
 
         private void CreateNodes()
         {
-            for (uint i = 0; i < _nodeCount; i++)
+            foreach (var node in NodeIdGenerator.GenerateNodes(0, (int)_nodeCount))
             {
-                var node = new Node
-                {
-                    Id = i
-                };
-
                 _network.AddNode(node);
             }
         }

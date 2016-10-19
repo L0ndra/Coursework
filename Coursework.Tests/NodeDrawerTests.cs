@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Markup;
+using AutoMapper;
 using Coursework.Data;
-using Coursework.Data.Drawers;
 using Coursework.Data.Entities;
+using Coursework.Gui.Drawers;
+using Coursework.Gui.Initializers;
 using Moq;
 using NUnit.Framework;
 
@@ -47,6 +47,8 @@ namespace Coursework.Tests
         public void DrawComponentsShouldAddToPanelSpecifiedNumberOfGrids()
         {
             // Arrange
+            Mapper.Initialize(MapperInitializer.InitializeMapper);
+
             // Act
             _nodeDrawer.DrawComponents(_networkMock.Object, _panel);
 

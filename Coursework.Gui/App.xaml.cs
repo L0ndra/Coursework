@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Media;
+using AutoMapper;
 using Coursework.Data;
 using Coursework.Data.Builder;
-using Coursework.Data.Drawers;
+using Coursework.Data.Entities;
+using Coursework.Gui.Drawers;
+using Coursework.Gui.Dto;
+using Coursework.Gui.Initializers;
 using Ninject;
 
 namespace Coursework.Gui
@@ -21,6 +26,7 @@ namespace Coursework.Gui
             base.OnStartup(e);
             ConfigureContainer();
             ComposeObjects();
+            Mapper.Initialize(MapperInitializer.InitializeMapper);
             Current.MainWindow.Show();
         }
 
@@ -33,13 +39,13 @@ namespace Coursework.Gui
         private void ConfigureContainer()
         {
             _container = new StandardKernel();
-            
+
             _container
                 .Bind<Random>()
                 .ToSelf()
                 .InSingletonScope()
-                .WithConstructorArgument("Seed", (int) (DateTime.Now.Ticks & 0xFFFF));
-                
+                .WithConstructorArgument("Seed", (int)(DateTime.Now.Ticks & 0xFFFF));
+
             _container
                 .Bind<INetworkBuilder>()
                 .To<NetworkBuilder>()

@@ -2,10 +2,9 @@
 using System.Linq;
 using System.Threading;
 using System.Windows.Controls;
-using System.Windows.Shapes;
 using Coursework.Data;
-using Coursework.Data.Drawers;
 using Coursework.Data.Entities;
+using Coursework.Gui.Drawers;
 using Moq;
 using NUnit.Framework;
 

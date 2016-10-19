@@ -4,8 +4,12 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using AutoMapper;
+using Coursework.Data;
+using Coursework.Data.Entities;
+using Coursework.Gui.Dto;
 
-namespace Coursework.Data.Drawers
+namespace Coursework.Gui.Drawers
 {
     public class NodeDrawer : IComponentDrawer
     {
@@ -26,6 +30,7 @@ namespace Coursework.Data.Drawers
                 var textBlock = CreateTextBlock(node.Id.ToString());
 
                 var grid = CreateGrid(panel, rectangle, textBlock);
+                grid.Tag = Mapper.Map<Node, NodeDto>(node);
 
                 panel.Children.Add(grid);
             }

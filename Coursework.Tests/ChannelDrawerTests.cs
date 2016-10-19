@@ -4,9 +4,11 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Shapes;
+using AutoMapper;
 using Coursework.Data;
-using Coursework.Data.Drawers;
 using Coursework.Data.Entities;
+using Coursework.Gui.Drawers;
+using Coursework.Gui.Initializers;
 using Moq;
 using NUnit.Framework;
 
@@ -63,6 +65,8 @@ namespace Coursework.Tests
         public void DrawComponentsShouldAddToPanelSpecifiedNumberOfLines()
         {
             // Arrange
+            Mapper.Initialize(MapperInitializer.InitializeMapper);
+
             for (var i = 0; i < _networkMock.Object.Nodes.Length; i++)
             {
                 var element = new UIElement();

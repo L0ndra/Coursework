@@ -1,6 +1,7 @@
 ﻿using System.Windows.Controls;
+using Coursework.Data;
 
-namespace Coursework.Data.Drawers
+namespace Coursework.Gui.Drawers
 {
     public interface INetworkDrawer
     {

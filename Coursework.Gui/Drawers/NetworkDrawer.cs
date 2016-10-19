@@ -2,8 +2,9 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Shapes;
+using Coursework.Data;
 
-namespace Coursework.Data.Drawers
+namespace Coursework.Gui.Drawers
 {
     public class NetworkDrawer : INetworkDrawer
     {

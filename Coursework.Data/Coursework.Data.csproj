@@ -31,7 +31,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml" />
@@ -40,11 +39,7 @@
   <ItemGroup>
     <Compile Include="Builder\INetworkBuilder.cs" />
     <Compile Include="Builder\NetworkBuilder.cs" />
-    <Compile Include="Drawers\ChannelDrawer.cs" />
-    <Compile Include="Drawers\INetworkDrawer.cs" />
-    <Compile Include="Drawers\IComponentDrawer.cs" />
-    <Compile Include="Drawers\NetworkDrawer.cs" />
-    <Compile Include="Drawers\NodeDrawer.cs" />
+    <Compile Include="Builder\NodeIdGenerator.cs" />
     <Compile Include="Entities\ChannelType.cs" />
     <Compile Include="Exceptions\ChannelException.cs" />
     <Compile Include="INetwork.cs" />
@@ -55,7 +50,9 @@
     <Compile Include="Exceptions\NodeException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
