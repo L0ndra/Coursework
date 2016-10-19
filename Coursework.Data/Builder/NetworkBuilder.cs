@@ -11,10 +11,10 @@ namespace Coursework.Data.Builder
         private readonly double _networkPower;
 
         private readonly int[] _availablePrices = { 2, 4, 7, 8, 11, 15, 17, 20, 24, 25, 28 };
-        private readonly Random _random = new Random((int)(DateTime.Now.Ticks & 0xFFFF));
+        private readonly Random _randomGenerator;
 
 
-        public NetworkBuilder(uint nodeCount, double networkPower)
+        public NetworkBuilder(uint nodeCount, double networkPower, Random randomGenerator)
         {
             if (networkPower <= 0.0)
             {
@@ -23,6 +23,7 @@ namespace Coursework.Data.Builder
 
             _nodeCount = nodeCount;
             _networkPower = networkPower;
+            _randomGenerator = randomGenerator;
         }
 
         public INetwork Build()
@@ -53,7 +54,7 @@ namespace Coursework.Data.Builder
                 var currentChannelsNumber = _network.Channels
                     .Count(c => c.SecondNodeId == node.Id);
 
-                var numberOfChannels = _random.Next(roundedPower) + 1 - currentChannelsNumber;
+                var numberOfChannels = _randomGenerator.Next(roundedPower) + 1 - currentChannelsNumber;
 
                 var maxChannelsCountInNode = Enumerable
                     .Range(0, _network.Nodes.Length)
@@ -77,7 +78,7 @@ namespace Coursework.Data.Builder
 
             while (destinationNodeId == null)
             {
-                destinationNodeId = (uint)_random.Next(_network.Nodes.Length);
+                destinationNodeId = (uint)_randomGenerator.Next(_network.Nodes.Length);
 
                 if (destinationNodeId == currentNodeId || _network.IsChannelExists(currentNodeId, destinationNodeId.Value))
                 {
@@ -91,8 +92,8 @@ namespace Coursework.Data.Builder
                     SecondNodeId = destinationNodeId.Value,
                     ChannelType = ChannelType.Ground,
                     ConnectionType = ConnectionType.Duplex,
-                    ErrorChance = _random.NextDouble(),
-                    Price = _availablePrices[_random.Next(_availablePrices.Length)]
+                    ErrorChance = _randomGenerator.NextDouble(),
+                    Price = _availablePrices[_randomGenerator.Next(_availablePrices.Length)]
                 };
 
                 _network.AddChannel(channel);
