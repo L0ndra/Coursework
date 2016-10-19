@@ -49,6 +49,19 @@ namespace Coursework.Tests
 
             // Assert
             _nodeDrawerMock.Verify(n => n.DrawComponents(_networkMock.Object, It.IsAny<Panel>()), Times.Once());
+            _channelDrawerMock.Verify(n => n.DrawComponents(_networkMock.Object, It.IsAny<Panel>()), Times.Once());
+            Assert.That(result, Is.Not.Null);
+        }
+
+        [Test]
+        public void DrawNetworkShouldThrowExceptionIfWidthOrHeightIsNegative()
+        {
+            // Arrange
+            // Act
+            TestDelegate testDelegate = () => _networkDrawer.DrawNetwork(_networkMock.Object, -700, 700);
+
+            // Assert
+            Assert.That(testDelegate, Throws.ArgumentException);
         }
     }
 }

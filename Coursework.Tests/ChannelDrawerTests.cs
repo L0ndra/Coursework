@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -56,8 +57,13 @@ namespace Coursework.Tests
 
             _networkMock.Setup(n => n.Channels)
                 .Returns(channels);
+        }
 
-            for (var i = 0; i < nodes.Length; i++)
+        [Test]
+        public void DrawComponentsShouldAddToPanelSpecifiedNumberOfLines()
+        {
+            // Arrange
+            for (var i = 0; i < _networkMock.Object.Nodes.Length; i++)
             {
                 var element = new UIElement();
 
@@ -66,17 +72,23 @@ namespace Coursework.Tests
 
                 _panel.Children.Add(element);
             }
-        }
 
-        [Test]
-        public void DrawComponentsShouldAddToPanelSpecifiedNumberOfLines()
-        {
-            // Arrange
             // Act
             _channelDrawer.DrawComponents(_networkMock.Object, _panel);
 
             // Assert
             Assert.That(_panel.Children.OfType<Line>().Count, Is.EqualTo(_networkMock.Object.Channels.Length));
+        }
+
+        [Test]
+        public void DrawComponentsShouldThrowExceptionIfPanelHasNoChildren()
+        {
+            // Arrange
+            // Act
+            TestDelegate testDelegate = () => _channelDrawer.DrawComponents(_networkMock.Object, _panel);
+
+            // Assert
+            Assert.That(testDelegate, Throws.TypeOf(typeof(ArgumentOutOfRangeException)));
         }
     }
 }
