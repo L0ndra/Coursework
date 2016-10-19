@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Media;
 using AutoMapper;
 using Coursework.Data;
 using Coursework.Data.Builder;
-using Coursework.Data.Entities;
 using Coursework.Gui.Drawers;
-using Coursework.Gui.Dto;
 using Coursework.Gui.Initializers;
 using Ninject;
 
