@@ -14,14 +14,21 @@ namespace Coursework.Tests
     [Apartment(ApartmentState.STA)]
     public class NetworkDrawerTests
     {
+        private Panel _panel;
         private Mock<INetwork> _networkMock;
-        private INetworkDrawer _networkDrawer;
+        private IComponentDrawer _networkDrawer;
         private Mock<IComponentDrawer> _nodeDrawerMock;
         private Mock<IComponentDrawer> _channelDrawerMock;
 
         [SetUp]
         public void Setup()
         {
+            _panel = new Canvas()
+            {
+                Width = 700,
+                Height = 700
+            };
+
             _networkMock = new Mock<INetwork>();
 
             _nodeDrawerMock = new Mock<IComponentDrawer>();
@@ -40,27 +47,16 @@ namespace Coursework.Tests
         }
 
         [Test]
-        public void DrawNetworkShouldReturnCanvasWithCorrectUiElements()
+        public void DrawComponentsShouldReturnCanvasWithCorrectUiElements()
         {
             // Arrange
             // Act
-            var result = _networkDrawer.DrawNetwork(_networkMock.Object, 700, 700);
+            _networkDrawer.DrawComponents(_panel, _networkMock.Object);
 
             // Assert
-            _nodeDrawerMock.Verify(n => n.DrawComponents(_networkMock.Object, It.IsAny<Panel>()), Times.Once());
-            _channelDrawerMock.Verify(n => n.DrawComponents(_networkMock.Object, It.IsAny<Panel>()), Times.Once());
-            Assert.That(result, Is.Not.Null);
-        }
-
-        [Test]
-        public void DrawNetworkShouldThrowExceptionIfWidthOrHeightIsNegative()
-        {
-            // Arrange
-            // Act
-            TestDelegate testDelegate = () => _networkDrawer.DrawNetwork(_networkMock.Object, -700, 700);
-
-            // Assert
-            Assert.That(testDelegate, Throws.ArgumentException);
+            _nodeDrawerMock.Verify(n => n.DrawComponents(It.IsAny<Panel>(), _networkMock.Object), Times.Once());
+            _channelDrawerMock.Verify(n => n.DrawComponents(It.IsAny<Panel>(), _networkMock.Object), Times.Once());
+            Assert.That(_panel.Children.Count, Is.EqualTo(1));
         }
     }
 }

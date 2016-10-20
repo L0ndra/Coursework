@@ -6,7 +6,7 @@ using Coursework.Data;
 
 namespace Coursework.Gui.Drawers
 {
-    public class NetworkDrawer : INetworkDrawer
+    public class NetworkDrawer : IComponentDrawer
     {
         private readonly IComponentDrawer _nodeDrawer;
         private readonly IComponentDrawer _channelDrawer;
@@ -17,23 +17,23 @@ namespace Coursework.Gui.Drawers
             _channelDrawer = channelDrawer;
         }
 
-        public Panel DrawNetwork(INetwork network, double width, double height)
+        public void DrawComponents(Panel panel, INetwork network)
         {
             var canvas = new Canvas()
             {
-                Width = width,
-                Height = height
+                Width = panel.ActualWidth,
+                Height = panel.ActualHeight
             };
 
-            _nodeDrawer.DrawComponents(network, canvas);
-            _channelDrawer.DrawComponents(network, canvas);
+            _nodeDrawer.DrawComponents(canvas, network);
+            _channelDrawer.DrawComponents(canvas, network);
 
-            canvas.MouseUp += (object sender, MouseButtonEventArgs e) => RefreshChannels(network, sender as Panel);
+            canvas.MouseUp += (object sender, MouseButtonEventArgs e) => RefreshChannels(sender as Panel, network);
 
-            return canvas;
+            panel.Children.Add(canvas);
         }
 
-        private void RefreshChannels(INetwork network, Panel panel)
+        private void RefreshChannels(Panel panel, INetwork network)
         {
             var allLines = panel.Children
                 .OfType<Line>()
@@ -44,7 +44,7 @@ namespace Coursework.Gui.Drawers
                 panel.Children.Remove(line);
             }
 
-            _channelDrawer.DrawComponents(network, panel);
+            _channelDrawer.DrawComponents(panel, network);
         }
     }
 }

@@ -13,9 +13,9 @@ namespace Coursework.Gui
     public partial class MainWindow : MetroWindow
     {
         private readonly INetwork _network;
-        private readonly INetworkDrawer _networkDrawer;
+        private readonly IComponentDrawer _networkDrawer;
 
-        public MainWindow(INetwork network, INetworkDrawer networkDrawer)
+        public MainWindow(INetwork network, IComponentDrawer networkDrawer)
         {
             InitializeComponent();
 
@@ -29,10 +29,7 @@ namespace Coursework.Gui
         {
             var frameworkElement = NetworkArea;
 
-            var canvas = _networkDrawer.DrawNetwork(_network, frameworkElement.ActualWidth,
-                frameworkElement.ActualHeight);
-
-            NetworkArea.Children.Add(canvas);
+            _networkDrawer.DrawComponents(frameworkElement, _network);
         }
     }
 }

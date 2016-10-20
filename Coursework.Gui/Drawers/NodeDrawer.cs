@@ -22,7 +22,7 @@ namespace Coursework.Gui.Drawers
             _randomGenerator = randomGenerator;
         }
 
-        public void DrawComponents(INetwork network, Panel panel)
+        public void DrawComponents(Panel panel, INetwork network)
         {
             foreach (var node in network.Nodes)
             {

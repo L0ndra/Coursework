@@ -50,7 +50,7 @@ namespace Coursework.Tests
             Mapper.Initialize(MapperInitializer.InitializeMapper);
 
             // Act
-            _nodeDrawer.DrawComponents(_networkMock.Object, _panel);
+            _nodeDrawer.DrawComponents(_panel, _networkMock.Object);
 
             // Assert
             Assert.That(_panel.Children.Count, Is.EqualTo(_networkMock.Object.Nodes.Length));

@@ -75,9 +75,10 @@ namespace Coursework.Gui
                 .Named("Channel drawer");
 
             _container
-                .Bind<INetworkDrawer>()
+                .Bind<IComponentDrawer>()
                 .To<NetworkDrawer>()
                 .InTransientScope()
+                .Named("Network drawer")
                 .WithConstructorArgument("nodeDrawer", _container.Get<IComponentDrawer>("Node drawer"))
                 .WithConstructorArgument("channelDrawer", _container.Get<IComponentDrawer>("Channel drawer"));
 
@@ -85,7 +86,7 @@ namespace Coursework.Gui
                 .Bind<MainWindow>()
                 .ToSelf()
                 .WithConstructorArgument("network", _container.Get<INetwork>("Generated network"))
-                .WithConstructorArgument("networkDrawer", _container.Get<INetworkDrawer>());
+                .WithConstructorArgument("networkDrawer", _container.Get<IComponentDrawer>("Network drawer"));
         }
     }
 }

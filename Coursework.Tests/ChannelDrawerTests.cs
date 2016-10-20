@@ -78,7 +78,7 @@ namespace Coursework.Tests
             }
 
             // Act
-            _channelDrawer.DrawComponents(_networkMock.Object, _panel);
+            _channelDrawer.DrawComponents(_panel, _networkMock.Object);
 
             // Assert
             Assert.That(_panel.Children.OfType<Line>().Count, Is.EqualTo(_networkMock.Object.Channels.Length));
@@ -89,7 +89,7 @@ namespace Coursework.Tests
         {
             // Arrange
             // Act
-            TestDelegate testDelegate = () => _channelDrawer.DrawComponents(_networkMock.Object, _panel);
+            TestDelegate testDelegate = () => _channelDrawer.DrawComponents(_panel, _networkMock.Object);
 
             // Assert
             Assert.That(testDelegate, Throws.TypeOf(typeof(ArgumentOutOfRangeException)));

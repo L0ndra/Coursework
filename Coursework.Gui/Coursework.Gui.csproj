@@ -72,7 +72,6 @@
     </Compile>
     <Compile Include="Drawers\ChannelDrawer.cs" />
     <Compile Include="Drawers\IComponentDrawer.cs" />
-    <Compile Include="Drawers\INetworkDrawer.cs" />
     <Compile Include="Drawers\NetworkDrawer.cs" />
     <Compile Include="Drawers\NodeDrawer.cs" />
     <Compile Include="Dto\ChannelDto.cs" />

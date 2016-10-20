@@ -5,6 +5,6 @@ namespace Coursework.Gui.Drawers
 {
     public interface IComponentDrawer
     {
-        void DrawComponents(INetwork network, Panel panel);
+        void DrawComponents(Panel panel, INetwork network);
     }
 }

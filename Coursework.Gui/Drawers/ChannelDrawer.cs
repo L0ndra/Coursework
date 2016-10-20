@@ -15,7 +15,7 @@ namespace Coursework.Gui.Drawers
     {
         private static double SquareSize => 30.0;
 
-        public void DrawComponents(INetwork network, Panel panel)
+        public void DrawComponents(Panel panel, INetwork network)
         {
             foreach (var channel in network.Channels)
             {
