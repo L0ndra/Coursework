@@ -2,11 +2,13 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using AutoMapper;
 using Coursework.Data;
 using Coursework.Data.Entities;
+using Coursework.Gui.Dialogs;
 using Coursework.Gui.Dto;
 
 namespace Coursework.Gui.Drawers
@@ -19,29 +21,30 @@ namespace Coursework.Gui.Drawers
         {
             foreach (var channel in network.Channels)
             {
-                var firstUiElement = GetElementByNodeId(network, panel, channel.FirstNodeId);
-                var secondUiElement = GetElementByNodeId(network, panel, channel.SecondNodeId);
-
-                var line = CreateLine(Canvas.GetLeft(firstUiElement), Canvas.GetLeft(secondUiElement),
-                    Canvas.GetTop(firstUiElement), Canvas.GetTop(secondUiElement));
-
-                line.Tag = Mapper.Map<Channel, ChannelDto>(channel);
+                var line = CreateLine(channel, network, panel);
 
                 panel.Children.Add(line);
             }
         }
 
-        private Line CreateLine(double x1, double x2, double y1, double y2)
+        private Line CreateLine(Channel channel, INetwork network, Panel panel)
         {
+            var firstUiElement = GetElementByNodeId(network, panel, channel.FirstNodeId);
+            var secondUiElement = GetElementByNodeId(network, panel, channel.SecondNodeId);
+
             var line = new Line
             {
-                X1 = x1 + SquareSize / 2,
-                X2 = x2 + SquareSize / 2,
-                Y1 = y1 + SquareSize / 2,
-                Y2 = y2 + SquareSize / 2,
+                X1 = Canvas.GetLeft(firstUiElement) + SquareSize / 2,
+                X2 = Canvas.GetLeft(secondUiElement) + SquareSize / 2,
+                Y1 = Canvas.GetTop(firstUiElement) + SquareSize / 2,
+                Y2 = Canvas.GetTop(secondUiElement) + SquareSize / 2,
                 Stroke = Brushes.Black,
                 StrokeThickness = 2
             };
+
+            line.Tag = Mapper.Map<Channel, ChannelDto>(channel);
+            line.MouseUp += Line_MouseUp;
+            line.Cursor = Cursors.Hand;
 
             return line;
         }
@@ -53,6 +56,16 @@ namespace Coursework.Gui.Drawers
             var uiElement = panel.Children[nodeIndex];
 
             return uiElement;
+        }
+
+        private void Line_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            var line = sender as Line;
+
+            var infoWindow = new ChannelInfoWindow();
+            infoWindow.BindChannelInfo(line.Tag as ChannelDto);
+
+            infoWindow.Show();
         }
     }
 }
