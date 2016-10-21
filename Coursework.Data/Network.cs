@@ -5,7 +5,7 @@ using Coursework.Data.Exceptions;
 
 namespace Coursework.Data
 {
-    public class Network : INetwork
+    public class Network : INetworkHandler
     {
         private readonly IList<Node> _nodes;
         private readonly IList<Channel> _channels;
@@ -34,6 +34,14 @@ namespace Coursework.Data
             _channels.Add(channel);
         }
 
+        public void UpdateChannel(Channel newChannel)
+        {
+            var oldChannel = GetChannel(newChannel.FirstNodeId, newChannel.SecondNodeId);
+
+            _channels.Remove(oldChannel);
+            AddChannel(newChannel);
+        }
+
         public IDictionary<uint, int> GetLinkedNodeIdsWithLinkPrice(uint id)
         {
             var channelsFromCurrentNode = _channels.Where(c => c.FirstNodeId == id);
@@ -50,9 +58,9 @@ namespace Coursework.Data
                 .ToDictionary(k => k.Key, k => k.Value);
         } 
 
-        public bool IsChannelExists(uint firstNodeId, uint secondNodeId)
+        public Channel GetChannel(uint firstNodeId, uint secondNodeId)
         {
-            return Channels.Any(c => c.FirstNodeId == firstNodeId && c.SecondNodeId == secondNodeId
+            return Channels.FirstOrDefault(c => c.FirstNodeId == firstNodeId && c.SecondNodeId == secondNodeId
                                      || c.FirstNodeId == secondNodeId && c.SecondNodeId == firstNodeId);
         }
 

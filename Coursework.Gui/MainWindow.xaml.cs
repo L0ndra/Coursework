@@ -1,6 +1,4 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows;
 using Coursework.Data;
 using Coursework.Gui.Drawers;
 using MahApps.Metro.Controls;
@@ -12,15 +10,13 @@ namespace Coursework.Gui
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        private readonly INetwork _network;
-        private readonly IComponentDrawer _networkDrawer;
+        private readonly INetworkHandler _network;
 
-        public MainWindow(INetwork network, IComponentDrawer networkDrawer)
+        public MainWindow(INetworkHandler network)
         {
             InitializeComponent();
 
             _network = network;
-            _networkDrawer = networkDrawer;
 
             Loaded += OnWindowLoaded;
         }
@@ -29,7 +25,11 @@ namespace Coursework.Gui
         {
             var frameworkElement = NetworkArea;
 
-            _networkDrawer.DrawComponents(frameworkElement, _network);
+            var nodeDrawer = new NodeDrawer(_network);
+            var channelDrawer = new ChannelDrawer(_network);
+            var networkDrawer = new NetworkDrawer(nodeDrawer, channelDrawer);
+
+            networkDrawer.DrawComponents(frameworkElement);
         }
     }
 }

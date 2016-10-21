@@ -1,6 +1,8 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Shapes;
 using AutoMapper;
 using Coursework.Data;
@@ -12,20 +14,40 @@ namespace Coursework.Gui.Drawers
 {
     public class NodeDrawer : IComponentDrawer
     {
-        public void DrawComponents(Panel panel, INetwork network)
+        private readonly INetworkHandler _network;
+        private readonly IList<UIElement> _uiElements = new List<UIElement>();
+
+        public NodeDrawer(INetworkHandler network)
         {
-            foreach (var node in network.Nodes)
+            _network = network;
+        }
+
+        public void DrawComponents(Panel panel)
+        {
+            foreach (var node in _network.Nodes)
             {
                 var rectangle = CreateRectangle();
                 var textBlock = CreateTextBlock(node.Id.ToString());
 
                 var grid = CreateGrid(panel, rectangle, textBlock);
                 var nodeDto = Mapper.Map<Node, NodeDto>(node);
-                nodeDto.LinkedNodesIdWithPrices = network.GetLinkedNodeIdsWithLinkPrice(node.Id);
+                nodeDto.LinkedNodesIdWithPrices = _network.GetLinkedNodeIdsWithLinkPrice(node.Id);
                 grid.Tag = nodeDto;
 
                 panel.Children.Add(grid);
+                _uiElements.Add(grid);
             }
+        }
+
+        public void RemoveCreatedElements()
+        {
+            foreach (var uiElement in _uiElements)
+            {
+                var parent = VisualTreeHelper.GetParent(uiElement) as Panel;
+                parent?.Children.Remove(uiElement);
+            }
+
+            _uiElements.Clear();
         }
 
         private Rectangle CreateRectangle()

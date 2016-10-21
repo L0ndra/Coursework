@@ -2,6 +2,6 @@
 {
     public interface INetworkBuilder
     {
-        INetwork Build();
+        INetworkHandler Build();
     }
 }

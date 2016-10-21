@@ -14,6 +14,7 @@
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         
         <Grid Grid.Row="0">
@@ -23,7 +24,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Price: "></TextBlock>
-            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="Price"></TextBlock>
+            <TextBox Grid.Column="1" VerticalAlignment="Center" Name="Price" Margin="10 0"></TextBox>
         </Grid>
 
         <Grid Grid.Row="1">
@@ -33,7 +34,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Error Chance: "></TextBlock>
-            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="ErrorChance"></TextBlock>
+            <TextBox Grid.Column="1" VerticalAlignment="Center" Name="ErrorChance" Margin="10 0"></TextBox>
         </Grid>
 
         <Grid Grid.Row="2">
@@ -43,7 +44,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="First Node: "></TextBlock>
-            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="FirstNodeId"></TextBlock>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="FirstNodeId" Margin="10 0"></TextBlock>
         </Grid>
 
         <Grid Grid.Row="3">
@@ -53,7 +54,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Second Node: "></TextBlock>
-            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="SecondNodeId"></TextBlock>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="SecondNodeId" Margin="10 0"></TextBlock>
         </Grid>
 
         <Grid Grid.Row="4">
@@ -63,10 +64,26 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Connection Type: "></TextBlock>
-            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="ConnectionType"></TextBlock>
+            <ComboBox Grid.Column="1" VerticalAlignment="Center" Name="ConnectionType" Margin="10 0">
+                <ComboBoxItem Content="Duplex" Name="DuplexItem"></ComboBoxItem>
+                <ComboBoxItem Content="Halfduplex" Name="HalfduplexItem"></ComboBoxItem>
+            </ComboBox>
         </Grid>
 
         <Grid Grid.Row="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Channel Type: "></TextBlock>
+            <ComboBox Grid.Column="1" VerticalAlignment="Center" Name="ChannelType" Margin="10 0">
+                <ComboBoxItem Content="Sattelite" Name="SatteliteItem"></ComboBoxItem>
+                <ComboBoxItem Content="Ground" Name="GroundItem"></ComboBoxItem>
+            </ComboBox>
+        </Grid>
+
+        <Grid Grid.Row="6">
             <Button HorizontalAlignment="Center" VerticalAlignment="Center" Content="OK" Width="100" Click="Ok_OnClick"></Button>
         </Grid>
     </Grid>

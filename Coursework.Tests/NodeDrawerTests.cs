@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Windows.Controls;
 using AutoMapper;
@@ -16,7 +15,7 @@ namespace Coursework.Tests
     [Apartment(ApartmentState.STA)]
     public class NodeDrawerTests
     {
-        private Mock<INetwork> _networkMock;
+        private Mock<INetworkHandler> _networkMock;
         private IComponentDrawer _nodeDrawer;
         private Panel _panel;
 
@@ -28,8 +27,8 @@ namespace Coursework.Tests
                 Width = 700,
                 Height = 700
             };
-            _networkMock = new Mock<INetwork>();
-            _nodeDrawer = new NodeDrawer();
+            _networkMock = new Mock<INetworkHandler>();
+            _nodeDrawer = new NodeDrawer(_networkMock.Object);
 
             const int nodesCount = 5;
 
@@ -49,10 +48,34 @@ namespace Coursework.Tests
             Mapper.Initialize(MapperInitializer.InitializeMapper);
 
             // Act
-            _nodeDrawer.DrawComponents(_panel, _networkMock.Object);
+            _nodeDrawer.DrawComponents(_panel);
 
             // Assert
             Assert.That(_panel.Children.Count, Is.EqualTo(_networkMock.Object.Nodes.Length));
+        }
+
+        [Test]
+        public void RemoveCreatedElementsShouldRemoveAllCreatedChildren()
+        {
+            // Arrange
+            _nodeDrawer.DrawComponents(_panel);
+
+            // Act
+            _nodeDrawer.RemoveCreatedElements();
+
+            // Assert
+            Assert.That(_panel.Children.Count, Is.Zero);
+        }
+
+        [Test]
+        public void RemoveCreatedElementsShouldDoNothing()
+        {
+            // Arrange
+            // Act
+            _nodeDrawer.RemoveCreatedElements();
+
+            // Assert
+            Assert.That(_panel.Children.Count, Is.Zero);
         }
     }
 }

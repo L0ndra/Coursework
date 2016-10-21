@@ -50,13 +50,13 @@ namespace Coursework.Gui
                 .WithConstructorArgument("networkPower", AllConstants.NetworkPower);
 
             _container
-                .Bind<INetwork>()
+                .Bind<INetworkHandler>()
                 .To<Network>()
                 .InTransientScope()
                 .Named("Empty");
 
             _container
-                .Bind<INetwork>()
+                .Bind<INetworkHandler>()
                 .ToMethod(x => _container.Get<INetworkBuilder>().Build())
                 .InTransientScope()
                 .Named("Generated network");
@@ -65,13 +65,15 @@ namespace Coursework.Gui
                 .Bind<IComponentDrawer>()
                 .To<NodeDrawer>()
                 .InTransientScope()
-                .Named("Node drawer");
+                .Named("Node drawer")
+                .WithConstructorArgument("network", _container.Get<INetworkHandler>("Generated network"));
 
             _container
                 .Bind<IComponentDrawer>()
                 .To<ChannelDrawer>()
                 .InTransientScope()
-                .Named("Channel drawer");
+                .Named("Channel drawer")
+                .WithConstructorArgument("network", _container.Get<INetworkHandler>("Generated network"));
 
             _container
                 .Bind<IComponentDrawer>()
@@ -84,8 +86,7 @@ namespace Coursework.Gui
             _container
                 .Bind<MainWindow>()
                 .ToSelf()
-                .WithConstructorArgument("network", _container.Get<INetwork>("Generated network"))
-                .WithConstructorArgument("networkDrawer", _container.Get<IComponentDrawer>("Network drawer"));
+                .WithConstructorArgument("network", _container.Get<INetworkHandler>("Generated network"));
         }
     }
 }

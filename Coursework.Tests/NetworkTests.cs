@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Coursework.Data;
 using Coursework.Data.Builder;
+using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.Exceptions;
 using NUnit.Framework;
@@ -10,7 +11,7 @@ namespace Coursework.Tests
     [TestFixture]
     public class NetworkTests
     {
-        private INetwork _network;
+        private INetworkHandler _network;
         private Channel _channel;
         private Node _node1;
         private Node _node2;
@@ -28,7 +29,7 @@ namespace Coursework.Tests
             {
                 SecondNodeId = _node2.Id,
                 FirstNodeId = _node1.Id,
-                Price = 5,
+                Price = AllConstants.AllPrices.ElementAt(0),
                 ChannelType = ChannelType.Ground,
                 ErrorChance = 0.6,
                 ConnectionType = ConnectionType.Duplex
@@ -132,7 +133,7 @@ namespace Coursework.Tests
         }
 
         [Test]
-        public void IsChannelExistsShouldReturnTrueIfChannelFromFirstToSecondNodeExists()
+        public void GetChannelShouldReturnChannelIfChannelFromFirstToSecondNodeExists()
         {
             // Arrange
             _network.AddNode(_node1);
@@ -140,14 +141,16 @@ namespace Coursework.Tests
             _network.AddChannel(_channel);
 
             // Act
-            var result = _network.IsChannelExists(_node1.Id, _node2.Id);
+            var result = _network.GetChannel(_node1.Id, _node2.Id);
 
             // Assert
-            Assert.That(result, Is.True);
+            Assert.That(result, Is.Not.Null);
+            Assert.IsTrue(result.FirstNodeId == _node1.Id || result.FirstNodeId == _node2.Id);
+            Assert.IsTrue(result.SecondNodeId == _node1.Id || result.SecondNodeId == _node2.Id);
         }
 
         [Test]
-        public void IsChannelExistsShouldReturnTrueIfChannelFromSecondToFirstNodeExists()
+        public void GetChannelShouldReturnChannelIfChannelFromSecondToFirstNodeExists()
         {
             // Arrange
             _network.AddNode(_node1);
@@ -155,21 +158,23 @@ namespace Coursework.Tests
             _network.AddChannel(_channel);
 
             // Act
-            var result = _network.IsChannelExists(_node2.Id, _node1.Id);
+            var result = _network.GetChannel(_node2.Id, _node1.Id);
 
             // Assert
-            Assert.That(result, Is.True);
+            Assert.That(result, Is.Not.Null);
+            Assert.IsTrue(result.FirstNodeId == _node1.Id || result.FirstNodeId == _node2.Id);
+            Assert.IsTrue(result.SecondNodeId == _node1.Id || result.SecondNodeId == _node2.Id);
         }
 
         [Test]
-        public void IsChannelExistsShouldReturnFalseIfChannelNotExists()
+        public void GetChannelShouldReturnNullIfChannelNotExists()
         {
             // Arrange
             // Act
-            var result = _network.IsChannelExists(_node2.Id, _node1.Id);
+            var result = _network.GetChannel(_node2.Id, _node1.Id);
 
             // Assert
-            Assert.That(result, Is.False);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -186,6 +191,38 @@ namespace Coursework.Tests
             // Assert
             Assert.That(result.Count, Is.EqualTo(1));
             Assert.That(result[_channel.SecondNodeId], Is.EqualTo(_channel.Price));
+        }
+
+        [Test]
+        public void UpdateChannelShouldChangeExistedChannel()
+        {
+            // Arrange
+            _network.AddNode(_node1);
+            _network.AddNode(_node2);
+            _network.AddChannel(_channel);
+
+            _channel.Price = AllConstants.AllPrices.ElementAt(2);
+            _channel.ChannelType = ChannelType.Satellite;
+
+            // Act
+            _network.UpdateChannel(_channel);
+            var updatedChannel = _network.GetChannel(_channel.FirstNodeId, _channel.SecondNodeId);
+
+            // Assert
+            Assert.That(updatedChannel.Price, Is.EqualTo(AllConstants.AllPrices.ElementAt(2)));
+            Assert.That(updatedChannel.ChannelType, Is.EqualTo(ChannelType.Satellite));
+            Assert.That(updatedChannel.ConnectionType, Is.EqualTo(_channel.ConnectionType));
+        }
+
+        [Test]
+        public void UpdateChannelShouldThrowExceptionIfChannelNotExists()
+        {
+            // Arrange
+            // Act
+            TestDelegate testDelegate = () => _network.UpdateChannel(_channel);
+
+            // Assert
+            Assert.That(testDelegate, Throws.TypeOf(typeof(NodeException)));
         }
     }
 }

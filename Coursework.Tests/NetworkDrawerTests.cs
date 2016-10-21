@@ -14,7 +14,7 @@ namespace Coursework.Tests
     public class NetworkDrawerTests
     {
         private Panel _panel;
-        private Mock<INetwork> _networkMock;
+        private Mock<INetworkHandler> _networkMock;
         private IComponentDrawer _networkDrawer;
         private Mock<IComponentDrawer> _nodeDrawerMock;
         private Mock<IComponentDrawer> _channelDrawerMock;
@@ -28,7 +28,7 @@ namespace Coursework.Tests
                 Height = 700
             };
 
-            _networkMock = new Mock<INetwork>();
+            _networkMock = new Mock<INetworkHandler>();
 
             _nodeDrawerMock = new Mock<IComponentDrawer>();
             _channelDrawerMock = new Mock<IComponentDrawer>();
@@ -50,12 +50,36 @@ namespace Coursework.Tests
         {
             // Arrange
             // Act
-            _networkDrawer.DrawComponents(_panel, _networkMock.Object);
+            _networkDrawer.DrawComponents(_panel);
 
             // Assert
-            _nodeDrawerMock.Verify(n => n.DrawComponents(It.IsAny<Panel>(), _networkMock.Object), Times.Once());
-            _channelDrawerMock.Verify(n => n.DrawComponents(It.IsAny<Panel>(), _networkMock.Object), Times.Once());
+            _nodeDrawerMock.Verify(n => n.DrawComponents(It.IsAny<Panel>()), Times.Once());
+            _channelDrawerMock.Verify(n => n.DrawComponents(It.IsAny<Panel>()), Times.Once());
             Assert.That(_panel.Children.Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void RemoveCreatedElementsShouldRemoveAllCreatedChildren()
+        {
+            // Arrange
+            _networkDrawer.DrawComponents(_panel);
+
+            // Act
+            _networkDrawer.RemoveCreatedElements();
+
+            // Assert
+            Assert.That(_panel.Children.Count, Is.Zero);
+        }
+
+        [Test]
+        public void RemoveCreatedElementsShouldDoNothing()
+        {
+            // Arrange
+            // Act
+            _networkDrawer.RemoveCreatedElements();
+
+            // Assert
+            Assert.That(_panel.Children.Count, Is.Zero);
         }
     }
 }

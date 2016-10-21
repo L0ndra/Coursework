@@ -19,7 +19,7 @@ namespace Coursework.Tests
     public class ChannelDrawerTests
     {
         private Panel _panel;
-        private Mock<INetwork> _networkMock;
+        private Mock<INetworkHandler> _networkMock;
         private IComponentDrawer _channelDrawer;
 
         [SetUp]
@@ -30,8 +30,8 @@ namespace Coursework.Tests
                 Width = 700,
                 Height = 700
             };
-            _networkMock = new Mock<INetwork>();
-            _channelDrawer = new ChannelDrawer();
+            _networkMock = new Mock<INetworkHandler>();
+            _channelDrawer = new ChannelDrawer(_networkMock.Object);
 
             const int nodesCount = 5;
 
@@ -78,7 +78,7 @@ namespace Coursework.Tests
             }
 
             // Act
-            _channelDrawer.DrawComponents(_panel, _networkMock.Object);
+            _channelDrawer.DrawComponents(_panel);
 
             // Assert
             Assert.That(_panel.Children.OfType<Line>().Count, Is.EqualTo(_networkMock.Object.Channels.Length));
@@ -89,10 +89,46 @@ namespace Coursework.Tests
         {
             // Arrange
             // Act
-            TestDelegate testDelegate = () => _channelDrawer.DrawComponents(_panel, _networkMock.Object);
+            TestDelegate testDelegate = () => _channelDrawer.DrawComponents(_panel);
 
             // Assert
             Assert.That(testDelegate, Throws.TypeOf(typeof(ArgumentOutOfRangeException)));
+        }
+
+        [Test]
+        public void RemoveCreatedElementsShouldRemoveAllCreatedChildren()
+        {
+            // Arrange
+            Mapper.Initialize(MapperInitializer.InitializeMapper);
+
+            for (var i = 0; i < _networkMock.Object.Nodes.Length; i++)
+            {
+                var element = new UIElement();
+
+                Canvas.SetLeft(element, 10);
+                Canvas.SetTop(element, 10);
+
+                _panel.Children.Add(element);
+            }
+
+            _channelDrawer.DrawComponents(_panel);
+
+            // Act
+            _channelDrawer.RemoveCreatedElements();
+
+            // Assert
+            Assert.That(_panel.Children.Count, Is.EqualTo(_networkMock.Object.Nodes.Length));
+        }
+
+        [Test]
+        public void RemoveCreatedElementsShouldDoNothing()
+        {
+            // Arrange
+            // Act
+            _channelDrawer.RemoveCreatedElements();
+
+            // Assert
+            Assert.That(_panel.Children.Count, Is.Zero);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,22 +17,44 @@ namespace Coursework.Gui.Drawers
 {
     public class ChannelDrawer : IComponentDrawer
     {
-        public void DrawComponents(Panel panel, INetwork network)
+        private readonly INetworkHandler _network;
+        private readonly IList<UIElement> _uiElements = new List<UIElement>();
+
+        public ChannelDrawer(INetworkHandler network)
         {
-            foreach (var channel in network.Channels)
+            _network = network;
+        }
+
+        public void DrawComponents(Panel panel)
+        {
+            foreach (var channel in _network.Channels)
             {
-                var line = CreateLine(channel, network, panel);
+                var line = CreateLine(channel, panel);
                 var textBlock = CreateTextBlock(channel, line);
 
                 panel.Children.Add(line);
                 panel.Children.Add(textBlock);
+
+                _uiElements.Add(line);
+                _uiElements.Add(textBlock);
             }
         }
 
-        private Line CreateLine(Channel channel, INetwork network, Panel panel)
+        public void RemoveCreatedElements()
         {
-            var firstUiElement = GetElementByNodeId(network, panel, channel.FirstNodeId);
-            var secondUiElement = GetElementByNodeId(network, panel, channel.SecondNodeId);
+            foreach (var uiElement in _uiElements)
+            {
+                var parent = VisualTreeHelper.GetParent(uiElement) as Panel;
+                parent?.Children.Remove(uiElement);
+            }
+
+            _uiElements.Clear();
+        }
+
+        private Line CreateLine(Channel channel, Panel panel)
+        {
+            var firstUiElement = GetElementByNodeId(panel, channel.FirstNodeId);
+            var secondUiElement = GetElementByNodeId(panel, channel.SecondNodeId);
 
             var line = new Line
             {
@@ -41,6 +64,7 @@ namespace Coursework.Gui.Drawers
                 Y2 = Canvas.GetTop(secondUiElement) + AllConstants.SquareSize / 2,
                 Stroke = AllConstants.LineBrush,
                 StrokeThickness = AllConstants.LineThickness,
+                StrokeDashArray = GetStrokeDashArray(channel),
                 Tag = Mapper.Map<Channel, ChannelDto>(channel),
                 Cursor = Cursors.Hand
             };
@@ -48,6 +72,13 @@ namespace Coursework.Gui.Drawers
             line.MouseUp += Line_MouseUp;
 
             return line;
+        }
+
+        private static DoubleCollection GetStrokeDashArray(Channel channel)
+        {
+            return channel.ChannelType == ChannelType.Ground
+                ? AllConstants.StrokeDashArrayForGroundConnection
+                : AllConstants.StrokeDashArrayForSatteliteConnection;
         }
 
         private TextBlock CreateTextBlock(Channel channel, Line connectedLine)
@@ -64,10 +95,10 @@ namespace Coursework.Gui.Drawers
             return textBlock;
         }
 
-        private UIElement GetElementByNodeId(INetwork network, Panel panel, uint nodeId)
+        private UIElement GetElementByNodeId(Panel panel, uint nodeId)
         {
-            var node = network.Nodes.FirstOrDefault(n => n.Id == nodeId);
-            var nodeIndex = Array.IndexOf(network.Nodes, node);
+            var node = _network.Nodes.FirstOrDefault(n => n.Id == nodeId);
+            var nodeIndex = Array.IndexOf(_network.Nodes, node);
             var uiElement = panel.Children[nodeIndex];
 
             return uiElement;
@@ -80,10 +111,28 @@ namespace Coursework.Gui.Drawers
             var infoWindow = new ChannelInfoWindow();
             if (line != null)
             {
-                infoWindow.BindChannelInfo(line.Tag as ChannelDto);
+                infoWindow.BindChannelInfo(line.Tag as ChannelDto, UpdateChannels);
             }
 
             infoWindow.Show();
+        }
+
+        private void UpdateChannels(ChannelDto channelDto)
+        {
+            var newChannel = Mapper.Map<ChannelDto, Channel>(channelDto);
+            _network.UpdateChannel(newChannel);
+
+            var parents = _uiElements
+                .Select(uiElement => VisualTreeHelper.GetParent(_uiElements.First()) as Panel)
+                .GroupBy(panel => panel)
+                .Select(g => g.Key)
+                .ToArray();
+
+            RemoveCreatedElements();
+            foreach (var parent in parents)
+            {
+                DrawComponents(parent);
+            }
         }
     }
 }

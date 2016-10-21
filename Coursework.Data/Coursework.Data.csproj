@@ -49,6 +49,7 @@
     <Compile Include="Entities\Message.cs" />
     <Compile Include="Exceptions\ChannelException.cs" />
     <Compile Include="INetwork.cs" />
+    <Compile Include="INetworkHandler.cs" />
     <Compile Include="MessageServices\IMessageQueueHandler.cs" />
     <Compile Include="MessageServices\MessageQueueHandler.cs" />
     <Compile Include="Network.cs" />

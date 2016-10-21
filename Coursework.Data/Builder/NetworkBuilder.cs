@@ -8,7 +8,7 @@ namespace Coursework.Data.Builder
 {
     public class NetworkBuilder : INetworkBuilder
     {
-        private INetwork _network;
+        private INetworkHandler _network;
         private readonly uint _nodeCount;
         private readonly double _networkPower;
 
@@ -25,7 +25,7 @@ namespace Coursework.Data.Builder
             _networkPower = networkPower;
         }
 
-        public INetwork Build()
+        public INetworkHandler Build()
         {
             if (_network == null)
             {
@@ -59,7 +59,7 @@ namespace Coursework.Data.Builder
 
                 var maxChannelsCountInNode = Enumerable
                     .Range(0, _network.Nodes.Length)
-                    .Count(id => !_network.IsChannelExists(node.Id, (uint)id)) - 1;
+                    .Count(id => _network.GetChannel(node.Id, (uint)id) == null) - 1;
 
                 if (numberOfChannels > maxChannelsCountInNode)
                 {
@@ -81,7 +81,7 @@ namespace Coursework.Data.Builder
             {
                 var destinationNodeId = (uint)AllConstants.RandomGenerator.Next(_network.Nodes.Length);
 
-                if (destinationNodeId == currentNodeId || _network.IsChannelExists(currentNodeId, destinationNodeId))
+                if (destinationNodeId == currentNodeId || _network.GetChannel(currentNodeId, destinationNodeId) != null)
                 {
                     continue;
                 }
@@ -94,7 +94,7 @@ namespace Coursework.Data.Builder
                     SecondNodeId = destinationNodeId,
                     ChannelType = ChannelType.Ground,
                     ConnectionType = ConnectionType.Duplex,
-                    ErrorChance = AllConstants.RandomGenerator.NextDouble(),
+                    ErrorChance = Math.Round(AllConstants.RandomGenerator.NextDouble() * 100.0) / 100.0,
                     Price = price
                 };
                 

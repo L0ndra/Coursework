@@ -9,6 +9,7 @@ namespace Coursework.Gui.Initializers
         public static void InitializeMapper(IMapperConfigurationExpression configuration)
         {
             configuration.CreateMap<Channel, ChannelDto>();
+            configuration.CreateMap<ChannelDto, Channel>();
             configuration.CreateMap<Node, NodeDto>();
         }
     }

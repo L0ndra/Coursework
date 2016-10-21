@@ -9,5 +9,6 @@ namespace Coursework.Gui.Dto
         public uint FirstNodeId { get; set; }
         public uint SecondNodeId { get; set; }
         public ConnectionType ConnectionType { get; set; }
+        public ChannelType ChannelType { get; set; }
     }
 }

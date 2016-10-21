@@ -1,8 +1,6 @@
-﻿using System.Linq;
-using System.Windows;
+﻿using System.Collections.Generic;
 using System.Windows.Controls;
-using System.Windows.Shapes;
-using Coursework.Data;
+using System.Windows.Media;
 using Coursework.Data.Constants;
 
 namespace Coursework.Gui.Drawers
@@ -11,6 +9,7 @@ namespace Coursework.Gui.Drawers
     {
         private readonly IComponentDrawer _nodeDrawer;
         private readonly IComponentDrawer _channelDrawer;
+        private readonly IList<Canvas> _createdCanvases = new List<Canvas>();
 
         public NetworkDrawer(IComponentDrawer nodeDrawer, IComponentDrawer channelDrawer)
         {
@@ -18,7 +17,7 @@ namespace Coursework.Gui.Drawers
             _channelDrawer = channelDrawer;
         }
 
-        public void DrawComponents(Panel panel, INetwork network)
+        public void DrawComponents(Panel panel)
         {
             var canvas = new Canvas()
             {
@@ -27,34 +26,31 @@ namespace Coursework.Gui.Drawers
                 Background = AllConstants.CanvasBrush
             };
 
-            _nodeDrawer.DrawComponents(canvas, network);
-            _channelDrawer.DrawComponents(canvas, network);
+            _nodeDrawer.DrawComponents(canvas);
+            _channelDrawer.DrawComponents(canvas);
 
-            canvas.MouseUp += (sender, e) => RefreshChannels(sender as Panel, network);
+            canvas.MouseUp += (sender, e) => RefreshChannels(sender as Panel);
 
             panel.Children.Add(canvas);
+            _createdCanvases.Add(canvas);
         }
 
-        private void RefreshChannels(Panel panel, INetwork network)
+        public void RemoveCreatedElements()
         {
-            RemoveChannels(panel);
-
-            _channelDrawer.DrawComponents(panel, network);
-        }
-
-        private static void RemoveChannels(Panel panel)
-        {
-            var elementsToClear = panel.Children
-                .OfType<Line>()
-                .Cast<UIElement>()
-                .Concat(panel.Children.OfType<TextBlock>())
-                .ToArray();
-
-
-            foreach (var line in elementsToClear)
+            foreach (var createdCanvas in _createdCanvases)
             {
-                panel.Children.Remove(line);
+                var parent = VisualTreeHelper.GetParent(createdCanvas) as Panel;
+                parent?.Children.Remove(createdCanvas);
             }
+
+            _createdCanvases.Clear();
+        }
+
+        private void RefreshChannels(Panel panel)
+        {
+            _channelDrawer.RemoveCreatedElements();
+
+            _channelDrawer.DrawComponents(panel);
         }
     }
 }
