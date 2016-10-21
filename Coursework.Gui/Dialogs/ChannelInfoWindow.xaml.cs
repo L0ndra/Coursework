@@ -21,5 +21,10 @@ namespace Coursework.Gui.Dialogs
             SecondNodeId.Text = channelDto.SecondNodeId.ToString();
             ConnectionType.Text = channelDto.ConnectionType.ToString();
         }
+
+        private void Ok_OnClick(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }

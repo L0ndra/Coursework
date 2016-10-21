@@ -1,6 +1,6 @@
 ﻿using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Shapes;
 using Coursework.Data;
 
@@ -28,23 +28,31 @@ namespace Coursework.Gui.Drawers
             _nodeDrawer.DrawComponents(canvas, network);
             _channelDrawer.DrawComponents(canvas, network);
 
-            canvas.MouseUp += (object sender, MouseButtonEventArgs e) => RefreshChannels(sender as Panel, network);
+            canvas.MouseUp += (sender, e) => RefreshChannels(sender as Panel, network);
 
             panel.Children.Add(canvas);
         }
 
         private void RefreshChannels(Panel panel, INetwork network)
         {
-            var allLines = panel.Children
+            RemoveChannels(panel);
+
+            _channelDrawer.DrawComponents(panel, network);
+        }
+
+        private static void RemoveChannels(Panel panel)
+        {
+            var elementsToClear = panel.Children
                 .OfType<Line>()
+                .Cast<UIElement>()
+                .Concat(panel.Children.OfType<TextBlock>())
                 .ToArray();
 
-            foreach (var line in allLines)
+
+            foreach (var line in elementsToClear)
             {
                 panel.Children.Remove(line);
             }
-
-            _channelDrawer.DrawComponents(panel, network);
         }
     }
 }

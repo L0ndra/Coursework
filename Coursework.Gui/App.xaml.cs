@@ -3,6 +3,7 @@ using System.Windows;
 using AutoMapper;
 using Coursework.Data;
 using Coursework.Data.Builder;
+using Coursework.Data.Constants;
 using Coursework.Gui.Drawers;
 using Coursework.Gui.Initializers;
 using Ninject;
@@ -15,8 +16,6 @@ namespace Coursework.Gui
     public partial class App : Application
     {
         private IKernel _container;
-        private static uint NodeCount => 5;
-        private static double NetworkPower => 2.0;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -47,8 +46,8 @@ namespace Coursework.Gui
                 .Bind<INetworkBuilder>()
                 .To<NetworkBuilder>()
                 .InTransientScope()
-                .WithConstructorArgument("nodeCount", NodeCount)
-                .WithConstructorArgument("networkPower", NetworkPower);
+                .WithConstructorArgument("nodeCount", AllConstants.NodeCount)
+                .WithConstructorArgument("networkPower", AllConstants.NetworkPower);
 
             _container
                 .Bind<INetwork>()

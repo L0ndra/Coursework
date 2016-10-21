@@ -11,12 +11,10 @@ namespace Coursework.Tests
         private INetworkBuilder _networkBuilder;
         private const int TimesToCreateNetwork = 1000;
         private readonly int[] _availablePrices = { 2, 4, 7, 8, 11, 15, 17, 20, 24, 25, 28 };
-        private Random _random;
 
         [SetUp]
         public void Setup()
         {
-            _random = new Random((int)(DateTime.Now.Ticks & 0xFFFF));
         }
 
         [Test]
@@ -29,7 +27,7 @@ namespace Coursework.Tests
             for (var i = 0; i < TimesToCreateNetwork; i++)
             {
                 // Arrange
-                _networkBuilder = new NetworkBuilder(nodeCount, networkPower, _random);
+                _networkBuilder = new NetworkBuilder(nodeCount, networkPower);
 
                 // Act
                 var network = _networkBuilder.Build();

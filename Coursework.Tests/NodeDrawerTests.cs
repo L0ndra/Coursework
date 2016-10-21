@@ -29,8 +29,7 @@ namespace Coursework.Tests
                 Height = 700
             };
             _networkMock = new Mock<INetwork>();
-            var random = new Random((int)(DateTime.Now.Ticks & 0xFFFF));
-            _nodeDrawer = new NodeDrawer(random);
+            _nodeDrawer = new NodeDrawer();
 
             const int nodesCount = 5;
 

@@ -1,7 +1,5 @@
-﻿using System.Globalization;
-using AutoMapper;
+﻿using AutoMapper;
 using Coursework.Data.Entities;
-using Coursework.Gui.Dialogs;
 using Coursework.Gui.Dto;
 
 namespace Coursework.Gui.Initializers

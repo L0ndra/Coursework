@@ -1,11 +1,10 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Shapes;
 using AutoMapper;
 using Coursework.Data;
+using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Gui.Dto;
 
@@ -13,15 +12,6 @@ namespace Coursework.Gui.Drawers
 {
     public class NodeDrawer : IComponentDrawer
     {
-        private readonly Random _randomGenerator;
-        private static double SquareSize => 30.0;
-        private static Brush BrushColor => Brushes.Aqua;
-
-        public NodeDrawer(Random randomGenerator)
-        {
-            _randomGenerator = randomGenerator;
-        }
-
         public void DrawComponents(Panel panel, INetwork network)
         {
             foreach (var node in network.Nodes)
@@ -40,7 +30,7 @@ namespace Coursework.Gui.Drawers
         {
             var rectangle = new Rectangle
             {
-                Fill = BrushColor
+                Fill = AllConstants.NodeBrush
             };
 
             rectangle.MouseMove += Rectangle_OnMouseMove;
@@ -65,8 +55,8 @@ namespace Coursework.Gui.Drawers
         {
             var grid = new Grid
             {
-                Width = SquareSize,
-                Height = SquareSize
+                Width = AllConstants.SquareSize,
+                Height = AllConstants.SquareSize
             };
 
             foreach (var child in childs)
@@ -74,8 +64,8 @@ namespace Coursework.Gui.Drawers
                 grid.Children.Add(child);
             }
 
-            Canvas.SetTop(grid, _randomGenerator.Next((int)(parent.Height - grid.Height)));
-            Canvas.SetLeft(grid, _randomGenerator.Next((int)(parent.Width - grid.Width)));
+            Canvas.SetTop(grid, AllConstants.RandomGenerator.Next((int)(parent.Height - grid.Height)));
+            Canvas.SetLeft(grid, AllConstants.RandomGenerator.Next((int)(parent.Width - grid.Width)));
 
             return grid;
         }

@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using AutoMapper;
 using Coursework.Data;
+using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Gui.Dialogs;
 using Coursework.Gui.Dto;
@@ -15,15 +16,15 @@ namespace Coursework.Gui.Drawers
 {
     public class ChannelDrawer : IComponentDrawer
     {
-        private static double SquareSize => 30.0;
-
         public void DrawComponents(Panel panel, INetwork network)
         {
             foreach (var channel in network.Channels)
             {
                 var line = CreateLine(channel, network, panel);
+                var textBlock = CreateTextBlock(channel, line);
 
                 panel.Children.Add(line);
+                panel.Children.Add(textBlock);
             }
         }
 
@@ -34,19 +35,33 @@ namespace Coursework.Gui.Drawers
 
             var line = new Line
             {
-                X1 = Canvas.GetLeft(firstUiElement) + SquareSize / 2,
-                X2 = Canvas.GetLeft(secondUiElement) + SquareSize / 2,
-                Y1 = Canvas.GetTop(firstUiElement) + SquareSize / 2,
-                Y2 = Canvas.GetTop(secondUiElement) + SquareSize / 2,
+                X1 = Canvas.GetLeft(firstUiElement) + AllConstants.SquareSize / 2,
+                X2 = Canvas.GetLeft(secondUiElement) + AllConstants.SquareSize / 2,
+                Y1 = Canvas.GetTop(firstUiElement) + AllConstants.SquareSize / 2,
+                Y2 = Canvas.GetTop(secondUiElement) + AllConstants.SquareSize / 2,
                 Stroke = Brushes.Black,
-                StrokeThickness = 2
+                StrokeThickness = 2,
+                Tag = Mapper.Map<Channel, ChannelDto>(channel),
+                Cursor = Cursors.Hand
             };
 
-            line.Tag = Mapper.Map<Channel, ChannelDto>(channel);
             line.MouseUp += Line_MouseUp;
-            line.Cursor = Cursors.Hand;
 
             return line;
+        }
+
+        private TextBlock CreateTextBlock(Channel channel, Line connectedLine)
+        {
+            var textBlock = new TextBlock
+            {
+                Text = channel.Price.ToString("N"),
+                Background = Brushes.White
+            };
+
+            Canvas.SetTop(textBlock, (connectedLine.Y1 + connectedLine.Y2) / 2);
+            Canvas.SetLeft(textBlock, (connectedLine.X1 + connectedLine.X2) / 2);
+
+            return textBlock;
         }
 
         private UIElement GetElementByNodeId(INetwork network, Panel panel, uint nodeId)

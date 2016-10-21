@@ -13,6 +13,11 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="FontFamily" Value="Times New Roman"></Setter>
+                <Setter Property="FontSize" Value="14"></Setter>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
