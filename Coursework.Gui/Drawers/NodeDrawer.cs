@@ -20,7 +20,9 @@ namespace Coursework.Gui.Drawers
                 var textBlock = CreateTextBlock(node.Id.ToString());
 
                 var grid = CreateGrid(panel, rectangle, textBlock);
-                grid.Tag = Mapper.Map<Node, NodeDto>(node);
+                var nodeDto = Mapper.Map<Node, NodeDto>(node);
+                nodeDto.LinkedNodesIdWithPrices = network.GetLinkedNodeIdsWithLinkPrice(node.Id);
+                grid.Tag = nodeDto;
 
                 panel.Children.Add(grid);
             }

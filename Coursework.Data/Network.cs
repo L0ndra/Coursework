@@ -29,8 +29,26 @@ namespace Coursework.Data
         {
             ThrowExceptionIfChannelCannotBeCreated(channel);
 
+            AddLink(channel.FirstNodeId, channel.SecondNodeId);
+
             _channels.Add(channel);
         }
+
+        public IDictionary<uint, int> GetLinkedNodeIdsWithLinkPrice(uint id)
+        {
+            var channelsFromCurrentNode = _channels.Where(c => c.FirstNodeId == id);
+            var channelsToCurrentNode = _channels.Where(c => c.SecondNodeId == id);
+
+            var firstResult = channelsFromCurrentNode
+                .ToDictionary(channel => channel.SecondNodeId, channel => channel.Price);
+
+            var secondResult = channelsToCurrentNode
+                .ToDictionary(channel => channel.FirstNodeId, channel => channel.Price);
+
+            return firstResult
+                .Concat(secondResult)
+                .ToDictionary(k => k.Key, k => k.Value);
+        } 
 
         public bool IsChannelExists(uint firstNodeId, uint secondNodeId)
         {
@@ -81,6 +99,17 @@ namespace Coursework.Data
             {
                 throw new NodeException("Node is already exists");
             }
+        }
+
+        private Node GetNodeById(uint id)
+        {
+            return _nodes.FirstOrDefault(n => n.Id == id);
+        }
+
+        private void AddLink(uint firstNodeId, uint secondNodeId)
+        {
+            GetNodeById(firstNodeId).LinkedNodesId.Add(secondNodeId);
+            GetNodeById(secondNodeId).LinkedNodesId.Add(firstNodeId);
         }
     }
 }

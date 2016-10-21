@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Coursework.Data;
+using Coursework.Data.Builder;
 using Coursework.Data.Entities;
 using Coursework.Data.Exceptions;
 using NUnit.Framework;
@@ -19,15 +20,9 @@ namespace Coursework.Tests
         {
             _network = new Network();
 
-            _node1 = new Node
-            {
-                Id = 0
-            };
+            _node1 = NodeGenerator.GenerateNodes(0, 1).First();
 
-            _node2 = new Node
-            {
-                Id = 1
-            };
+            _node2 = NodeGenerator.GenerateNodes(1, 1).First();
 
             _channel = new Channel
             {
@@ -76,6 +71,8 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(_network.Channels.Contains(_channel), Is.True);
+            Assert.That(_node1.LinkedNodesId.Contains(_node2.Id), Is.True);
+            Assert.That(_node2.LinkedNodesId.Contains(_node1.Id), Is.True);
         }
 
         [Test]
@@ -173,6 +170,22 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(result, Is.False);
+        }
+
+        [Test]
+        public void GetLinkedNodeWithLinkPriceShouldReturnDictionaryWithNodesAndPrices()
+        {
+            // Arrange 
+            _network.AddNode(_node1);
+            _network.AddNode(_node2);
+            _network.AddChannel(_channel);
+
+            // Act
+            var result = _network.GetLinkedNodeIdsWithLinkPrice(_channel.FirstNodeId);
+
+            // Assert
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result[_channel.SecondNodeId], Is.EqualTo(_channel.Price));
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Shapes;
 using Coursework.Data;
+using Coursework.Data.Constants;
 
 namespace Coursework.Gui.Drawers
 {
@@ -22,7 +23,8 @@ namespace Coursework.Gui.Drawers
             var canvas = new Canvas()
             {
                 Width = panel.ActualWidth,
-                Height = panel.ActualHeight
+                Height = panel.ActualHeight,
+                Background = AllConstants.CanvasBrush
             };
 
             _nodeDrawer.DrawComponents(canvas, network);

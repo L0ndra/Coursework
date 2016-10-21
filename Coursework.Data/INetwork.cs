@@ -1,4 +1,5 @@
-﻿using Coursework.Data.Entities;
+﻿using System.Collections.Generic;
+using Coursework.Data.Entities;
 
 namespace Coursework.Data
 {
@@ -9,5 +10,6 @@ namespace Coursework.Data
         void AddChannel(Channel channel);
         void AddNode(Node node);
         bool IsChannelExists(uint firstNodeId, uint secondNodeId);
+        IDictionary<uint, int> GetLinkedNodeIdsWithLinkPrice(uint id);
     }
 }

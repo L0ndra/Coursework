@@ -43,11 +43,14 @@
   <ItemGroup>
     <Compile Include="Builder\INetworkBuilder.cs" />
     <Compile Include="Builder\NetworkBuilder.cs" />
-    <Compile Include="Builder\NodeIdGenerator.cs" />
+    <Compile Include="Builder\NodeGenerator.cs" />
     <Compile Include="Constants\AllConstants.cs" />
     <Compile Include="Entities\ChannelType.cs" />
+    <Compile Include="Entities\Message.cs" />
     <Compile Include="Exceptions\ChannelException.cs" />
     <Compile Include="INetwork.cs" />
+    <Compile Include="MessageServices\IMessageQueueHandler.cs" />
+    <Compile Include="MessageServices\MessageQueueHandler.cs" />
     <Compile Include="Network.cs" />
     <Compile Include="Entities\Node.cs" />
     <Compile Include="Entities\Channel.cs" />
@@ -58,6 +61,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

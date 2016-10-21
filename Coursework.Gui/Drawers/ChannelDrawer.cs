@@ -39,8 +39,8 @@ namespace Coursework.Gui.Drawers
                 X2 = Canvas.GetLeft(secondUiElement) + AllConstants.SquareSize / 2,
                 Y1 = Canvas.GetTop(firstUiElement) + AllConstants.SquareSize / 2,
                 Y2 = Canvas.GetTop(secondUiElement) + AllConstants.SquareSize / 2,
-                Stroke = Brushes.Black,
-                StrokeThickness = 2,
+                Stroke = AllConstants.LineBrush,
+                StrokeThickness = AllConstants.LineThickness,
                 Tag = Mapper.Map<Channel, ChannelDto>(channel),
                 Cursor = Cursors.Hand
             };
@@ -55,7 +55,7 @@ namespace Coursework.Gui.Drawers
             var textBlock = new TextBlock
             {
                 Text = channel.Price.ToString("N"),
-                Background = Brushes.White
+                Background = AllConstants.CanvasBrush
             };
 
             Canvas.SetTop(textBlock, (connectedLine.Y1 + connectedLine.Y2) / 2);
@@ -78,7 +78,10 @@ namespace Coursework.Gui.Drawers
             var line = sender as Line;
 
             var infoWindow = new ChannelInfoWindow();
-            infoWindow.BindChannelInfo(line.Tag as ChannelDto);
+            if (line != null)
+            {
+                infoWindow.BindChannelInfo(line.Tag as ChannelDto);
+            }
 
             infoWindow.Show();
         }

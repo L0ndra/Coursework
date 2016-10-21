@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
@@ -69,22 +68,21 @@ namespace Coursework.Data.Builder
 
                 for (var i = 0; i < numberOfChannels; i++)
                 {
-                    GenerateChannel(node.Id);
+                    var channel = GenerateChannel(node.Id);
+
+                    _network.AddChannel(channel); 
                 }
             }
         }
 
-        private void GenerateChannel(uint currentNodeId)
+        private Channel GenerateChannel(uint currentNodeId)
         {
-            uint? destinationNodeId = null;
-
-            while (destinationNodeId == null)
+            while (true)
             {
-                destinationNodeId = (uint)AllConstants.RandomGenerator.Next(_network.Nodes.Length);
+                var destinationNodeId = (uint)AllConstants.RandomGenerator.Next(_network.Nodes.Length);
 
-                if (destinationNodeId == currentNodeId || _network.IsChannelExists(currentNodeId, destinationNodeId.Value))
+                if (destinationNodeId == currentNodeId || _network.IsChannelExists(currentNodeId, destinationNodeId))
                 {
-                    destinationNodeId = null;
                     continue;
                 }
 
@@ -93,20 +91,20 @@ namespace Coursework.Data.Builder
                 var channel = new Channel
                 {
                     FirstNodeId = currentNodeId,
-                    SecondNodeId = destinationNodeId.Value,
+                    SecondNodeId = destinationNodeId,
                     ChannelType = ChannelType.Ground,
                     ConnectionType = ConnectionType.Duplex,
                     ErrorChance = AllConstants.RandomGenerator.NextDouble(),
                     Price = price
                 };
-
-                _network.AddChannel(channel);
+                
+                return channel;
             }
         }
 
         private void CreateNodes()
         {
-            foreach (var node in NodeIdGenerator.GenerateNodes(0, (int)_nodeCount))
+            foreach (var node in NodeGenerator.GenerateNodes(0, (int)_nodeCount))
             {
                 _network.AddNode(node);
             }

@@ -1,7 +1,10 @@
-﻿namespace Coursework.Gui.Dto
+﻿using System.Collections.Generic;
+
+namespace Coursework.Gui.Dto
 {
-    class NodeDto
+    public class NodeDto
     {
         public uint Id { get; set; }
+        public IDictionary<uint, int> LinkedNodesIdWithPrices { get; set; }
     }
 }
