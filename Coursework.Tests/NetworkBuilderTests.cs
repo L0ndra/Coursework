@@ -39,7 +39,7 @@ namespace Coursework.Tests
                 // Assert
                 Assert.That(network.Nodes.Length, Is.EqualTo(nodeCount));
                 Assert.That(network.Channels.Length, Is.GreaterThan(0));
-                Assert.That(isAllPricesIsAvailable, Is.True);
+                Assert.IsTrue(isAllPricesIsAvailable);
                 Assert.That(Math.Abs(currentPower - networkPower), Is.LessThanOrEqualTo(eps));
 
                 LogResult(i, networkPower, currentPower);

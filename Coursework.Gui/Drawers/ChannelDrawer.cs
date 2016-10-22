@@ -27,7 +27,13 @@ namespace Coursework.Gui.Drawers
 
         public void DrawComponents(Panel panel)
         {
-            foreach (var channel in _network.Channels)
+            var createdChannels = _uiElements
+                .Where(uiElement => VisualTreeHelper.GetParent(uiElement).Equals(panel))
+                .OfType<Line>()
+                .Select(uiElement => uiElement.Tag as ChannelDto)
+                .Select(n => n.Id);
+
+            foreach (var channel in _network.Channels.Where(channel => !createdChannels.Contains(channel.Id)))
             {
                 var line = CreateLine(channel, panel);
                 var textBlock = CreateTextBlock(channel, line);

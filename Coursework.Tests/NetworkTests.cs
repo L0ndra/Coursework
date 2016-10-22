@@ -21,9 +21,8 @@ namespace Coursework.Tests
         {
             _network = new Network();
 
-            _node1 = NodeGenerator.GenerateNodes(0, 1).First();
-
-            _node2 = NodeGenerator.GenerateNodes(1, 1).First();
+            _node1 = NodeGenerator.GenerateNodes(1).First();
+            _node2 = NodeGenerator.GenerateNodes(1).First();
 
             _channel = new Channel
             {

@@ -39,6 +39,8 @@ namespace Coursework.Data.Builder
         {
             _network = new Network();
 
+            NodeGenerator.ResetAccumulator();
+
             CreateNodes();
 
             CreateChannels();
@@ -70,7 +72,7 @@ namespace Coursework.Data.Builder
                 {
                     var channel = GenerateChannel(node.Id);
 
-                    _network.AddChannel(channel); 
+                    _network.AddChannel(channel);
                 }
             }
         }
@@ -79,7 +81,9 @@ namespace Coursework.Data.Builder
         {
             while (true)
             {
-                var destinationNodeId = (uint)AllConstants.RandomGenerator.Next(_network.Nodes.Length);
+                var destinationNodeId = _network.Nodes
+                    .Select(n => n.Id)
+                    .ElementAt(AllConstants.RandomGenerator.Next(_network.Nodes.Length));
 
                 if (destinationNodeId == currentNodeId || _network.GetChannel(currentNodeId, destinationNodeId) != null)
                 {
@@ -90,6 +94,7 @@ namespace Coursework.Data.Builder
 
                 var channel = new Channel
                 {
+                    Id = Guid.NewGuid(),
                     FirstNodeId = currentNodeId,
                     SecondNodeId = destinationNodeId,
                     ChannelType = ChannelType.Ground,
@@ -97,14 +102,14 @@ namespace Coursework.Data.Builder
                     ErrorChance = Math.Round(AllConstants.RandomGenerator.NextDouble() * 100.0) / 100.0,
                     Price = price
                 };
-                
+
                 return channel;
             }
         }
 
         private void CreateNodes()
         {
-            foreach (var node in NodeGenerator.GenerateNodes(0, (int)_nodeCount))
+            foreach (var node in NodeGenerator.GenerateNodes((int)_nodeCount))
             {
                 _network.AddNode(node);
             }

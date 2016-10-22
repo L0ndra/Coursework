@@ -55,6 +55,21 @@ namespace Coursework.Tests
         }
 
         [Test]
+        public void DrawComponentsShouldAddToOneNodeOnce()
+        {
+            // Arrange
+            Mapper.Initialize(MapperInitializer.InitializeMapper);
+
+            _nodeDrawer.DrawComponents(_panel);
+
+            // Act
+            _nodeDrawer.DrawComponents(_panel);
+
+            // Assert
+            Assert.That(_panel.Children.Count, Is.EqualTo(_networkMock.Object.Nodes.Length));
+        }
+
+        [Test]
         public void RemoveCreatedElementsShouldRemoveAllCreatedChildren()
         {
             // Arrange

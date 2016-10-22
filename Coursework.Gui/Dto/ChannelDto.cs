@@ -1,9 +1,11 @@
-﻿using Coursework.Data.Entities;
+﻿using System;
+using Coursework.Data.Entities;
 
 namespace Coursework.Gui.Dto
 {
     public class ChannelDto
     {
+        public Guid Id { get; set; }
         public int Price { get; set; }
         public double ErrorChance { get; set; }
         public uint FirstNodeId { get; set; }

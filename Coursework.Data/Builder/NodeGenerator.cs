@@ -5,16 +5,25 @@ using Coursework.Data.MessageServices;
 
 namespace Coursework.Data.Builder
 {
-    public class NodeGenerator
+    public static class NodeGenerator
     {
-        public static Node[] GenerateNodes(int startId, int count)
+        private static int _currentId;
+
+        public static Node[] GenerateNodes(int count)
         {
             var nodes = Enumerable
-                .Range(startId, count)
+                .Range(_currentId, count)
                 .Select(CreateNode)
                 .ToArray();
 
+            _currentId += count;
+
             return nodes;
+        }
+
+        public static void ResetAccumulator()
+        {
+            _currentId = 0;
         }
 
         private static Node CreateNode(int id)

@@ -47,11 +47,13 @@ namespace Coursework.Tests
             {
                 new Channel
                 {
+                    Id = Guid.NewGuid(),
                     FirstNodeId = 0,
                     SecondNodeId = 1,
                 },
                 new Channel
                 {
+                    Id = Guid.NewGuid(),
                     FirstNodeId = 3,
                     SecondNodeId = 2
                 }
@@ -76,6 +78,31 @@ namespace Coursework.Tests
 
                 _panel.Children.Add(element);
             }
+
+            // Act
+            _channelDrawer.DrawComponents(_panel);
+
+            // Assert
+            Assert.That(_panel.Children.OfType<Line>().Count, Is.EqualTo(_networkMock.Object.Channels.Length));
+        }
+
+        [Test]
+        public void DrawComponentsShouldAddToPanelLinesOnce()
+        {
+            // Arrange
+            Mapper.Initialize(MapperInitializer.InitializeMapper);
+
+            for (var i = 0; i < _networkMock.Object.Nodes.Length; i++)
+            {
+                var element = new UIElement();
+
+                Canvas.SetLeft(element, 10);
+                Canvas.SetTop(element, 10);
+
+                _panel.Children.Add(element);
+            }
+
+            _channelDrawer.DrawComponents(_panel);
 
             // Act
             _channelDrawer.DrawComponents(_panel);

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,7 +16,7 @@ namespace Coursework.Gui.Drawers
     public class NodeDrawer : IComponentDrawer
     {
         private readonly INetworkHandler _network;
-        private readonly IList<UIElement> _uiElements = new List<UIElement>();
+        private readonly IList<Grid> _createdGrids = new List<Grid>();
 
         public NodeDrawer(INetworkHandler network)
         {
@@ -24,7 +25,12 @@ namespace Coursework.Gui.Drawers
 
         public void DrawComponents(Panel panel)
         {
-            foreach (var node in _network.Nodes)
+            var createdNodes = _createdGrids
+                .Where(uiElement => VisualTreeHelper.GetParent(uiElement).Equals(panel))
+                .Select(uiElement => uiElement.Tag as NodeDto)
+                .Select(n => n.Id);
+            
+            foreach (var node in _network.Nodes.Where(n => !createdNodes.Contains(n.Id)))
             {
                 var rectangle = CreateRectangle();
                 var textBlock = CreateTextBlock(node.Id.ToString());
@@ -35,19 +41,19 @@ namespace Coursework.Gui.Drawers
                 grid.Tag = nodeDto;
 
                 panel.Children.Add(grid);
-                _uiElements.Add(grid);
+                _createdGrids.Add(grid);
             }
         }
 
         public void RemoveCreatedElements()
         {
-            foreach (var uiElement in _uiElements)
+            foreach (var uiElement in _createdGrids)
             {
                 var parent = VisualTreeHelper.GetParent(uiElement) as Panel;
                 parent?.Children.Remove(uiElement);
             }
 
-            _uiElements.Clear();
+            _createdGrids.Clear();
         }
 
         private Rectangle CreateRectangle()

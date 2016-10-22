@@ -7,14 +7,24 @@
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
         Title="MainWindow" Height="700" Width="1050">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="3*"></ColumnDefinition>
-        </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="1" Margin="10" BorderBrush="Black" BorderThickness="2">
-            <Grid Name="NetworkArea" />
-        </Border>
-    </Grid>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_Add">
+                <MenuItem Header="_Node" Click="AddNode_OnClick"/>
+                <MenuItem Header="_Link"/>
+            </MenuItem>
+        </Menu>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="1" Margin="10" BorderBrush="Black" BorderThickness="2">
+                <Grid Name="NetworkArea" />
+            </Border>
+        </Grid>
+    </DockPanel>
 </controls:MetroWindow>

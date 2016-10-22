@@ -1,7 +1,10 @@
-﻿namespace Coursework.Data.Entities
+﻿using System;
+
+namespace Coursework.Data.Entities
 {
     public class Channel
     {
+        public Guid Id { get; set; }
         public int Price { get; set; }
         public double ErrorChance { get; set; }
         public uint FirstNodeId { get; set; }
