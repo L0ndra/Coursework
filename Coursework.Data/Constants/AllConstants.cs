@@ -15,7 +15,8 @@ namespace Coursework.Data.Constants
         public static readonly DoubleCollection StrokeDashArrayForGroundConnection = new DoubleCollection(new[] { 1.0, 0.0 });
         public static readonly Brush NodeBrush = Brushes.Aqua;
         public static readonly Brush CanvasBrush = Brushes.Azure;
-        public static readonly Brush LineBrush = Brushes.Black;
+        public static readonly Brush DuplexChannelBrush = Brushes.Black;
+        public static readonly Brush HalfduplexChannelBrush = Brushes.DimGray;
         public static readonly Random RandomGenerator = new Random((int)(DateTime.Now.Ticks & 0xFFFF));
         public static readonly ImmutableSortedSet<int> AllPrices = new[] { 2, 4, 7, 8, 11, 15, 17, 20, 24, 25, 28 }.ToImmutableSortedSet();
     }

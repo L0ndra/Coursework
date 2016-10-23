@@ -13,6 +13,7 @@ namespace Coursework.Gui.Dialogs
     {
         public delegate void ChannelChangeEventHandler(ChannelDto newChannelParams);
         private ChannelChangeEventHandler _onChangeChannelInfoHandler;
+        private Guid _lastLineId;
 
         public ChannelInfoWindow()
         {
@@ -22,6 +23,7 @@ namespace Coursework.Gui.Dialogs
         public void BindChannelInfo(ChannelDto channelDto, ChannelChangeEventHandler onChangeChannelInfoHandler)
         {
             _onChangeChannelInfoHandler = onChangeChannelInfoHandler;
+            _lastLineId = channelDto.Id;
 
             ShowDto(channelDto);
         }
@@ -44,6 +46,7 @@ namespace Coursework.Gui.Dialogs
         {
             var newChannelDto = new ChannelDto
             {
+                Id = _lastLineId,
                 Price = int.Parse(Price.Text),
                 ErrorChance = double.Parse(ErrorChance.Text),
                 ConnectionType = GetNewConnectionType(),

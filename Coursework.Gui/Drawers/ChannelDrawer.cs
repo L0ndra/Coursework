@@ -68,7 +68,7 @@ namespace Coursework.Gui.Drawers
                 X2 = Canvas.GetLeft(secondUiElement) + AllConstants.SquareSize / 2,
                 Y1 = Canvas.GetTop(firstUiElement) + AllConstants.SquareSize / 2,
                 Y2 = Canvas.GetTop(secondUiElement) + AllConstants.SquareSize / 2,
-                Stroke = AllConstants.LineBrush,
+                Stroke = GetChannelBrush(channel),
                 StrokeThickness = AllConstants.LineThickness,
                 StrokeDashArray = GetStrokeDashArray(channel),
                 Tag = Mapper.Map<Channel, ChannelDto>(channel),
@@ -78,6 +78,13 @@ namespace Coursework.Gui.Drawers
             line.MouseUp += Line_MouseUp;
 
             return line;
+        }
+
+        private Brush GetChannelBrush(Channel channel)
+        {
+            return channel.ConnectionType == ConnectionType.Duplex
+                ? AllConstants.DuplexChannelBrush
+                : AllConstants.HalfduplexChannelBrush;
         }
 
         private static DoubleCollection GetStrokeDashArray(Channel channel)

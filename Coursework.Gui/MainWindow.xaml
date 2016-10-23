@@ -6,13 +6,13 @@
         xmlns:local="clr-namespace:Coursework.Gui"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="1050">
+        Title="MainWindow" Height="700" Width="1050" Closing="MainWindow_OnClosing">
 
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_Add">
                 <MenuItem Header="_Node" Click="AddNode_OnClick"/>
-                <MenuItem Header="_Link"/>
+                <MenuItem Header="_Link" Click="AddChannel_OnClick"/>
             </MenuItem>
         </Menu>
 
