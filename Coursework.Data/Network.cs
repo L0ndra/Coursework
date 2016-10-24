@@ -25,6 +25,36 @@ namespace Coursework.Data
             _nodes.Add(node);
         }
 
+        public void RemoveNode(uint nodeId)
+        {
+            var node = GetNodeById(nodeId);
+
+            if (node != null)
+            {
+                var channels = GetChannels(nodeId);
+
+                foreach (var channel in channels)
+                {
+                    _channels.Remove(channel);
+                }
+
+                _nodes.Remove(node);
+            }
+
+        }
+
+        public Channel[] GetChannels(uint nodeId)
+        {
+            var node = GetNodeById(nodeId);
+
+            var channels = node
+                .LinkedNodesId
+                .Select(linkedNodeId => GetChannel(nodeId, linkedNodeId))
+                .ToArray();
+
+            return channels;
+        }
+
         public void AddChannel(Channel channel)
         {
             ThrowExceptionIfChannelCannotBeCreated(channel);
@@ -42,21 +72,12 @@ namespace Coursework.Data
             AddChannel(newChannel);
         }
 
-        public IDictionary<uint, int> GetLinkedNodeIdsWithLinkPrice(uint id)
+        public void RemoveChannel(uint firstNodeId, uint secondNodeId)
         {
-            var channelsFromCurrentNode = _channels.Where(c => c.FirstNodeId == id);
-            var channelsToCurrentNode = _channels.Where(c => c.SecondNodeId == id);
+            var channel = GetChannel(firstNodeId, secondNodeId);
 
-            var firstResult = channelsFromCurrentNode
-                .ToDictionary(channel => channel.SecondNodeId, channel => channel.Price);
-
-            var secondResult = channelsToCurrentNode
-                .ToDictionary(channel => channel.FirstNodeId, channel => channel.Price);
-
-            return firstResult
-                .Concat(secondResult)
-                .ToDictionary(k => k.Key, k => k.Value);
-        } 
+            _channels.Remove(channel);
+        }
 
         public Channel GetChannel(uint firstNodeId, uint secondNodeId)
         {

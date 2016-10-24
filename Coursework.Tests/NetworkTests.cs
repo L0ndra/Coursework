@@ -70,9 +70,11 @@ namespace Coursework.Tests
             _network.AddChannel(_channel);
 
             // Assert
-            Assert.That(_network.Channels.Contains(_channel), Is.True);
-            Assert.That(_node1.LinkedNodesId.Contains(_node2.Id), Is.True);
-            Assert.That(_node2.LinkedNodesId.Contains(_node1.Id), Is.True);
+            Assert.IsTrue(_network.Channels.Contains(_channel));
+            Assert.IsTrue(_node1.LinkedNodesId.Contains(_node2.Id));
+            Assert.IsTrue(_node2.LinkedNodesId.Contains(_node1.Id));
+            Assert.IsTrue(_node1.LinkedNodesId.Contains(_node2.Id));
+            Assert.IsTrue(_node2.LinkedNodesId.Contains(_node1.Id));
         }
 
         [Test]
@@ -105,8 +107,7 @@ namespace Coursework.Tests
         public void AddChannelShouldThrowExceptionIfErrorChanceIsIncorrect()
         {
             // Arrange
-            _network.AddNode(_node1);
-            _network.AddNode(_node2);
+            CreateTwoNodesForTests();
             _channel.ErrorChance = 1.2;
 
             // Act
@@ -120,8 +121,7 @@ namespace Coursework.Tests
         public void AddChannelShouldThrowExceptionIfPriceIsNegative()
         {
             // Arrange
-            _network.AddNode(_node1);
-            _network.AddNode(_node2);
+            CreateTwoNodesForTests();
             _channel.Price = -1;
 
             // Act
@@ -135,9 +135,8 @@ namespace Coursework.Tests
         public void GetChannelShouldReturnChannelIfChannelFromFirstToSecondNodeExists()
         {
             // Arrange
-            _network.AddNode(_node1);
-            _network.AddNode(_node2);
-            _network.AddChannel(_channel);
+            CreateTwoNodesForTests();
+            CreateChannelForTests();
 
             // Act
             var result = _network.GetChannel(_node1.Id, _node2.Id);
@@ -152,9 +151,8 @@ namespace Coursework.Tests
         public void GetChannelShouldReturnChannelIfChannelFromSecondToFirstNodeExists()
         {
             // Arrange
-            _network.AddNode(_node1);
-            _network.AddNode(_node2);
-            _network.AddChannel(_channel);
+            CreateTwoNodesForTests();
+            CreateChannelForTests();
 
             // Act
             var result = _network.GetChannel(_node2.Id, _node1.Id);
@@ -177,28 +175,26 @@ namespace Coursework.Tests
         }
 
         [Test]
-        public void GetLinkedNodeWithLinkPriceShouldReturnDictionaryWithNodesAndPrices()
+        public void GetChannelsShouldReturnAllChannelsLinkedWithCurrentNode()
         {
             // Arrange 
-            _network.AddNode(_node1);
-            _network.AddNode(_node2);
-            _network.AddChannel(_channel);
+            CreateTwoNodesForTests();
+            CreateChannelForTests();
 
             // Act
-            var result = _network.GetLinkedNodeIdsWithLinkPrice(_channel.FirstNodeId);
+            var result = _network.GetChannels(_channel.FirstNodeId);
 
             // Assert
             Assert.That(result.Count, Is.EqualTo(1));
-            Assert.That(result[_channel.SecondNodeId], Is.EqualTo(_channel.Price));
+            Assert.IsTrue(result.Any(c => c.SecondNodeId == _channel.SecondNodeId || c.FirstNodeId == _channel.SecondNodeId));
         }
 
         [Test]
         public void UpdateChannelShouldChangeExistedChannel()
         {
             // Arrange
-            _network.AddNode(_node1);
-            _network.AddNode(_node2);
-            _network.AddChannel(_channel);
+            CreateTwoNodesForTests();
+            CreateChannelForTests();
 
             _channel.Price = AllConstants.AllPrices.ElementAt(2);
             _channel.ChannelType = ChannelType.Satellite;
@@ -213,6 +209,17 @@ namespace Coursework.Tests
             Assert.That(updatedChannel.ConnectionType, Is.EqualTo(_channel.ConnectionType));
         }
 
+        private void CreateChannelForTests()
+        {
+            _network.AddChannel(_channel);
+        }
+
+        private void CreateTwoNodesForTests()
+        {
+            _network.AddNode(_node1);
+            _network.AddNode(_node2);
+        }
+
         [Test]
         public void UpdateChannelShouldThrowExceptionIfChannelNotExists()
         {
@@ -222,6 +229,89 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(testDelegate, Throws.TypeOf(typeof(NodeException)));
+        }
+
+        [Test]
+        public void RemoveChannelShouldDropOneChannelIfItExists()
+        {
+            // Arrange
+            CreateTwoNodesForTests();
+            CreateChannelForTests();
+            var initialChannelCount = _network.Channels.Length;
+
+            // Act
+            _network.RemoveChannel(_node1.Id, _node2.Id);
+            var resultChannelCount = _network.Channels.Length;
+
+            // Assert
+            Assert.That(resultChannelCount, Is.EqualTo(initialChannelCount - 1));
+        }
+
+        [Test]
+        public void RemoveChannelShouldDropOneChannelIfItExistsAndIdsSwaped()
+        {
+            // Arrange
+            CreateTwoNodesForTests();
+            CreateChannelForTests();
+            var initialChannelCount = _network.Channels.Length;
+
+            // Act
+            _network.RemoveChannel(_node2.Id, _node1.Id);
+            var resultChannelCount = _network.Channels.Length;
+
+            // Assert
+            Assert.That(resultChannelCount, Is.EqualTo(initialChannelCount - 1));
+        }
+
+        [Test]
+        public void RemoveChannelShouldDoNothingIfChannelNotExists()
+        {
+            // Arrange
+            CreateTwoNodesForTests();
+            var initialChannelCount = _network.Channels.Length;
+
+            // Act
+            _network.RemoveChannel(_node2.Id, _node1.Id);
+            var resultChannelCount = _network.Channels.Length;
+
+            // Assert
+            Assert.That(resultChannelCount, Is.EqualTo(initialChannelCount));
+        }
+
+        [Test]
+        public void RemoveNodeShouldRemoveNodeWithAllLinkedChannels()
+        {
+            // Arrange
+            CreateTwoNodesForTests();
+            CreateChannelForTests();
+            var initialNodeCount = _network.Nodes.Length;
+            var initialChannelCount = _network.Nodes.Length;
+
+            // Act
+            _network.RemoveNode(_node1.Id);
+            var resultNodeCount = _network.Nodes.Length;
+            var resultChannelCount = _network.Nodes.Length;
+
+            // Assert
+            Assert.That(resultNodeCount, Is.EqualTo(initialNodeCount - 1));
+            Assert.That(resultChannelCount, Is.EqualTo(initialChannelCount - 1));
+        }
+
+        [Test]
+        public void RemoveNodeShouldDoNothingIfNodeNotExists()
+        {
+            // Arrange
+            var initialNodeCount = _network.Nodes.Length;
+            var initialChannelCount = _network.Nodes.Length;
+
+            // Act
+            _network.RemoveNode(_node1.Id);
+            var resultNodeCount = _network.Nodes.Length;
+            var resultChannelCount = _network.Nodes.Length;
+
+            // Assert
+            Assert.That(resultNodeCount, Is.EqualTo(initialNodeCount));
+            Assert.That(resultChannelCount, Is.EqualTo(initialChannelCount));
         }
     }
 }

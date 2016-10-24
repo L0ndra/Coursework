@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -110,22 +109,23 @@ namespace Coursework.Gui.Drawers
 
         private UIElement GetElementByNodeId(Panel panel, uint nodeId)
         {
-            var node = _network.Nodes.FirstOrDefault(n => n.Id == nodeId);
-            var nodeIndex = Array.IndexOf(_network.Nodes, node);
-            var uiElement = panel.Children[nodeIndex];
+            var uiElement = panel.Children
+                .OfType<Grid>()
+                .FirstOrDefault(g =>
+                {
+                    var nodeDto = g.Tag as NodeDto;
+                    return nodeDto != null && nodeDto.Id == nodeId;
+                });
 
             return uiElement;
         }
 
         private void Line_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            var line = sender as Line;
+            var line = (Line)sender;
 
             var infoWindow = new ChannelInfoWindow();
-            if (line != null)
-            {
-                infoWindow.BindChannelInfo(line.Tag as ChannelDto, UpdateChannels);
-            }
+            infoWindow.BindChannelInfo(line.Tag as ChannelDto, UpdateChannels);
 
             infoWindow.Show();
         }

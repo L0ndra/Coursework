@@ -4,6 +4,7 @@ using AutoMapper;
 using Coursework.Data;
 using Coursework.Data.Builder;
 using Coursework.Data.Constants;
+using Coursework.Data.IONetwork;
 using Coursework.Gui.Drawers;
 using Coursework.Gui.Initializers;
 using Ninject;
@@ -84,9 +85,15 @@ namespace Coursework.Gui
                 .WithConstructorArgument("channelDrawer", _container.Get<IComponentDrawer>("Channel drawer"));
 
             _container
+                .Bind<INetworkInfoRetriever>()
+                .To<NetworkInfoRetriever>()
+                .InTransientScope();
+
+            _container
                 .Bind<MainWindow>()
                 .ToSelf()
-                .WithConstructorArgument("network", _container.Get<INetworkHandler>("Generated network"));
+                .WithConstructorArgument("network", _container.Get<INetworkHandler>("Generated network"))
+                .WithConstructorArgument("networkInfoRetriever", _container.Get<INetworkInfoRetriever>());
         }
     }
 }

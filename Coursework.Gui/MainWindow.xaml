@@ -10,6 +10,10 @@
 
     <DockPanel>
         <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_Network">
+                <MenuItem Header="_Save to file..." Click="SaveNetwork_OnClick"></MenuItem>
+                <MenuItem Header="_Read from file..." Click="ReadNetwork_OnClick"></MenuItem>
+            </MenuItem>
             <MenuItem Header="_Add">
                 <MenuItem Header="_Node" Click="AddNode_OnClick"/>
                 <MenuItem Header="_Link" Click="AddChannel_OnClick"/>

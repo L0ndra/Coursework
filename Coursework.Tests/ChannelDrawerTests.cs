@@ -8,6 +8,7 @@ using AutoMapper;
 using Coursework.Data;
 using Coursework.Data.Entities;
 using Coursework.Gui.Drawers;
+using Coursework.Gui.Dto;
 using Coursework.Gui.Initializers;
 using Moq;
 using NUnit.Framework;
@@ -69,15 +70,7 @@ namespace Coursework.Tests
             // Arrange
             Mapper.Initialize(MapperInitializer.InitializeMapper);
 
-            for (var i = 0; i < _networkMock.Object.Nodes.Length; i++)
-            {
-                var element = new UIElement();
-
-                Canvas.SetLeft(element, 10);
-                Canvas.SetTop(element, 10);
-
-                _panel.Children.Add(element);
-            }
+            CreateGridsForTests();
 
             // Act
             _channelDrawer.DrawComponents(_panel);
@@ -92,15 +85,7 @@ namespace Coursework.Tests
             // Arrange
             Mapper.Initialize(MapperInitializer.InitializeMapper);
 
-            for (var i = 0; i < _networkMock.Object.Nodes.Length; i++)
-            {
-                var element = new UIElement();
-
-                Canvas.SetLeft(element, 10);
-                Canvas.SetTop(element, 10);
-
-                _panel.Children.Add(element);
-            }
+            CreateGridsForTests();
 
             _channelDrawer.DrawComponents(_panel);
 
@@ -119,7 +104,7 @@ namespace Coursework.Tests
             TestDelegate testDelegate = () => _channelDrawer.DrawComponents(_panel);
 
             // Assert
-            Assert.That(testDelegate, Throws.TypeOf(typeof(ArgumentOutOfRangeException)));
+            Assert.That(testDelegate, Throws.ArgumentNullException);
         }
 
         [Test]
@@ -128,15 +113,7 @@ namespace Coursework.Tests
             // Arrange
             Mapper.Initialize(MapperInitializer.InitializeMapper);
 
-            for (var i = 0; i < _networkMock.Object.Nodes.Length; i++)
-            {
-                var element = new UIElement();
-
-                Canvas.SetLeft(element, 10);
-                Canvas.SetTop(element, 10);
-
-                _panel.Children.Add(element);
-            }
+            CreateGridsForTests();
 
             _channelDrawer.DrawComponents(_panel);
 
@@ -156,6 +133,25 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(_panel.Children.Count, Is.Zero);
+        }
+
+        private void CreateGridsForTests()
+        {
+            for (var i = 0; i < _networkMock.Object.Nodes.Length; i++)
+            {
+                var element = new Grid
+                {
+                    Tag = new NodeDto
+                    {
+                        Id = (uint) i
+                    }
+                };
+
+                Canvas.SetLeft(element, 10);
+                Canvas.SetTop(element, 10);
+
+                _panel.Children.Add(element);
+            }
         }
     }
 }

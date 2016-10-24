@@ -71,12 +71,16 @@
     <Compile Include="MessageQueueHandlerTests.cs" />
     <Compile Include="NetworkBuilderTests.cs" />
     <Compile Include="NetworkDrawerTests.cs" />
+    <Compile Include="NetworkInfoRetrieverTests.cs" />
     <Compile Include="NetworkTests.cs" />
     <Compile Include="NodeDrawerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="TestFiles\testnetworkfile.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Coursework.Data\Coursework.Data.csproj">

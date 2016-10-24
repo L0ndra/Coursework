@@ -1,0 +1,29 @@
+﻿{
+  "Nodes": [
+    {
+      "Id": 0,
+      "MessageQueue": null,
+      "LinkedNodesId": [
+        1
+      ]
+    },
+    {
+      "Id": 1,
+      "MessageQueue": null,
+      "LinkedNodesId": [
+        0
+      ]
+    }
+  ],
+  "Channels": [
+    {
+      "Id": "00000000-0000-0000-0000-000000000000",
+      "Price": 20,
+      "ErrorChance": 0.5,
+      "FirstNodeId": 1,
+      "SecondNodeId": 0,
+      "ConnectionType": 1,
+      "ChannelType": 1
+    }
+  ]
+}
