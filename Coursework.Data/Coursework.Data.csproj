@@ -46,6 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Builder\INetworkBuilder.cs" />
+    <Compile Include="Builder\INodeGenerator.cs" />
+    <Compile Include="Builder\MetropolitanNetworkBuilder.cs" />
     <Compile Include="Builder\NetworkBuilder.cs" />
     <Compile Include="Builder\NodeGenerator.cs" />
     <Compile Include="Constants\AllConstants.cs" />

@@ -44,11 +44,17 @@ namespace Coursework.Gui
                 .WithConstructorArgument("Seed", (int)(DateTime.Now.Ticks & 0xFFFF));
 
             _container
+                .Bind<INodeGenerator>()
+                .To<NodeGenerator>()
+                .InTransientScope();
+
+            _container
                 .Bind<INetworkBuilder>()
                 .To<NetworkBuilder>()
                 .InTransientScope()
                 .WithConstructorArgument("nodeCount", AllConstants.NodeCount)
-                .WithConstructorArgument("networkPower", AllConstants.NetworkPower);
+                .WithConstructorArgument("networkPower", AllConstants.NetworkPower)
+                .WithConstructorArgument("nodeGenerator", _container.Get<INodeGenerator>());
 
             _container
                 .Bind<INetworkHandler>()

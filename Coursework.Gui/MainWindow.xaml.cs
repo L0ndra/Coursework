@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Coursework.Data;
 using Coursework.Data.Builder;
+using Coursework.Data.Entities;
 using Coursework.Data.IONetwork;
 using Coursework.Gui.Dialogs;
 using Coursework.Gui.Drawers;
@@ -48,7 +49,10 @@ namespace Coursework.Gui
 
         private void AddNode_OnClick(object sender, RoutedEventArgs e)
         {
-            var node = NodeGenerator.GenerateNodes(1).First();
+            var node = new Node
+            {
+                Id = _network.Nodes.Max(n => n.Id) + 1
+            };
             _network.AddNode(node);
 
             _nodeDrawer.DrawComponents(GeneratedCanvas);

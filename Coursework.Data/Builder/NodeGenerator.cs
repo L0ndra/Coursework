@@ -5,11 +5,11 @@ using Coursework.Data.MessageServices;
 
 namespace Coursework.Data.Builder
 {
-    public static class NodeGenerator
+    public class NodeGenerator : INodeGenerator
     {
         private static int _currentId;
 
-        public static Node[] GenerateNodes(int count)
+        public Node[] GenerateNodes(int count)
         {
             var nodes = Enumerable
                 .Range(_currentId, count)
@@ -21,12 +21,12 @@ namespace Coursework.Data.Builder
             return nodes;
         }
 
-        public static void ResetAccumulator()
+        public void ResetAccumulator()
         {
             _currentId = 0;
         }
 
-        private static Node CreateNode(int id)
+        private Node CreateNode(int id)
         {
             return new Node
             {

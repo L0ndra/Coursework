@@ -69,12 +69,14 @@
   <ItemGroup>
     <Compile Include="ChannelDrawerTests.cs" />
     <Compile Include="MessageQueueHandlerTests.cs" />
+    <Compile Include="MetropolitanNetworkBuilderTests.cs" />
     <Compile Include="NetworkBuilderTests.cs" />
     <Compile Include="NetworkDrawerTests.cs" />
     <Compile Include="NetworkInfoRetrieverTests.cs" />
     <Compile Include="NetworkTests.cs" />
     <Compile Include="NodeDrawerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="NodeGeneratorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

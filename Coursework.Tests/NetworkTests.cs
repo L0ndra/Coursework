@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Coursework.Data;
 using Coursework.Data.Builder;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.Exceptions;
+using Coursework.Data.MessageServices;
 using NUnit.Framework;
 
 namespace Coursework.Tests
@@ -21,8 +23,18 @@ namespace Coursework.Tests
         {
             _network = new Network();
 
-            _node1 = NodeGenerator.GenerateNodes(1).First();
-            _node2 = NodeGenerator.GenerateNodes(1).First();
+            _node1 = new Node
+            {
+                Id = 0,
+                LinkedNodesId = new SortedSet<uint>(),
+                MessageQueue = new MessageQueueHandler()
+            };
+            _node2 = new Node
+            {
+                Id = 1,
+                LinkedNodesId = new SortedSet<uint>(),
+                MessageQueue = new MessageQueueHandler()
+            };
 
             _channel = new Channel
             {

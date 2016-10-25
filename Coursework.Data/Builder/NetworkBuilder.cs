@@ -9,18 +9,20 @@ namespace Coursework.Data.Builder
     public class NetworkBuilder : INetworkBuilder
     {
         private INetworkHandler _network;
+        private readonly INodeGenerator _nodeGenerator;
         private readonly uint _nodeCount;
         private readonly double _networkPower;
 
         private readonly SortedSet<int> _usedPrices = new SortedSet<int>();
 
-        public NetworkBuilder(uint nodeCount, double networkPower)
+        public NetworkBuilder(INodeGenerator nodeGenerator, uint nodeCount, double networkPower)
         {
             if (networkPower <= 0.0)
             {
                 throw new ArgumentException("networkPower");
             }
 
+            _nodeGenerator = nodeGenerator;
             _nodeCount = nodeCount;
             _networkPower = networkPower;
         }
@@ -39,7 +41,7 @@ namespace Coursework.Data.Builder
         {
             _network = new Network();
 
-            NodeGenerator.ResetAccumulator();
+            _nodeGenerator.ResetAccumulator();
 
             CreateNodes();
 
@@ -109,7 +111,7 @@ namespace Coursework.Data.Builder
 
         private void CreateNodes()
         {
-            foreach (var node in NodeGenerator.GenerateNodes((int)_nodeCount))
+            foreach (var node in _nodeGenerator.GenerateNodes((int)_nodeCount))
             {
                 _network.AddNode(node);
             }

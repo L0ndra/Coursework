@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Coursework.Data.Builder;
+using Coursework.Data.Entities;
+using Coursework.Data.MessageServices;
+using Moq;
 using NUnit.Framework;
 
 namespace Coursework.Tests
@@ -9,12 +13,34 @@ namespace Coursework.Tests
     public class NetworkBuilderTests
     {
         private INetworkBuilder _networkBuilder;
+        private Mock<INodeGenerator> _nodeGeneratorMock;
         private const int TimesToCreateNetwork = 1000;
         private readonly int[] _availablePrices = { 2, 4, 7, 8, 11, 15, 17, 20, 24, 25, 28 };
 
         [SetUp]
         public void Setup()
         {
+            _nodeGeneratorMock = new Mock<INodeGenerator>();
+            var closureCounter = 0;
+
+            _nodeGeneratorMock.Setup(n => n.GenerateNodes(It.IsAny<int>()))
+                .Returns((int count) =>
+                {
+                    var result = Enumerable
+                        .Range(closureCounter, count)
+                        .Select(i => new Node
+                        {
+                            Id = (uint) i,
+                            LinkedNodesId = new SortedSet<uint>(),
+                            MessageQueue = new MessageQueueHandler()
+                        })
+                        .ToArray();
+
+                    closureCounter += count;
+
+                    return result;
+                }
+                );
         }
 
         [Test]
@@ -27,7 +53,7 @@ namespace Coursework.Tests
             for (var i = 0; i < TimesToCreateNetwork; i++)
             {
                 // Arrange
-                _networkBuilder = new NetworkBuilder(nodeCount, networkPower);
+                _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, networkPower);
 
                 // Act
                 var network = _networkBuilder.Build();
