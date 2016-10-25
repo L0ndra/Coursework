@@ -27,13 +27,13 @@ namespace Coursework.Tests
             {
                 Id = 0,
                 LinkedNodesId = new SortedSet<uint>(),
-                MessageQueue = new MessageQueueHandler()
+                MessageQueue = new List<MessageQueueHandler>()
             };
             _node2 = new Node
             {
                 Id = 1,
                 LinkedNodesId = new SortedSet<uint>(),
-                MessageQueue = new MessageQueueHandler()
+                MessageQueue = new List<MessageQueueHandler>()
             };
 
             _channel = new Channel
@@ -90,10 +90,25 @@ namespace Coursework.Tests
         }
 
         [Test]
+        public void AddChannelShouldCreateTwoMessageQueuesInNodes()
+        {
+            // Arrange
+            _network.AddNode(_node1);
+            _network.AddNode(_node2);
+
+            // Act
+            _network.AddChannel(_channel);
+
+            // Assert
+            Assert.That(_node1.MessageQueue.Any(m => m.ChannelId == _channel.Id));
+            Assert.That(_node2.MessageQueue.Any(m => m.ChannelId == _channel.Id));
+        }
+
+        [Test]
         public void AddChannelShouldThrowExceptionIfStartNodeNotExists()
         {
             // Arrange
-            _channel.FirstNodeId = (uint)_network.Nodes.Length + 1;
+            _channel.FirstNodeId = uint.MaxValue;
 
             // Act
             TestDelegate testDelegate = () => _network.AddChannel(_channel);
@@ -106,13 +121,28 @@ namespace Coursework.Tests
         public void AddChannelShouldThrowExceptionIfEndNodeNotExists()
         {
             // Arrange
-            _channel.SecondNodeId = (uint)_network.Nodes.Length + 1;
+            _channel.SecondNodeId = uint.MaxValue;
 
             // Act
             TestDelegate testDelegate = () => _network.AddChannel(_channel);
 
             // Assert
             Assert.That(testDelegate, Throws.TypeOf(typeof(NodeException)));
+        }
+
+        [Test]
+        public void AddChannelShouldThrowExceptionIfChannelWithSameIdExistsInNetwork()
+        {
+            // Arrange
+            _network.AddNode(_node1);
+            _network.AddNode(_node2);
+            _network.AddChannel(_channel);
+
+            // Act
+            TestDelegate testDelegate = () => _network.AddChannel(_channel);
+
+            // Assert
+            Assert.That(testDelegate, Throws.TypeOf(typeof(ChannelException)));
         }
 
         [Test]

@@ -1,21 +1,13 @@
 ﻿{
-  "Nodes": [
+  "NodeIoDtos": [
     {
-      "Id": 0,
-      "MessageQueue": null,
-      "LinkedNodesId": [
-        1
-      ]
+      "Id": 0
     },
     {
-      "Id": 1,
-      "MessageQueue": null,
-      "LinkedNodesId": [
-        0
-      ]
+      "Id": 1
     }
   ],
-  "Channels": [
+  "ChannelIoDtos": [
     {
       "Id": "00000000-0000-0000-0000-000000000000",
       "Price": 20,

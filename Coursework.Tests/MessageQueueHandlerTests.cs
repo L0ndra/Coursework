@@ -1,4 +1,5 @@
-﻿using Coursework.Data.Entities;
+﻿using System;
+using Coursework.Data.Entities;
 using Coursework.Data.MessageServices;
 using NUnit.Framework;
 
@@ -13,7 +14,7 @@ namespace Coursework.Tests
         [SetUp]
         public void Setup()
         {
-            _messageQueueHandler = new MessageQueueHandler();
+            _messageQueueHandler = new MessageQueueHandler(Guid.Empty);
 
             _message = new Message
             {

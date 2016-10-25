@@ -35,6 +35,10 @@ namespace Coursework.Gui
 
         private void ConfigureContainer()
         {
+            const string simpleNetworkBuilder = "Simple network builder";
+            const string metropolitanNetworkBuilder = "Metropolitan network builder";
+            const string generatedMetropolitanNetwork = "Generated metropolitan network";
+
             _container = new StandardKernel();
 
             _container
@@ -52,43 +56,24 @@ namespace Coursework.Gui
                 .Bind<INetworkBuilder>()
                 .To<NetworkBuilder>()
                 .InTransientScope()
+                .Named(simpleNetworkBuilder)
                 .WithConstructorArgument("nodeCount", AllConstants.NodeCount)
                 .WithConstructorArgument("networkPower", AllConstants.NetworkPower)
                 .WithConstructorArgument("nodeGenerator", _container.Get<INodeGenerator>());
 
             _container
-                .Bind<INetworkHandler>()
-                .To<Network>()
+                .Bind<INetworkBuilder>()
+                .To<MetropolitanNetworkBuilder>()
                 .InTransientScope()
-                .Named("Empty");
+                .Named(metropolitanNetworkBuilder)
+                .WithConstructorArgument("simpleNetworkBuilder", _container.Get<INetworkBuilder>(simpleNetworkBuilder))
+                .WithConstructorArgument("numberOfMetropolitanNetworks", AllConstants.MetropolitanNetworksCount);
 
             _container
                 .Bind<INetworkHandler>()
-                .ToMethod(x => _container.Get<INetworkBuilder>().Build())
+                .ToMethod(x => _container.Get<INetworkBuilder>(metropolitanNetworkBuilder).Build())
                 .InTransientScope()
-                .Named("Generated network");
-
-            _container
-                .Bind<IComponentDrawer>()
-                .To<NodeDrawer>()
-                .InTransientScope()
-                .Named("Node drawer")
-                .WithConstructorArgument("network", _container.Get<INetworkHandler>("Generated network"));
-
-            _container
-                .Bind<IComponentDrawer>()
-                .To<ChannelDrawer>()
-                .InTransientScope()
-                .Named("Channel drawer")
-                .WithConstructorArgument("network", _container.Get<INetworkHandler>("Generated network"));
-
-            _container
-                .Bind<IComponentDrawer>()
-                .To<NetworkDrawer>()
-                .InTransientScope()
-                .Named("Network drawer")
-                .WithConstructorArgument("nodeDrawer", _container.Get<IComponentDrawer>("Node drawer"))
-                .WithConstructorArgument("channelDrawer", _container.Get<IComponentDrawer>("Channel drawer"));
+                .Named(generatedMetropolitanNetwork);
 
             _container
                 .Bind<INetworkInfoRetriever>()
@@ -98,7 +83,7 @@ namespace Coursework.Gui
             _container
                 .Bind<MainWindow>()
                 .ToSelf()
-                .WithConstructorArgument("network", _container.Get<INetworkHandler>("Generated network"))
+                .WithConstructorArgument("network", _container.Get<INetworkHandler>(generatedMetropolitanNetwork))
                 .WithConstructorArgument("networkInfoRetriever", _container.Get<INetworkInfoRetriever>());
         }
     }

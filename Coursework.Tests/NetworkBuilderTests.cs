@@ -32,7 +32,7 @@ namespace Coursework.Tests
                         {
                             Id = (uint) i,
                             LinkedNodesId = new SortedSet<uint>(),
-                            MessageQueue = new MessageQueueHandler()
+                            MessageQueue = new List<MessageQueueHandler>()
                         })
                         .ToArray();
 
@@ -69,6 +69,24 @@ namespace Coursework.Tests
                 Assert.That(Math.Abs(currentPower - networkPower), Is.LessThanOrEqualTo(eps));
 
                 LogResult(i, networkPower, currentPower);
+            }
+        }
+
+        [Test]
+        [TestCase((uint)5, 2.0)]
+        public void BuildShouldTwoNetworksWithDifferentIds(uint nodeCount, double networkPower)
+        {
+            // Arrange
+            _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, networkPower);
+            var firstNetwork = _networkBuilder.Build();
+
+            // Act
+            var result = _networkBuilder.Build();
+
+            // Assert
+            foreach (var node in result.Nodes)
+            {
+                Assert.IsFalse(firstNetwork.Nodes.Any(n => n.Id == node.Id));
             }
         }
 

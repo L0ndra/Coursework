@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using AutoMapper;
 using Coursework.Data.Entities;
 using Coursework.Data.MessageServices;
 using Newtonsoft.Json;
@@ -24,7 +26,9 @@ namespace Coursework.Data.IONetwork
 
         public void Write(string filename, INetwork network)
         {
-            var jsonNetwork = JsonConvert.SerializeObject(network, Formatting.Indented);
+            var networkIoDto = ConvertToNetworkIoDto(network);
+
+            var jsonNetwork = JsonConvert.SerializeObject(networkIoDto, Formatting.Indented);
 
             using (var file = new StreamWriter(filename))
             {
@@ -46,13 +50,13 @@ namespace Coursework.Data.IONetwork
 
         private void ParseNodes(JObject unparsedNetwork, INetworkHandler network)
         {
-            foreach (var nodeInfo in unparsedNetwork["Nodes"])
+            foreach (var nodeInfo in unparsedNetwork["NodeIoDtos"])
             {
                 var node = new Node
                 {
                     Id = (uint)nodeInfo["Id"],
                     LinkedNodesId = new SortedSet<uint>(),
-                    MessageQueue = new MessageQueueHandler()
+                    MessageQueue = new List<MessageQueueHandler>()
                 };
 
                 network.AddNode(node);
@@ -61,7 +65,7 @@ namespace Coursework.Data.IONetwork
 
         private void ParseChannels(JObject unparsedNetwork, INetworkHandler network)
         {
-            foreach (var channelInfo in unparsedNetwork["Channels"])
+            foreach (var channelInfo in unparsedNetwork["ChannelIoDtos"])
             {
                 var channel = new Channel
                 {
@@ -76,6 +80,23 @@ namespace Coursework.Data.IONetwork
 
                 network.AddChannel(channel);
             }
+        }
+
+        private NetworkIoDto ConvertToNetworkIoDto(INetwork network)
+        {
+            var channelIoDtos = network.Channels
+                .Select(Mapper.Map<Channel, ChannelIoDto>)
+                .ToArray();
+
+            var nodeIoDtos = network.Nodes
+                .Select(Mapper.Map<Node, NodeIoDto>)
+                .ToArray();
+
+            return new NetworkIoDto
+            {
+                ChannelIoDtos = channelIoDtos,
+                NodeIoDtos = nodeIoDtos
+            };
         }
     }
 }

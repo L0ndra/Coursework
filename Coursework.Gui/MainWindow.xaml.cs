@@ -4,7 +4,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Coursework.Data;
-using Coursework.Data.Builder;
 using Coursework.Data.Entities;
 using Coursework.Data.IONetwork;
 using Coursework.Gui.Dialogs;

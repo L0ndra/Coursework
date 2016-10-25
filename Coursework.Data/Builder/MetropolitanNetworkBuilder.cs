@@ -1,9 +1,17 @@
-﻿namespace Coursework.Data.Builder
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Coursework.Data.Constants;
+using Coursework.Data.Entities;
+using Coursework.Data.MessageServices;
+
+namespace Coursework.Data.Builder
 {
     public class MetropolitanNetworkBuilder : INetworkBuilder
     {
-        private INetworkBuilder _simpleNetworkBuilder;
-        private int _numberOfMetropolitanNetworks;
+        private readonly INetworkBuilder _simpleNetworkBuilder;
+        private readonly int _numberOfMetropolitanNetworks;
+        private INetworkHandler _network;
 
         public MetropolitanNetworkBuilder(INetworkBuilder simpleNetworkBuilder, int numberOfMetropolitanNetworks)
         {
@@ -13,7 +21,98 @@
 
         public INetworkHandler Build()
         {
-            throw new System.NotImplementedException();
+            var metropolianNetworks = CreateMetropolianNetworks();
+
+            ConvertMetropolianNetworksToWideAreaNetwork(metropolianNetworks);
+
+            var centralMachine = GenerateCentralMachineNode();
+
+            _network.AddNode(centralMachine);
+
+            var nodesIdConnectedToCentralMachine = CreateSetOfConnectedToCentralMachineNodesId(metropolianNetworks);
+
+            ConnectCentralMachineToOtherNodes(nodesIdConnectedToCentralMachine, centralMachine.Id);
+
+            return _network;
+        }
+
+        private Node GenerateCentralMachineNode()
+        {
+            var centralMachine = new Node
+            {
+                Id = _network.Nodes.Max(n => n.Id) + 1,
+                LinkedNodesId = new SortedSet<uint>(),
+                MessageQueue = new List<MessageQueueHandler>(),
+            };
+
+            return centralMachine;
+        }
+
+        private IEnumerable<uint> CreateSetOfConnectedToCentralMachineNodesId(IList<INetworkHandler> metropolianNetworks)
+        {
+            var result = new SortedSet<uint>();
+
+            foreach (var metropolianNetwork in metropolianNetworks)
+            {
+                var nodesCount = metropolianNetwork.Nodes.Length;
+                var randomId = metropolianNetwork.Nodes
+                    .ElementAt(AllConstants.RandomGenerator.Next(nodesCount)).Id;
+
+                result.Add(randomId);
+            }
+
+            return result;
+        }
+
+        private void ConnectCentralMachineToOtherNodes(IEnumerable<uint> nodesIdConnectedToCentralMachine, uint centralMachineId)
+        {
+            foreach (var nodeId in nodesIdConnectedToCentralMachine)
+            {
+                var channel = new Channel
+                {
+                    Id = Guid.NewGuid(),
+                    FirstNodeId = centralMachineId,
+                    SecondNodeId = nodeId,
+                    ConnectionType = ConnectionType.Duplex,
+                    ChannelType = ChannelType.Satellite,
+                    ErrorChance = AllConstants.RandomGenerator.NextDouble(),
+                    Price = PriceGenerator.GetRandomPrice()
+                };
+
+                _network.AddChannel(channel);
+            }
+        }
+
+        private IList<INetworkHandler> CreateMetropolianNetworks()
+        {
+            var metropolitanNetworks = new List<INetworkHandler>();
+
+            for (var i = 0; i < _numberOfMetropolitanNetworks; i++)
+            {
+                var network = _simpleNetworkBuilder.Build();
+
+                metropolitanNetworks.Add(network);
+            }
+
+            return metropolitanNetworks;
+        }
+
+        private void ConvertMetropolianNetworksToWideAreaNetwork(IList<INetworkHandler> metropolitanNetworks)
+        {
+            _network = new Network();
+
+            foreach (var metropolitanNetwork in metropolitanNetworks)
+            {
+                foreach (var node in metropolitanNetwork.Nodes)
+                {
+                    _network.AddNode(node);
+                }
+
+                foreach (var channel in metropolitanNetwork.Channels)
+                {
+                    _network.AddChannel(channel);
+                }
+            }
         }
     }
 }

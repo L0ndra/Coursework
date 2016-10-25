@@ -31,7 +31,7 @@ namespace Coursework.Data.Builder
             return new Node
             {
                 Id = (uint)id,
-                MessageQueue = new MessageQueueHandler(),
+                MessageQueue = new List<MessageQueueHandler>(),
                 LinkedNodesId = new SortedSet<uint>()
             };
         }

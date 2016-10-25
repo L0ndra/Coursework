@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Coursework.Data.Entities;
 using Coursework.Data.Exceptions;
+using Coursework.Data.MessageServices;
 
 namespace Coursework.Data
 {
@@ -59,8 +61,9 @@ namespace Coursework.Data
         {
             ThrowExceptionIfChannelCannotBeCreated(channel);
 
-            AddLink(channel.FirstNodeId, channel.SecondNodeId);
-
+            AddLinkToNodes(channel.FirstNodeId, channel.SecondNodeId);
+            AddMessageQueueToNodes(channel);
+            
             _channels.Add(channel);
         }
 
@@ -85,12 +88,33 @@ namespace Coursework.Data
                                      || c.FirstNodeId == secondNodeId && c.SecondNodeId == firstNodeId);
         }
 
+        private void AddMessageQueueToNodes(Channel channel)
+        {
+            var node1 = GetNodeById(channel.FirstNodeId);
+            var node2 = GetNodeById(channel.SecondNodeId);
+
+            var firstMessageQueue = new MessageQueueHandler(channel.Id);
+            var secondMessageQueue = new MessageQueueHandler(channel.Id);
+
+            node1.MessageQueue.Add(firstMessageQueue);
+            node2.MessageQueue.Add(secondMessageQueue);
+        }
+
         private void ThrowExceptionIfChannelCannotBeCreated(Channel channel)
         {
             ThrowExceptionIfNodeNotExists(channel.FirstNodeId);
             ThrowExceptionIfNodeNotExists(channel.SecondNodeId);
             ThrowExceptionIfPriceIsIncorrect(channel.Price);
             ThrowExceptionIfErrorChanceIsIncorrect(channel.ErrorChance);
+            ThrowExceptionIfChannelWithSameIdExists(channel.Id);
+        }
+
+        private void ThrowExceptionIfChannelWithSameIdExists(Guid channelId)
+        {
+            if (_channels.Any(c => c.Id == channelId))
+            {
+                throw new ChannelException("Channel with same id is already exists in network");
+            }
         }
 
         private void ThrowExceptionIfNodeCannotBeCreated(Node node)
@@ -135,7 +159,7 @@ namespace Coursework.Data
             return _nodes.FirstOrDefault(n => n.Id == id);
         }
 
-        private void AddLink(uint firstNodeId, uint secondNodeId)
+        private void AddLinkToNodes(uint firstNodeId, uint secondNodeId)
         {
             GetNodeById(firstNodeId).LinkedNodesId.Add(secondNodeId);
             GetNodeById(secondNodeId).LinkedNodesId.Add(firstNodeId);

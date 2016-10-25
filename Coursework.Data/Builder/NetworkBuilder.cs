@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
@@ -12,8 +11,6 @@ namespace Coursework.Data.Builder
         private readonly INodeGenerator _nodeGenerator;
         private readonly uint _nodeCount;
         private readonly double _networkPower;
-
-        private readonly SortedSet<int> _usedPrices = new SortedSet<int>();
 
         public NetworkBuilder(INodeGenerator nodeGenerator, uint nodeCount, double networkPower)
         {
@@ -29,10 +26,7 @@ namespace Coursework.Data.Builder
 
         public INetworkHandler Build()
         {
-            if (_network == null)
-            {
-                InitializeNetwork();
-            }
+            InitializeNetwork();
 
             return _network;
         }
@@ -40,8 +34,6 @@ namespace Coursework.Data.Builder
         private void InitializeNetwork()
         {
             _network = new Network();
-
-            _nodeGenerator.ResetAccumulator();
 
             CreateNodes();
 
@@ -51,8 +43,6 @@ namespace Coursework.Data.Builder
         private void CreateChannels()
         {
             var roundedPower = (int)Math.Ceiling(_networkPower);
-
-            _usedPrices.Clear();
 
             foreach (var node in _network.Nodes)
             {
@@ -92,7 +82,7 @@ namespace Coursework.Data.Builder
                     continue;
                 }
 
-                var price = GetRandomPrice();
+                var price = PriceGenerator.GetRandomPrice();
 
                 var channel = new Channel
                 {
@@ -115,23 +105,6 @@ namespace Coursework.Data.Builder
             {
                 _network.AddNode(node);
             }
-        }
-
-        private int GetRandomPrice()
-        {
-            if (!AllConstants.AllPrices.Except(_usedPrices).Any())
-            {
-                _usedPrices.Clear();
-            }
-
-            var price = AllConstants.AllPrices
-                .Except(_usedPrices)
-                .OrderBy(n => AllConstants.RandomGenerator.Next())
-                .FirstOrDefault();
-
-            _usedPrices.Add(price);
-
-            return price;
         }
     }
 }

@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper">
+      <HintPath>..\packages\AutoMapper.5.1.1\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -50,7 +53,9 @@
     <Compile Include="Builder\MetropolitanNetworkBuilder.cs" />
     <Compile Include="Builder\NetworkBuilder.cs" />
     <Compile Include="Builder\NodeGenerator.cs" />
+    <Compile Include="Builder\PriceGenerator.cs" />
     <Compile Include="Constants\AllConstants.cs" />
+    <Compile Include="IONetwork\ChannelIoDto.cs" />
     <Compile Include="Entities\ChannelType.cs" />
     <Compile Include="Entities\Message.cs" />
     <Compile Include="Exceptions\ChannelException.cs" />
@@ -58,6 +63,8 @@
     <Compile Include="INetworkHandler.cs" />
     <Compile Include="IONetwork\INetworkInfoRetriever.cs" />
     <Compile Include="IONetwork\NetworkInfoRetriever.cs" />
+    <Compile Include="IONetwork\NetworkIoDto.cs" />
+    <Compile Include="IONetwork\NodeIoDto.cs" />
     <Compile Include="MessageServices\IMessageQueueHandler.cs" />
     <Compile Include="MessageServices\MessageQueueHandler.cs" />
     <Compile Include="Network.cs" />

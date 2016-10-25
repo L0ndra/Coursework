@@ -13,40 +13,26 @@ namespace Coursework.Tests
     public class MetropolitanNetworkBuilderTests
     {
         private Mock<INetworkBuilder> _simpleNetworkBuilderMock;
-        private Mock<INetworkHandler> _networkMock;
         private MetropolitanNetworkBuilder _metropolitanNetworkBuilder;
+        private int _numberOfMetropolitanNetworks;
+        private uint _lastId;
 
         [SetUp]
         public void Setup()
         {
             _simpleNetworkBuilderMock = new Mock<INetworkBuilder>();
 
-            _networkMock = new Mock<INetworkHandler>();
-
-            const int numberOfMetropolitanNetworks = 5;
+            _numberOfMetropolitanNetworks = 5;
+            const int nodesCount = 1;
 
             _metropolitanNetworkBuilder = new MetropolitanNetworkBuilder(_simpleNetworkBuilderMock.Object,
-                numberOfMetropolitanNetworks);
+                _numberOfMetropolitanNetworks);
 
-            var nodes = new[]
-            {
-                new Node
-                {
-                    Id = 0,
-                    LinkedNodesId = new SortedSet<uint>(),
-                    MessageQueue = new MessageQueueHandler()
-                }
-            };
-
-            _networkMock.Setup(n => n.Nodes)
-                .Returns(nodes);
-
-            _networkMock.Setup(n => n.Channels)
-                .Returns(new Channel[0]);
+            _simpleNetworkBuilderMock.Setup(n => n.Build())
+                .Returns(() => GenerateNetworkMockForTests(nodesCount).Object);
         }
 
         [Test]
-        [Ignore("method not implemented")]
         public void BuildShouldReturnCorrectNetworkWithSpecifiedNumberOfRegionalNetworks()
         {
             // Arrange
@@ -60,7 +46,36 @@ namespace Coursework.Tests
                 .Select(n => n.Key);
 
             Assert.That(resultWithoutDublicates.Count(), Is.EqualTo(result.Nodes.Length));
-            Assert.IsTrue(result.Channels.Any(c => c.ChannelType == ChannelType.Satellite));
+            Assert.That(result.Channels.Count(c => c.ChannelType == ChannelType.Satellite), 
+                Is.EqualTo(_numberOfMetropolitanNetworks));
+        }
+
+        private Mock<INetworkHandler> GenerateNetworkMockForTests(int count)
+        {
+            var networkMock = new Mock<INetworkHandler>();
+
+            var nodes = new List<Node>();
+
+            for (var i = 0; i < count; i++)
+            {
+                var node = new Node
+                {
+                    Id = _lastId,
+                    LinkedNodesId = new SortedSet<uint>(),
+                    MessageQueue = new List<MessageQueueHandler>()
+                };
+                _lastId++;
+
+                nodes.Add(node);
+            }
+
+            networkMock.Setup(n => n.Nodes)
+                .Returns(nodes.ToArray());
+
+            networkMock.Setup(n => n.Channels)
+                .Returns(new Channel[0]);
+
+            return networkMock;
         }
     }
 }

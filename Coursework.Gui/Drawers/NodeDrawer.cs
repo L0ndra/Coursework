@@ -29,7 +29,7 @@ namespace Coursework.Gui.Drawers
                 .Where(uiElement => VisualTreeHelper.GetParent(uiElement).Equals(panel))
                 .Select(uiElement => uiElement.Tag as NodeDto)
                 .Select(n => n.Id);
-            
+
             foreach (var node in _network.Nodes.Where(n => !createdNodes.Contains(n.Id)))
             {
                 var rectangle = CreateRectangle();
@@ -101,8 +101,8 @@ namespace Coursework.Gui.Drawers
 
         private static void Rectangle_OnMouseMove(object sender, MouseEventArgs e)
         {
-            var concreteSender = sender as FrameworkElement;
-            var parent = concreteSender?.Parent as FrameworkElement;
+            var concreteSender = (FrameworkElement)sender;
+            var parent = (FrameworkElement)concreteSender?.Parent;
 
             if (parent != null)
             {
