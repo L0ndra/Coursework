@@ -13,10 +13,11 @@ namespace Coursework.Tests
 {
     [TestFixture]
     [Apartment(ApartmentState.STA)]
-    public class NodeDrawerTests
+    [Ignore("Class methods aren't implemented")]
+    public class WideAreaNetworkNodeDrawerTests
     {
         private Mock<INetworkHandler> _networkMock;
-        private IComponentDrawer _nodeDrawer;
+        private IComponentDrawer _wideAreaNetworkNodeDrawer;
         private Panel _panel;
 
         [SetUp]
@@ -28,7 +29,7 @@ namespace Coursework.Tests
                 Height = 700
             };
             _networkMock = new Mock<INetworkHandler>();
-            _nodeDrawer = new NodeDrawer(_networkMock.Object);
+            _wideAreaNetworkNodeDrawer = new WideAreaNetworkNodeDrawer(_networkMock.Object);
 
             const int nodesCount = 5;
 
@@ -48,7 +49,7 @@ namespace Coursework.Tests
             Mapper.Initialize(MapperInitializer.InitializeMapper);
 
             // Act
-            _nodeDrawer.DrawComponents(_panel);
+            _wideAreaNetworkNodeDrawer.DrawComponents(_panel);
 
             // Assert
             Assert.That(_panel.Children.Count, Is.EqualTo(_networkMock.Object.Nodes.Length));
@@ -60,10 +61,10 @@ namespace Coursework.Tests
             // Arrange
             Mapper.Initialize(MapperInitializer.InitializeMapper);
 
-            _nodeDrawer.DrawComponents(_panel);
+            _wideAreaNetworkNodeDrawer.DrawComponents(_panel);
 
             // Act
-            _nodeDrawer.DrawComponents(_panel);
+            _wideAreaNetworkNodeDrawer.DrawComponents(_panel);
 
             // Assert
             Assert.That(_panel.Children.Count, Is.EqualTo(_networkMock.Object.Nodes.Length));
@@ -73,10 +74,10 @@ namespace Coursework.Tests
         public void RemoveCreatedElementsShouldRemoveAllCreatedChildren()
         {
             // Arrange
-            _nodeDrawer.DrawComponents(_panel);
+            _wideAreaNetworkNodeDrawer.DrawComponents(_panel);
 
             // Act
-            _nodeDrawer.RemoveCreatedElements();
+            _wideAreaNetworkNodeDrawer.RemoveCreatedElements();
 
             // Assert
             Assert.That(_panel.Children.Count, Is.Zero);
@@ -87,7 +88,7 @@ namespace Coursework.Tests
         {
             // Arrange
             // Act
-            _nodeDrawer.RemoveCreatedElements();
+            _wideAreaNetworkNodeDrawer.RemoveCreatedElements();
 
             // Assert
             Assert.That(_panel.Children.Count, Is.Zero);

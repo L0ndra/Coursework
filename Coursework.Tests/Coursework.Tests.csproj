@@ -69,7 +69,8 @@
   <ItemGroup>
     <Compile Include="ChannelDrawerTests.cs" />
     <Compile Include="MessageQueueHandlerTests.cs" />
-    <Compile Include="MetropolitanNetworkBuilderTests.cs" />
+    <Compile Include="WideAreaNetworkBuilderTests.cs" />
+    <Compile Include="WideAreaNetworkNodeDrawerTests.cs" />
     <Compile Include="NetworkBuilderTests.cs" />
     <Compile Include="NetworkDrawerTests.cs" />
     <Compile Include="NetworkInfoRetrieverTests.cs" />

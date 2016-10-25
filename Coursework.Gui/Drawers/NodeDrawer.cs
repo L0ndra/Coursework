@@ -23,7 +23,7 @@ namespace Coursework.Gui.Drawers
             _network = network;
         }
 
-        public void DrawComponents(Panel panel)
+        public virtual void DrawComponents(Panel panel)
         {
             var createdNodes = _createdGrids
                 .Where(uiElement => VisualTreeHelper.GetParent(uiElement).Equals(panel))
@@ -44,7 +44,7 @@ namespace Coursework.Gui.Drawers
             }
         }
 
-        public void RemoveCreatedElements()
+        public virtual void RemoveCreatedElements()
         {
             foreach (var uiElement in _createdGrids)
             {
@@ -55,7 +55,7 @@ namespace Coursework.Gui.Drawers
             _createdGrids.Clear();
         }
 
-        private Rectangle CreateRectangle()
+        protected virtual Rectangle CreateRectangle()
         {
             var rectangle = new Rectangle
             {
@@ -68,7 +68,7 @@ namespace Coursework.Gui.Drawers
             return rectangle;
         }
 
-        private TextBlock CreateTextBlock(string name)
+        protected virtual TextBlock CreateTextBlock(string name)
         {
             var textBlock = new TextBlock
             {
@@ -80,7 +80,7 @@ namespace Coursework.Gui.Drawers
             return textBlock;
         }
 
-        private Grid CreateGrid(FrameworkElement parent, params UIElement[] childs)
+        protected virtual Grid CreateGrid(FrameworkElement parent, params UIElement[] childs)
         {
             var grid = new Grid
             {

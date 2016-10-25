@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Coursework.Data;
 using Coursework.Data.Entities;
 using Coursework.Data.IONetwork;
 using Coursework.Gui.Dto;

@@ -5,7 +5,6 @@ using Coursework.Data;
 using Coursework.Data.Builder;
 using Coursework.Data.Constants;
 using Coursework.Data.IONetwork;
-using Coursework.Gui.Drawers;
 using Coursework.Gui.Initializers;
 using Ninject;
 
@@ -36,8 +35,8 @@ namespace Coursework.Gui
         private void ConfigureContainer()
         {
             const string simpleNetworkBuilder = "Simple network builder";
-            const string metropolitanNetworkBuilder = "Metropolitan network builder";
-            const string generatedMetropolitanNetwork = "Generated metropolitan network";
+            const string wideAreaNetworkBuilder = "Wide area network builder";
+            const string generatedWideAreaNetwork = "Generated wide area network";
 
             _container = new StandardKernel();
 
@@ -63,17 +62,17 @@ namespace Coursework.Gui
 
             _container
                 .Bind<INetworkBuilder>()
-                .To<MetropolitanNetworkBuilder>()
+                .To<WideAreaNetworkBuilder>()
                 .InTransientScope()
-                .Named(metropolitanNetworkBuilder)
+                .Named(wideAreaNetworkBuilder)
                 .WithConstructorArgument("simpleNetworkBuilder", _container.Get<INetworkBuilder>(simpleNetworkBuilder))
                 .WithConstructorArgument("numberOfMetropolitanNetworks", AllConstants.MetropolitanNetworksCount);
 
             _container
                 .Bind<INetworkHandler>()
-                .ToMethod(x => _container.Get<INetworkBuilder>(metropolitanNetworkBuilder).Build())
+                .ToMethod(x => _container.Get<INetworkBuilder>(wideAreaNetworkBuilder).Build())
                 .InTransientScope()
-                .Named(generatedMetropolitanNetwork);
+                .Named(generatedWideAreaNetwork);
 
             _container
                 .Bind<INetworkInfoRetriever>()
@@ -83,7 +82,7 @@ namespace Coursework.Gui
             _container
                 .Bind<MainWindow>()
                 .ToSelf()
-                .WithConstructorArgument("network", _container.Get<INetworkHandler>(generatedMetropolitanNetwork))
+                .WithConstructorArgument("network", _container.Get<INetworkHandler>(generatedWideAreaNetwork))
                 .WithConstructorArgument("networkInfoRetriever", _container.Get<INetworkInfoRetriever>());
         }
     }

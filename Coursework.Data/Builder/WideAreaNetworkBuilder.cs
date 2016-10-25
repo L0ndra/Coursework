@@ -7,13 +7,13 @@ using Coursework.Data.MessageServices;
 
 namespace Coursework.Data.Builder
 {
-    public class MetropolitanNetworkBuilder : INetworkBuilder
+    public class WideAreaNetworkBuilder : INetworkBuilder
     {
         private readonly INetworkBuilder _simpleNetworkBuilder;
         private readonly int _numberOfMetropolitanNetworks;
         private INetworkHandler _network;
 
-        public MetropolitanNetworkBuilder(INetworkBuilder simpleNetworkBuilder, int numberOfMetropolitanNetworks)
+        public WideAreaNetworkBuilder(INetworkBuilder simpleNetworkBuilder, int numberOfMetropolitanNetworks)
         {
             _simpleNetworkBuilder = simpleNetworkBuilder;
             _numberOfMetropolitanNetworks = numberOfMetropolitanNetworks;

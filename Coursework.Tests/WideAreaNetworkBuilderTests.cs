@@ -10,10 +10,10 @@ using NUnit.Framework;
 namespace Coursework.Tests
 {
     [TestFixture]
-    public class MetropolitanNetworkBuilderTests
+    public class WideAreaNetworkBuilderTests
     {
         private Mock<INetworkBuilder> _simpleNetworkBuilderMock;
-        private MetropolitanNetworkBuilder _metropolitanNetworkBuilder;
+        private WideAreaNetworkBuilder _wideAreaNetworkBuilder;
         private int _numberOfMetropolitanNetworks;
         private uint _lastId;
 
@@ -25,7 +25,7 @@ namespace Coursework.Tests
             _numberOfMetropolitanNetworks = 5;
             const int nodesCount = 1;
 
-            _metropolitanNetworkBuilder = new MetropolitanNetworkBuilder(_simpleNetworkBuilderMock.Object,
+            _wideAreaNetworkBuilder = new WideAreaNetworkBuilder(_simpleNetworkBuilderMock.Object,
                 _numberOfMetropolitanNetworks);
 
             _simpleNetworkBuilderMock.Setup(n => n.Build())
@@ -38,7 +38,7 @@ namespace Coursework.Tests
             // Arrange
 
             // Act
-            var result = _metropolitanNetworkBuilder.Build();
+            var result = _wideAreaNetworkBuilder.Build();
 
             // Assert
             var resultWithoutDublicates = result.Nodes
