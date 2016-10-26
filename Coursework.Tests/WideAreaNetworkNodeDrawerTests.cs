@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Windows.Controls;
 using AutoMapper;
@@ -13,7 +14,6 @@ namespace Coursework.Tests
 {
     [TestFixture]
     [Apartment(ApartmentState.STA)]
-    [Ignore("Class methods aren't implemented")]
     public class WideAreaNetworkNodeDrawerTests
     {
         private Mock<INetworkHandler> _networkMock;
@@ -29,17 +29,21 @@ namespace Coursework.Tests
                 Height = 700
             };
             _networkMock = new Mock<INetworkHandler>();
+
             _wideAreaNetworkNodeDrawer = new WideAreaNetworkNodeDrawer(_networkMock.Object);
 
             const int nodesCount = 5;
 
             var nodes = Enumerable
                 .Range(0, nodesCount)
-                .Select(i => new Node { Id = (uint)i })
+                .Select(i => new Node { Id = (uint)i, LinkedNodesId = new SortedSet<uint>()})
                 .ToArray();
 
             _networkMock.Setup(n => n.Nodes)
                 .Returns(nodes);
+
+            _networkMock.Setup(n => n.GetNodeById(It.IsAny<uint>()))
+                .Returns((uint nodeId) => nodes.FirstOrDefault(n => n.Id == nodeId));
         }
 
         [Test]

@@ -55,6 +55,7 @@
     <Compile Include="Builder\NodeGenerator.cs" />
     <Compile Include="Builder\PriceGenerator.cs" />
     <Compile Include="Constants\AllConstants.cs" />
+    <Compile Include="Entities\NodeType.cs" />
     <Compile Include="IONetwork\ChannelIoDto.cs" />
     <Compile Include="Entities\ChannelType.cs" />
     <Compile Include="Entities\Message.cs" />
@@ -73,6 +74,8 @@
     <Compile Include="Entities\ConnectionType.cs" />
     <Compile Include="Exceptions\NodeException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\IWideAreaNetworkService.cs" />
+    <Compile Include="Services\WideAreaNetworkService.cs" />
     <Compile Include="Util\PathUtils.cs" />
   </ItemGroup>
   <ItemGroup>

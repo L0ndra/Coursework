@@ -50,6 +50,17 @@ namespace Coursework.Tests
                 Is.EqualTo(_numberOfMetropolitanNetworks));
         }
 
+        [Test]
+        public void BuildShouldReturnNetworkWithOneCentralMachine()
+        {
+            // Arrange
+            // Act
+            var result = _wideAreaNetworkBuilder.Build();
+
+            // Assert
+            Assert.That(result.Nodes.Count(n => n.NodeType == NodeType.CentralMachine), Is.EqualTo(1));
+        }
+
         private Mock<INetworkHandler> GenerateNetworkMockForTests(int count)
         {
             var networkMock = new Mock<INetworkHandler>();

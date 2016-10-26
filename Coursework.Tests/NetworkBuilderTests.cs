@@ -90,6 +90,18 @@ namespace Coursework.Tests
             }
         }
 
+        [Test]
+        [TestCase((uint) 5, 2.0)]
+        public void BuildShouldReturnNetworkWithOneCentralMachine(uint nodeCount, double networkPower)
+        {
+            // Arrange
+            // Act
+            var result = _networkBuilder.Build();
+
+            // Assert
+            Assert.That(result.Nodes.Count(n => n.NodeType == NodeType.CentralMachine), Is.EqualTo(1));
+        }
+
         private static void LogResult(int testNumber, double networkPower, double currentPower)
         {
             Console.WriteLine($"Test {testNumber}: ");

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Coursework.Data.Entities;
+﻿using Coursework.Data.Entities;
 
 namespace Coursework.Data
 {
@@ -10,6 +9,7 @@ namespace Coursework.Data
         void UpdateChannel(Channel newChannel);
         void RemoveChannel(uint firstNodeId, uint secondNodeId);
         void AddNode(Node node);
+        Node GetNodeById(uint id);
         void RemoveNode(uint nodeId);
         Channel[] GetChannels(uint nodeId);
     }

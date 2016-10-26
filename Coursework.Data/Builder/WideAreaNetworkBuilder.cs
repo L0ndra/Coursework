@@ -43,6 +43,7 @@ namespace Coursework.Data.Builder
                 Id = _network.Nodes.Max(n => n.Id) + 1,
                 LinkedNodesId = new SortedSet<uint>(),
                 MessageQueue = new List<MessageQueueHandler>(),
+                NodeType = NodeType.CentralMachine
             };
 
             return centralMachine;
@@ -97,7 +98,7 @@ namespace Coursework.Data.Builder
             return metropolitanNetworks;
         }
 
-        private void ConvertMetropolianNetworksToWideAreaNetwork(IList<INetworkHandler> metropolitanNetworks)
+        private void ConvertMetropolianNetworksToWideAreaNetwork(IEnumerable<INetworkHandler> metropolitanNetworks)
         {
             _network = new Network();
 
@@ -105,6 +106,7 @@ namespace Coursework.Data.Builder
             {
                 foreach (var node in metropolitanNetwork.Nodes)
                 {
+                    node.NodeType = NodeType.SimpleNode;
                     _network.AddNode(node);
                 }
 

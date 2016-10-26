@@ -105,6 +105,9 @@ namespace Coursework.Data.Builder
             {
                 _network.AddNode(node);
             }
+
+            var centralMachine = _network.Nodes.First();
+            centralMachine.NodeType = NodeType.CentralMachine;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -6,6 +7,7 @@ using System.Windows.Controls;
 using Coursework.Data;
 using Coursework.Data.Entities;
 using Coursework.Data.IONetwork;
+using Coursework.Data.MessageServices;
 using Coursework.Gui.Dialogs;
 using Coursework.Gui.Drawers;
 using MahApps.Metro.Controls;
@@ -33,7 +35,7 @@ namespace Coursework.Gui
             _network = network;
             _networkInfoRetriever = networkInfoRetriever;
 
-            _nodeDrawer = new NodeDrawer(_network);
+            _nodeDrawer = new WideAreaNetworkNodeDrawer(_network);
             _channelDrawer = new ChannelDrawer(_network);
             _networkDrawer = new NetworkDrawer(_nodeDrawer, _channelDrawer);
             _channelAddWindow = new ChannelAddWindow(network, channel => _channelDrawer.DrawComponents(GeneratedCanvas));
@@ -50,8 +52,11 @@ namespace Coursework.Gui
         {
             var node = new Node
             {
-                Id = _network.Nodes.Max(n => n.Id) + 1
+                Id = _network.Nodes.Max(n => n.Id) + 1,
+                LinkedNodesId = new SortedSet<uint>(),
+                MessageQueue = new List<MessageQueueHandler>()
             };
+
             _network.AddNode(node);
 
             _nodeDrawer.DrawComponents(GeneratedCanvas);

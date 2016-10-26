@@ -4,7 +4,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
 using AutoMapper;
 using Coursework.Data;
 using Coursework.Data.Constants;
@@ -15,57 +14,42 @@ namespace Coursework.Gui.Drawers
 {
     public class NodeDrawer : IComponentDrawer
     {
-        private readonly INetworkHandler _network;
-        private readonly IList<Grid> _createdGrids = new List<Grid>();
+        protected readonly INetworkHandler Network;
+        protected readonly IList<Grid> CreatedGrids = new List<Grid>();
 
         public NodeDrawer(INetworkHandler network)
         {
-            _network = network;
+            Network = network;
         }
 
         public virtual void DrawComponents(Panel panel)
         {
-            var createdNodes = _createdGrids
+            var createdNodes = CreatedGrids
                 .Where(uiElement => VisualTreeHelper.GetParent(uiElement).Equals(panel))
                 .Select(uiElement => uiElement.Tag as NodeDto)
                 .Select(n => n.Id);
 
-            foreach (var node in _network.Nodes.Where(n => !createdNodes.Contains(n.Id)))
+            foreach (var node in Network.Nodes.Where(n => !createdNodes.Contains(n.Id)))
             {
-                var rectangle = CreateRectangle();
                 var textBlock = CreateTextBlock(node.Id.ToString());
-
-                var grid = CreateGrid(panel, rectangle, textBlock);
+                
                 var nodeDto = Mapper.Map<Node, NodeDto>(node);
-                grid.Tag = nodeDto;
+                var grid = CreateGrid(panel, nodeDto, textBlock);
 
                 panel.Children.Add(grid);
-                _createdGrids.Add(grid);
+                CreatedGrids.Add(grid);
             }
         }
 
         public virtual void RemoveCreatedElements()
         {
-            foreach (var uiElement in _createdGrids)
+            foreach (var uiElement in CreatedGrids)
             {
                 var parent = VisualTreeHelper.GetParent(uiElement) as Panel;
                 parent?.Children.Remove(uiElement);
             }
 
-            _createdGrids.Clear();
-        }
-
-        protected virtual Rectangle CreateRectangle()
-        {
-            var rectangle = new Rectangle
-            {
-                Fill = AllConstants.NodeBrush
-            };
-
-            rectangle.MouseMove += Rectangle_OnMouseMove;
-            rectangle.MouseLeave += Rectangle_OnMouseLeave;
-
-            return rectangle;
+            CreatedGrids.Clear();
         }
 
         protected virtual TextBlock CreateTextBlock(string name)
@@ -73,19 +57,27 @@ namespace Coursework.Gui.Drawers
             var textBlock = new TextBlock
             {
                 Text = name,
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Center
+                Width = AllConstants.SquareSize,
+                Height = AllConstants.SquareSize,
+                TextAlignment = TextAlignment.Center
             };
+
+            textBlock.MouseMove += Node_OnMouseMove;
+            textBlock.MouseLeave += Node_OnMouseLeave;
 
             return textBlock;
         }
 
-        protected virtual Grid CreateGrid(FrameworkElement parent, params UIElement[] childs)
+        protected virtual Grid CreateGrid(FrameworkElement parent, NodeDto nodeDto, params UIElement[] childs)
         {
             var grid = new Grid
             {
                 Width = AllConstants.SquareSize,
-                Height = AllConstants.SquareSize
+                Height = AllConstants.SquareSize,
+                Background = nodeDto.NodeType == NodeType.SimpleNode
+                    ? AllConstants.SimpleNodeBrush
+                    : AllConstants.CentralMachineBrush,
+                Tag = nodeDto
             };
 
             foreach (var child in childs)
@@ -99,7 +91,7 @@ namespace Coursework.Gui.Drawers
             return grid;
         }
 
-        private static void Rectangle_OnMouseMove(object sender, MouseEventArgs e)
+        private static void Node_OnMouseMove(object sender, MouseEventArgs e)
         {
             var concreteSender = (FrameworkElement)sender;
             var parent = (FrameworkElement)concreteSender?.Parent;
@@ -121,7 +113,7 @@ namespace Coursework.Gui.Drawers
             }
         }
 
-        private static void Rectangle_OnMouseLeave(object sender, MouseEventArgs e)
+        private static void Node_OnMouseLeave(object sender, MouseEventArgs e)
         {
             var concreteSender = sender as FrameworkElement;
             var parent = concreteSender?.Parent as FrameworkElement;

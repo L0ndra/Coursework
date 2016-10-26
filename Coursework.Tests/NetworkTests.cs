@@ -355,5 +355,30 @@ namespace Coursework.Tests
             Assert.That(resultNodeCount, Is.EqualTo(initialNodeCount));
             Assert.That(resultChannelCount, Is.EqualTo(initialChannelCount));
         }
+
+        [Test]
+        public void GetNodeByIdShouldReturnCorrectNode()
+        {
+            // Arrange
+            _network.AddNode(_node1);
+
+            // Act
+            var result = _network.GetNodeById(_node1.Id);
+
+            // Assert
+            Assert.IsTrue(result.LinkedNodesId.All(i => _node1.LinkedNodesId.Any(i1 => i1 == i)));
+            Assert.That(result.MessageQueue.Count, Is.EqualTo(_node1.MessageQueue.Count));
+        }
+
+        [Test]
+        public void GetNodeByIdShouldReturnNullIfNodeNotExists()
+        {
+            // Arrange
+            // Act
+            var result = _network.GetNodeById(_node1.Id);
+
+            // Assert
+            Assert.IsNull(result);
+        }
     }
 }

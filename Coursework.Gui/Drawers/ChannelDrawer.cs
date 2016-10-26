@@ -74,9 +74,27 @@ namespace Coursework.Gui.Drawers
                 Cursor = Cursors.Hand
             };
 
+            Panel.SetZIndex(line, AllConstants.LineZIndex);
+
             line.MouseUp += Line_MouseUp;
 
             return line;
+        }
+
+        private TextBlock CreateTextBlock(Channel channel, Line connectedLine)
+        {
+            var textBlock = new TextBlock
+            {
+                Text = channel.Price.ToString("N"),
+                Background = AllConstants.CanvasBrush
+            };
+
+            Panel.SetZIndex(textBlock, AllConstants.PriceZIndex);
+
+            Canvas.SetTop(textBlock, (connectedLine.Y1 + connectedLine.Y2) / 2);
+            Canvas.SetLeft(textBlock, (connectedLine.X1 + connectedLine.X2) / 2);
+
+            return textBlock;
         }
 
         private Brush GetChannelBrush(Channel channel)
@@ -91,20 +109,6 @@ namespace Coursework.Gui.Drawers
             return channel.ChannelType == ChannelType.Ground
                 ? AllConstants.StrokeDashArrayForGroundConnection
                 : AllConstants.StrokeDashArrayForSatteliteConnection;
-        }
-
-        private TextBlock CreateTextBlock(Channel channel, Line connectedLine)
-        {
-            var textBlock = new TextBlock
-            {
-                Text = channel.Price.ToString("N"),
-                Background = AllConstants.CanvasBrush
-            };
-
-            Canvas.SetTop(textBlock, (connectedLine.Y1 + connectedLine.Y2) / 2);
-            Canvas.SetLeft(textBlock, (connectedLine.X1 + connectedLine.X2) / 2);
-
-            return textBlock;
         }
 
         private UIElement GetElementByNodeId(Panel panel, uint nodeId)

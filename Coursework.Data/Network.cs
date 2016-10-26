@@ -88,6 +88,11 @@ namespace Coursework.Data
                                      || c.FirstNodeId == secondNodeId && c.SecondNodeId == firstNodeId);
         }
 
+        public Node GetNodeById(uint id)
+        {
+            return _nodes.FirstOrDefault(n => n.Id == id);
+        }
+
         private void AddMessageQueueToNodes(Channel channel)
         {
             var node1 = GetNodeById(channel.FirstNodeId);
@@ -152,11 +157,6 @@ namespace Coursework.Data
             {
                 throw new NodeException("Node is already exists");
             }
-        }
-
-        private Node GetNodeById(uint id)
-        {
-            return _nodes.FirstOrDefault(n => n.Id == id);
         }
 
         private void AddLinkToNodes(uint firstNodeId, uint secondNodeId)
