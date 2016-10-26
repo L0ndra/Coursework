@@ -85,7 +85,7 @@ namespace Coursework.Gui.Drawers
         {
             var textBlock = new TextBlock
             {
-                Text = channel.Price.ToString("N"),
+                Text = channel.Price.ToString(),
                 Background = AllConstants.CanvasBrush
             };
 

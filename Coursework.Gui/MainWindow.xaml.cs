@@ -21,9 +21,9 @@ namespace Coursework.Gui
     public partial class MainWindow : MetroWindow
     {
         private INetworkHandler _network;
-        private readonly IComponentDrawer _networkDrawer;
-        private readonly IComponentDrawer _nodeDrawer;
-        private readonly IComponentDrawer _channelDrawer;
+        private IComponentDrawer _networkDrawer;
+        private IComponentDrawer _nodeDrawer;
+        private IComponentDrawer _channelDrawer;
         private readonly INetworkInfoRetriever _networkInfoRetriever;
         private readonly ChannelAddWindow _channelAddWindow;
         private Canvas GeneratedCanvas => NetworkArea.Children.OfType<Canvas>().First();
@@ -35,12 +35,17 @@ namespace Coursework.Gui
             _network = network;
             _networkInfoRetriever = networkInfoRetriever;
 
-            _nodeDrawer = new WideAreaNetworkNodeDrawer(_network);
-            _channelDrawer = new ChannelDrawer(_network);
-            _networkDrawer = new NetworkDrawer(_nodeDrawer, _channelDrawer);
+            InitializeDrawers();
             _channelAddWindow = new ChannelAddWindow(network, channel => _channelDrawer.DrawComponents(GeneratedCanvas));
 
             Loaded += OnWindowLoaded;
+        }
+
+        private void InitializeDrawers()
+        {
+            _nodeDrawer = new WideAreaNetworkNodeDrawer(_network);
+            _channelDrawer = new ChannelDrawer(_network);
+            _networkDrawer = new NetworkDrawer(_nodeDrawer, _channelDrawer);
         }
 
         private void OnWindowLoaded(object sender, RoutedEventArgs e)
@@ -94,6 +99,7 @@ namespace Coursework.Gui
             {
                 _network = _networkInfoRetriever.Read(filename) as Network;
 
+                InitializeDrawers();
                 NetworkArea.Children.Remove(GeneratedCanvas);
 
                 _networkDrawer.DrawComponents(NetworkArea);

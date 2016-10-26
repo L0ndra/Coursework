@@ -15,7 +15,6 @@ namespace Coursework.Gui.Drawers
         private readonly IWideAreaNetworkService _wideAreaNetworkService;
         private Tuple<double, double>[] _groupsPosition;
         private Node[][] _groups;
-        private const int ElementsInRow = 3;
 
         public WideAreaNetworkNodeDrawer(INetworkHandler network)
             : base(network)
@@ -41,8 +40,8 @@ namespace Coursework.Gui.Drawers
             var indexOfCurrentNodeInGroup = Array.IndexOf(currentGroup, currentNode);
             var groupNumber = Array.IndexOf(_groups, currentGroup);
 
-            var columnNumber = indexOfCurrentNodeInGroup % ElementsInRow;
-            var rowNumber = indexOfCurrentNodeInGroup / ElementsInRow;
+            var columnNumber = indexOfCurrentNodeInGroup % AllConstants.MetropolitanNetworkNodesInRow;
+            var rowNumber = indexOfCurrentNodeInGroup / AllConstants.MetropolitanNetworkNodesInRow;
 
             Canvas.SetLeft(grid, _groupsPosition[groupNumber].Item1
                 + columnNumber * AllConstants.SquareSize);
@@ -61,8 +60,8 @@ namespace Coursework.Gui.Drawers
             {
                 var groupSize = _groups[i].Length;
 
-                var heightOfRows = AllConstants.SquareSize * (groupSize / ElementsInRow + 1);
-                var widthOfColums = AllConstants.SquareSize * ElementsInRow;
+                var heightOfRows = AllConstants.SquareSize * (groupSize / AllConstants.MetropolitanNetworkNodesInRow + 1);
+                var widthOfColums = AllConstants.SquareSize * AllConstants.MetropolitanNetworkNodesInRow;
 
                 var startY = AllConstants.RandomGenerator.Next((int)(parent.Height - heightOfRows));
 

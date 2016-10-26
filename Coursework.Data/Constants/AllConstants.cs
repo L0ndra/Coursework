@@ -7,7 +7,8 @@ namespace Coursework.Data.Constants
     public static class AllConstants
     {
         public const uint NodeCount = 8;
-        public const int MetropolitanNetworksCount = 4;
+        public const int MetropolitanNetworksCount = 3;
+        public const int MetropolitanNetworkNodesInRow = 3;
         public const double NetworkPower = 2.5;
         public const double SquareSize = 30.0;
         public const double LineThickness = 1.5;
