@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AutoMapper.Execution;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.NetworkData;
@@ -121,11 +120,16 @@ namespace Coursework.Data.MessageServices
             var startNode = _network.GetNodeById(startId);
             var destinationNode = _network.GetNodeById(destinationId);
 
+            if (!startNode.IsActive || !destinationNode.IsActive)
+            {
+                return double.MaxValue;
+            }
+
             var startMessageQueue = startNode.MessageQueueHandlers
                 .First(m => m.ChannelId == channel.Id);
 
             var destinationMessageQueue = destinationNode.MessageQueueHandlers
-                .First(m => m.ChannelId == channel.Id);
+                .First(m => m.ChannelId == channel.Id);          
 
             return channel.Price * channel.ErrorChance * channel.ErrorChance
                    * (startMessageQueue.MessagesCount + destinationMessageQueue.MessagesCount + 1)

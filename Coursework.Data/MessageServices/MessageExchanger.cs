@@ -1,8 +1,9 @@
 ﻿using System.Linq;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
+using Coursework.Data.NetworkData;
 
-namespace Coursework.Data.NetworkData
+namespace Coursework.Data.MessageServices
 {
     public class MessageExchanger : IMessageExchanger
     {
@@ -20,11 +21,18 @@ namespace Coursework.Data.NetworkData
 
             if (centralMachine != null)
             {
+                centralMachine.IsActive = true;
+
                 foreach (var receiverId in centralMachine.LinkedNodesId)
                 {
                     CreateInitializeMessage(centralMachine, receiverId);
                 }
             }
+        }
+
+        public void HandleMessagesOnce()
+        {
+            throw new System.NotImplementedException();
         }
 
         private void CreateInitializeMessage(Node centralMachine, uint receiverId)
@@ -46,6 +54,7 @@ namespace Coursework.Data.NetworkData
                 ReceiverId = receiverId,
                 MessageType = MessageType.InitializeMessage,
                 SenderId = centralMachine.Id,
+                LastTransferNodeId = centralMachine.Id,
                 Size = AllConstants.InitializeMessageSize,
                 Data = null
             };

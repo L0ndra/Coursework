@@ -1,10 +1,12 @@
 ﻿{
   "NodeIoDtos": [
     {
-      "Id": 0
+      "Id": 0,
+      "NodeType": 0
     },
     {
-      "Id": 1
+      "Id": 1,
+      "NodeType": 0
     }
   ],
   "ChannelIoDtos": [

@@ -9,5 +9,6 @@ namespace Coursework.Data.Entities
         public IList<MessageQueueHandler> MessageQueueHandlers { get; set; }
         public SortedSet<uint> LinkedNodesId { get; set; } 
         public NodeType NodeType { get; set; }
+        public bool IsActive { get; set; }
     }
 }

@@ -20,6 +20,8 @@ namespace Coursework.Data.Constants
         public static readonly DoubleCollection StrokeDashArrayForGroundConnection = new DoubleCollection(new[] { 1.0, 0.0 });
         public static readonly Brush SimpleNodeBrush = Brushes.Aqua;
         public static readonly Brush CentralMachineBrush = Brushes.LightSeaGreen;
+        public static readonly Brush MainMetropolitanMachineBrush = Brushes.DarkCyan;
+        public static readonly Brush UnactiveNodeBrush = Brushes.Red;
         public static readonly Brush CanvasBrush = Brushes.Azure;
         public static readonly Brush DuplexChannelBrush = Brushes.Black;
         public static readonly Brush HalfduplexChannelBrush = Brushes.DimGray;

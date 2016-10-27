@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Coursework.Data;
 using Coursework.Data.Entities;
 using Coursework.Data.IONetwork;
 using Coursework.Data.MessageServices;
@@ -60,7 +59,8 @@ namespace Coursework.Gui
             {
                 Id = _network.Nodes.Max(n => n.Id) + 1,
                 LinkedNodesId = new SortedSet<uint>(),
-                MessageQueueHandlers = new List<MessageQueueHandler>()
+                MessageQueueHandlers = new List<MessageQueueHandler>(),
+                IsActive = false
             };
 
             _network.AddNode(node);

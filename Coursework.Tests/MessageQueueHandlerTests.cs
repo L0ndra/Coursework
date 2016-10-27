@@ -16,12 +16,7 @@ namespace Coursework.Tests
         {
             _messageQueueHandler = new MessageQueueHandler(Guid.Empty);
 
-            _message = new Message
-            {
-                ReceiverId = 5,
-                SenderId = 4,
-                Size = 20
-            };
+            _message = new Message();
         }
 
         [Test]

@@ -78,7 +78,8 @@ namespace Coursework.Tests
                     {
                         new MessageQueueHandler(_channels[0].Id),
                         new MessageQueueHandler(_channels[1].Id)
-                    }
+                    },
+                    IsActive = true
                 },
                 new Node
                 {
@@ -88,7 +89,8 @@ namespace Coursework.Tests
                     {
                         new MessageQueueHandler(_channels[0].Id),
                         new MessageQueueHandler(_channels[2].Id)
-                    }
+                    },
+                    IsActive = true
                 },
                 new Node
                 {
@@ -98,7 +100,8 @@ namespace Coursework.Tests
                     {
                         new MessageQueueHandler(_channels[1].Id),
                         new MessageQueueHandler(_channels[3].Id)
-                    }
+                    },
+                    IsActive = true
                 },
                 new Node
                 {
@@ -108,13 +111,15 @@ namespace Coursework.Tests
                     {
                         new MessageQueueHandler(_channels[2].Id),
                         new MessageQueueHandler(_channels[3].Id)
-                    }
+                    },
+                    IsActive = true
                 },
                 new Node
                 {
                     Id = 4,
                     LinkedNodesId = new SortedSet<uint>(),
-                    MessageQueueHandlers = new List<MessageQueueHandler>()
+                    MessageQueueHandlers = new List<MessageQueueHandler>(),
+                    IsActive = true
                 }
             };
 

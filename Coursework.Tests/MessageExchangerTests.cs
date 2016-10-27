@@ -48,7 +48,8 @@ namespace Coursework.Tests
                     MessageQueueHandlers = new List<MessageQueueHandler>
                     {
                         new MessageQueueHandler(Guid.Empty)
-                    }
+                    },
+                    IsActive = true
                 },
                 new Node
                 {
@@ -58,7 +59,8 @@ namespace Coursework.Tests
                     MessageQueueHandlers = new List<MessageQueueHandler>
                     {
                         new MessageQueueHandler(Guid.Empty)
-                    }
+                    },
+                    IsActive = true
                 }
             };
 
@@ -93,6 +95,13 @@ namespace Coursework.Tests
             {
                 Assert.That(messageQueueHandler.MessagesCount, Is.EqualTo(1));
             }
+        }
+
+        [Test]
+        [Ignore("Method Not Implemented")]
+        public void HandleMessagesOnceShouldReplaceMessageFromQueueToChannel()
+        {
+            Assert.Fail();
         }
     }
 }

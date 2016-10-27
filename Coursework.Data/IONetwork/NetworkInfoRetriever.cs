@@ -57,7 +57,9 @@ namespace Coursework.Data.IONetwork
                 {
                     Id = (uint)nodeInfo["Id"],
                     LinkedNodesId = new SortedSet<uint>(),
-                    MessageQueueHandlers = new List<MessageQueueHandler>()
+                    MessageQueueHandlers = new List<MessageQueueHandler>(),
+                    NodeType = (NodeType)(int)nodeInfo["NodeType"],
+                    IsActive = false
                 };
 
                 network.AddNode(node);

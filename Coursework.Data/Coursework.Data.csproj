@@ -63,7 +63,7 @@
     <Compile Include="Exceptions\ChannelException.cs" />
     <Compile Include="MessageServices\IMessageRouter.cs" />
     <Compile Include="MessageServices\MessageRouter.cs" />
-    <Compile Include="NetworkData\IMessageExchanger.cs" />
+    <Compile Include="MessageServices\IMessageExchanger.cs" />
     <Compile Include="NetworkData\INetwork.cs" />
     <Compile Include="NetworkData\INetworkHandler.cs" />
     <Compile Include="IONetwork\INetworkInfoRetriever.cs" />
@@ -72,7 +72,7 @@
     <Compile Include="IONetwork\NodeIoDto.cs" />
     <Compile Include="MessageServices\IMessageQueueHandler.cs" />
     <Compile Include="MessageServices\MessageQueueHandler.cs" />
-    <Compile Include="NetworkData\MessageExchanger.cs" />
+    <Compile Include="MessageServices\MessageExchanger.cs" />
     <Compile Include="NetworkData\Network.cs" />
     <Compile Include="Entities\Node.cs" />
     <Compile Include="Entities\Channel.cs" />

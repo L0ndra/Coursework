@@ -44,7 +44,8 @@ namespace Coursework.Data.Builder
                 Id = _network.Nodes.Max(n => n.Id) + 1,
                 LinkedNodesId = new SortedSet<uint>(),
                 MessageQueueHandlers = new List<MessageQueueHandler>(),
-                NodeType = NodeType.CentralMachine
+                NodeType = NodeType.CentralMachine,
+                IsActive = false
             };
 
             return centralMachine;

@@ -32,7 +32,8 @@ namespace Coursework.Data.Builder
             {
                 Id = (uint)id,
                 MessageQueueHandlers = new List<MessageQueueHandler>(),
-                LinkedNodesId = new SortedSet<uint>()
+                LinkedNodesId = new SortedSet<uint>(),
+                IsActive = false
             };
         }
     }

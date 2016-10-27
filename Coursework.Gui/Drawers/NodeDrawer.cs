@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using AutoMapper;
-using Coursework.Data;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.NetworkData;
@@ -75,9 +75,7 @@ namespace Coursework.Gui.Drawers
             {
                 Width = AllConstants.SquareSize,
                 Height = AllConstants.SquareSize,
-                Background = nodeDto.NodeType == NodeType.SimpleNode
-                    ? AllConstants.SimpleNodeBrush
-                    : AllConstants.CentralMachineBrush,
+                Background = GetBackground(nodeDto),
                 Tag = nodeDto
             };
 
@@ -92,10 +90,37 @@ namespace Coursework.Gui.Drawers
             return grid;
         }
 
+        private static Brush GetBackground(NodeDto nodeDto)
+        {
+            if (!nodeDto.IsActive)
+            {
+                return AllConstants.UnactiveNodeBrush;
+            }
+            switch (nodeDto.NodeType)
+            {
+                case NodeType.SimpleNode:
+                {
+                    return AllConstants.SimpleNodeBrush;
+                }
+                case NodeType.MainMetropolitanMachine:
+                {
+                    return AllConstants.MainMetropolitanMachineBrush;
+                }
+                case NodeType.CentralMachine:
+                {
+                    return AllConstants.CentralMachineBrush;
+                }
+                default:
+                {
+                    throw new ArgumentOutOfRangeException(nameof(nodeDto));
+                }
+            }
+        }
+
         private static void Node_OnMouseMove(object sender, MouseEventArgs e)
         {
-            var concreteSender = (FrameworkElement)sender;
-            var parent = (FrameworkElement)concreteSender?.Parent;
+            var concreteSender = (FrameworkElement) sender;
+            var parent = (FrameworkElement) concreteSender?.Parent;
 
             if (parent != null)
             {
@@ -105,8 +130,8 @@ namespace Coursework.Gui.Drawers
                 {
                     var mainParent = parent.Parent as IInputElement;
 
-                    var currentYPosition = e.GetPosition(mainParent).Y - parent.Height / 2;
-                    var currentXPosition = e.GetPosition(mainParent).X - parent.Width / 2;
+                    var currentYPosition = e.GetPosition(mainParent).Y - parent.Height/2;
+                    var currentXPosition = e.GetPosition(mainParent).X - parent.Width/2;
 
                     Canvas.SetTop(parent, currentYPosition);
                     Canvas.SetLeft(parent, currentXPosition);
