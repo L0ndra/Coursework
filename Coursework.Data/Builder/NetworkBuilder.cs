@@ -2,6 +2,7 @@
 using System.Linq;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
+using Coursework.Data.NetworkData;
 
 namespace Coursework.Data.Builder
 {

@@ -9,6 +9,7 @@ using AutoMapper;
 using Coursework.Data;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
+using Coursework.Data.NetworkData;
 using Coursework.Gui.Dialogs;
 using Coursework.Gui.Dto;
 

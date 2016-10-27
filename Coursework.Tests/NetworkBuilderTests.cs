@@ -32,7 +32,7 @@ namespace Coursework.Tests
                         {
                             Id = (uint) i,
                             LinkedNodesId = new SortedSet<uint>(),
-                            MessageQueue = new List<MessageQueueHandler>()
+                            MessageQueueHandlers = new List<MessageQueueHandler>()
                         })
                         .ToArray();
 

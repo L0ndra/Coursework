@@ -2,8 +2,8 @@
 using System.Threading;
 using System.Windows.Controls;
 using AutoMapper;
-using Coursework.Data;
 using Coursework.Data.Entities;
+using Coursework.Data.NetworkData;
 using Coursework.Gui.Drawers;
 using Coursework.Gui.Initializers;
 using Moq;

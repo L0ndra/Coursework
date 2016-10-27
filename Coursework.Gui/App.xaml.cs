@@ -5,6 +5,7 @@ using Coursework.Data;
 using Coursework.Data.Builder;
 using Coursework.Data.Constants;
 using Coursework.Data.IONetwork;
+using Coursework.Data.NetworkData;
 using Coursework.Gui.Initializers;
 using Ninject;
 

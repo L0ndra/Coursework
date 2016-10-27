@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Coursework.Data;
 using Coursework.Data.Entities;
+using Coursework.Data.NetworkData;
 using Coursework.Data.Services;
 using Moq;
 using NUnit.Framework;

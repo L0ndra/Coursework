@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Shapes;
 using AutoMapper;
-using Coursework.Data;
 using Coursework.Data.Entities;
+using Coursework.Data.NetworkData;
 using Coursework.Gui.Drawers;
 using Coursework.Gui.Dto;
 using Coursework.Gui.Initializers;

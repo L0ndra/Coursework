@@ -1,4 +1,6 @@
-﻿namespace Coursework.Data.IONetwork
+﻿using Coursework.Data.NetworkData;
+
+namespace Coursework.Data.IONetwork
 {
     public interface INetworkInfoRetriever
     {

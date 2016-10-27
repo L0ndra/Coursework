@@ -4,6 +4,7 @@ using System.Linq;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.MessageServices;
+using Coursework.Data.NetworkData;
 
 namespace Coursework.Data.Builder
 {
@@ -42,7 +43,7 @@ namespace Coursework.Data.Builder
             {
                 Id = _network.Nodes.Max(n => n.Id) + 1,
                 LinkedNodesId = new SortedSet<uint>(),
-                MessageQueue = new List<MessageQueueHandler>(),
+                MessageQueueHandlers = new List<MessageQueueHandler>(),
                 NodeType = NodeType.CentralMachine
             };
 
@@ -79,6 +80,9 @@ namespace Coursework.Data.Builder
                     ErrorChance = AllConstants.RandomGenerator.NextDouble(),
                     Price = PriceGenerator.GetRandomPrice()
                 };
+
+                var metropolitanNode = _network.GetNodeById(nodeId);
+                metropolitanNode.NodeType = NodeType.MainMetropolitanMachine;
 
                 _network.AddChannel(channel);
             }

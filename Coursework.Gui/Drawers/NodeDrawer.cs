@@ -8,6 +8,7 @@ using AutoMapper;
 using Coursework.Data;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
+using Coursework.Data.NetworkData;
 using Coursework.Gui.Dto;
 
 namespace Coursework.Gui.Drawers

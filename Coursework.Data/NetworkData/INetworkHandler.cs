@@ -1,6 +1,6 @@
 ﻿using Coursework.Data.Entities;
 
-namespace Coursework.Data
+namespace Coursework.Data.NetworkData
 {
     public interface INetworkHandler : INetwork
     {

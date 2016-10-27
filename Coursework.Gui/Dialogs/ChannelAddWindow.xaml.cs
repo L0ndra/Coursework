@@ -3,6 +3,7 @@ using System.Windows;
 using Coursework.Data;
 using Coursework.Data.Entities;
 using Coursework.Data.Exceptions;
+using Coursework.Data.NetworkData;
 
 namespace Coursework.Gui.Dialogs
 {

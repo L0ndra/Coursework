@@ -8,6 +8,7 @@ using Coursework.Data;
 using Coursework.Data.Entities;
 using Coursework.Data.IONetwork;
 using Coursework.Data.MessageServices;
+using Coursework.Data.NetworkData;
 using Coursework.Gui.Dialogs;
 using Coursework.Gui.Drawers;
 using MahApps.Metro.Controls;
@@ -59,7 +60,7 @@ namespace Coursework.Gui
             {
                 Id = _network.Nodes.Max(n => n.Id) + 1,
                 LinkedNodesId = new SortedSet<uint>(),
-                MessageQueue = new List<MessageQueueHandler>()
+                MessageQueueHandlers = new List<MessageQueueHandler>()
             };
 
             _network.AddNode(node);

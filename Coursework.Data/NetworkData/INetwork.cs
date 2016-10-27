@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using Coursework.Data.Entities;
+﻿using Coursework.Data.Entities;
 
-namespace Coursework.Data
+namespace Coursework.Data.NetworkData
 {
     public interface INetwork
     {

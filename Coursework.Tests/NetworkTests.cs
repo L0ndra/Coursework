@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Coursework.Data;
-using Coursework.Data.Builder;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.Exceptions;
 using Coursework.Data.MessageServices;
+using Coursework.Data.NetworkData;
 using NUnit.Framework;
 
 namespace Coursework.Tests
@@ -27,13 +26,13 @@ namespace Coursework.Tests
             {
                 Id = 0,
                 LinkedNodesId = new SortedSet<uint>(),
-                MessageQueue = new List<MessageQueueHandler>()
+                MessageQueueHandlers = new List<MessageQueueHandler>()
             };
             _node2 = new Node
             {
                 Id = 1,
                 LinkedNodesId = new SortedSet<uint>(),
-                MessageQueue = new List<MessageQueueHandler>()
+                MessageQueueHandlers = new List<MessageQueueHandler>()
             };
 
             _channel = new Channel
@@ -100,8 +99,8 @@ namespace Coursework.Tests
             _network.AddChannel(_channel);
 
             // Assert
-            Assert.That(_node1.MessageQueue.Any(m => m.ChannelId == _channel.Id));
-            Assert.That(_node2.MessageQueue.Any(m => m.ChannelId == _channel.Id));
+            Assert.That(_node1.MessageQueueHandlers.Any(m => m.ChannelId == _channel.Id));
+            Assert.That(_node2.MessageQueueHandlers.Any(m => m.ChannelId == _channel.Id));
         }
 
         [Test]
@@ -367,7 +366,7 @@ namespace Coursework.Tests
 
             // Assert
             Assert.IsTrue(result.LinkedNodesId.All(i => _node1.LinkedNodesId.Any(i1 => i1 == i)));
-            Assert.That(result.MessageQueue.Count, Is.EqualTo(_node1.MessageQueue.Count));
+            Assert.That(result.MessageQueueHandlers.Count, Is.EqualTo(_node1.MessageQueueHandlers.Count));
         }
 
         [Test]

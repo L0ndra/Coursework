@@ -1,4 +1,6 @@
-﻿namespace Coursework.Data.Builder
+﻿using Coursework.Data.NetworkData;
+
+namespace Coursework.Data.Builder
 {
     public interface INetworkBuilder
     {

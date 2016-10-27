@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Coursework.Data;
 using Coursework.Data.Builder;
 using Coursework.Data.Entities;
 using Coursework.Data.MessageServices;
+using Coursework.Data.NetworkData;
 using Moq;
 using NUnit.Framework;
 
@@ -61,6 +61,18 @@ namespace Coursework.Tests
             Assert.That(result.Nodes.Count(n => n.NodeType == NodeType.CentralMachine), Is.EqualTo(1));
         }
 
+        [Test]
+        public void BuildShouldReturnNetworkWithSpecifiedNumberOfMetropolitanLeaderMachines()
+        {
+            // Arrange
+            // Act
+            var result = _wideAreaNetworkBuilder.Build();
+
+            // Assert
+            Assert.That(result.Nodes.Count(n => n.NodeType == NodeType.MainMetropolitanMachine), 
+                Is.EqualTo(_numberOfMetropolitanNetworks));
+        }
+
         private Mock<INetworkHandler> GenerateNetworkMockForTests(int count)
         {
             var networkMock = new Mock<INetworkHandler>();
@@ -73,7 +85,7 @@ namespace Coursework.Tests
                 {
                     Id = _lastId,
                     LinkedNodesId = new SortedSet<uint>(),
-                    MessageQueue = new List<MessageQueueHandler>()
+                    MessageQueueHandlers = new List<MessageQueueHandler>()
                 };
                 _lastId++;
 

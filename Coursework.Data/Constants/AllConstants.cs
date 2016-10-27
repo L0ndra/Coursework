@@ -13,6 +13,7 @@ namespace Coursework.Data.Constants
         public const double SquareSize = 30.0;
         public const double LineThickness = 1.5;
         public const double Eps = 0.02;
+        public const int InitializeMessageSize = 5;
         public const int LineZIndex = int.MaxValue - 2;
         public const int PriceZIndex = int.MaxValue - 1;
         public static readonly DoubleCollection StrokeDashArrayForSatteliteConnection = new DoubleCollection(new[]{ 2.0, 2.0 });

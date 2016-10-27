@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Windows.Controls;
-using Coursework.Data;
 using Coursework.Data.Entities;
+using Coursework.Data.NetworkData;
 using Coursework.Gui.Drawers;
 using Moq;
 using NUnit.Framework;

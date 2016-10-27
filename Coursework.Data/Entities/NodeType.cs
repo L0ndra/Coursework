@@ -3,6 +3,7 @@
     public enum NodeType
     {
         SimpleNode,
+        MainMetropolitanMachine,
         CentralMachine
     }
 }

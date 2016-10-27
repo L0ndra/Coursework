@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Coursework.Data.Entities;
 
 namespace Coursework.Data.MessageServices
 {
     public class MessageQueueHandler : IMessageQueueHandler
     {
-        public int MessagesCount => _messages.Count;
         public Guid ChannelId { get; }
         private readonly IList<Message> _messages;
-        
+        public int MessagesCount => _messages.Count;
+        public Message[] Messages => _messages.ToArray();
+
         public MessageQueueHandler(Guid channelId)
         {
             ChannelId = channelId;

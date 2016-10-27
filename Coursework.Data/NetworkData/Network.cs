@@ -5,7 +5,7 @@ using Coursework.Data.Entities;
 using Coursework.Data.Exceptions;
 using Coursework.Data.MessageServices;
 
-namespace Coursework.Data
+namespace Coursework.Data.NetworkData
 {
     public class Network : INetworkHandler
     {
@@ -101,8 +101,8 @@ namespace Coursework.Data
             var firstMessageQueue = new MessageQueueHandler(channel.Id);
             var secondMessageQueue = new MessageQueueHandler(channel.Id);
 
-            node1.MessageQueue.Add(firstMessageQueue);
-            node2.MessageQueue.Add(secondMessageQueue);
+            node1.MessageQueueHandlers.Add(firstMessageQueue);
+            node2.MessageQueueHandlers.Add(secondMessageQueue);
         }
 
         private void ThrowExceptionIfChannelCannotBeCreated(Channel channel)

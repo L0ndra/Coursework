@@ -5,6 +5,7 @@ using System.Linq;
 using AutoMapper;
 using Coursework.Data.Entities;
 using Coursework.Data.MessageServices;
+using Coursework.Data.NetworkData;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -56,7 +57,7 @@ namespace Coursework.Data.IONetwork
                 {
                     Id = (uint)nodeInfo["Id"],
                     LinkedNodesId = new SortedSet<uint>(),
-                    MessageQueue = new List<MessageQueueHandler>()
+                    MessageQueueHandlers = new List<MessageQueueHandler>()
                 };
 
                 network.AddNode(node);

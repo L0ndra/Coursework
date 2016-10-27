@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AutoMapper;
-using Coursework.Data;
 using Coursework.Data.Entities;
 using Coursework.Data.IONetwork;
 using Coursework.Data.MessageServices;
+using Coursework.Data.NetworkData;
 using Coursework.Data.Util;
 using Coursework.Gui.Initializers;
 using NUnit.Framework;
@@ -36,13 +36,13 @@ namespace Coursework.Tests
                 {
                     Id = 0,
                     LinkedNodesId = new SortedSet<uint>(new uint[] {1}),
-                    MessageQueue = new List<MessageQueueHandler>()
+                    MessageQueueHandlers = new List<MessageQueueHandler>()
                 },
                 new Node
                 {
                     Id = 1,
                     LinkedNodesId = new SortedSet<uint>(new uint[] {0}),
-                    MessageQueue = new List<MessageQueueHandler>()
+                    MessageQueueHandlers = new List<MessageQueueHandler>()
                 }
             };
 

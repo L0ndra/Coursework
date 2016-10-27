@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using Coursework.Data;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
+using Coursework.Data.NetworkData;
 using Coursework.Data.Services;
 using Coursework.Gui.Dto;
 
