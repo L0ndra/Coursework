@@ -26,6 +26,14 @@
                 <ColumnDefinition Width="3*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"></RowDefinition>
+                </Grid.RowDefinitions>
+                
+                <Button Grid.Row="0" Content="INIT" Click="Init_OnClick"></Button>
+            </Grid>
+
             <Border Grid.Column="1" Margin="10" BorderBrush="Black" BorderThickness="2">
                 <Grid Name="NetworkArea" />
             </Border>

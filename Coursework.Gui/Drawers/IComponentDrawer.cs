@@ -5,6 +5,7 @@ namespace Coursework.Gui.Drawers
     public interface IComponentDrawer
     {
         void DrawComponents(Panel panel);
+        void UpdateComponents();
         void RemoveCreatedElements();
     }
 }

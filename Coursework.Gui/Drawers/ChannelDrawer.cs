@@ -6,7 +6,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using AutoMapper;
-using Coursework.Data;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.NetworkData;
@@ -44,6 +43,11 @@ namespace Coursework.Gui.Drawers
                 _uiElements.Add(line);
                 _uiElements.Add(textBlock);
             }
+        }
+
+        public void UpdateComponents()
+        {
+            throw new System.NotImplementedException();
         }
 
         public void RemoveCreatedElements()

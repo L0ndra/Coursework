@@ -124,7 +124,6 @@ namespace Coursework.Tests
         }
 
         [Test]
-        [Ignore("Method Not Implemented!")]
         public void HandleMessagesOnceShouldReplaceMessageFromChannelToNextNodeOrBackToSenderNode()
         {
             // Arrange

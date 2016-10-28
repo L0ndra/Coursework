@@ -41,19 +41,52 @@ namespace Coursework.Data.MessageServices
                 HandleMessagesInNodeQueues(node);
             }
 
-            //TODO: implement this shit
-
-            //foreach (var channel in _network.Channels)
-            //{
-            //    HandleMessageInChannel(channel);
-            //}
-
-            //throw new System.NotImplementedException();
+            foreach (var channel in _network.Channels)
+            {
+                HandleMessageInChannel(channel);
+            }
         }
 
         private void HandleMessageInChannel(Channel channel)
         {
-            throw new System.NotImplementedException();
+            var firstMessage = channel.FirstMessage;
+            var secondMessage = channel.SecondMessage;
+
+            if (firstMessage != null
+                && !_handledMessages.Contains(firstMessage))
+            {
+                ReplaceMessageToQueue(channel, firstMessage);
+                channel.FirstMessage = null;
+            }
+
+            else if (secondMessage != null
+                    && !_handledMessages.Contains(secondMessage))
+            {
+                ReplaceMessageToQueue(channel, secondMessage);
+                channel.SecondMessage = null;
+            }
+        }
+
+        private void ReplaceMessageToQueue(Channel channel, Message message)
+        {
+            Node node;
+
+            var isSuccess = AllConstants.RandomGenerator.NextDouble() > channel.ErrorChance;
+
+            if (message.LastTransferNodeId == channel.FirstNodeId && !isSuccess
+                || message.LastTransferNodeId != channel.FirstNodeId && isSuccess)
+            {
+                node = _network.GetNodeById(channel.FirstNodeId);
+            }
+            else
+            {
+                node = _network.GetNodeById(channel.SecondNodeId);
+            }
+
+            var messageQueueHandler = node.MessageQueueHandlers
+                .First(m => m.ChannelId == channel.Id);
+
+            messageQueueHandler.AddMessage(message);
         }
 
         private void HandleMessagesInNodeQueues(Node node)
@@ -66,7 +99,7 @@ namespace Coursework.Data.MessageServices
                 var currentChannel = _network.Channels
                     .First(c => c.Id == messageQueueHandler.ChannelId);
 
-                if (currentMessage != null)
+                if (currentMessage != null && !_handledMessages.Contains(currentMessage))
                 {
                     if (currentMessage.LastTransferNodeId == node.Id)
                     {
@@ -80,13 +113,60 @@ namespace Coursework.Data.MessageServices
                     }
                     else if (currentMessage.ReceiverId == node.Id)
                     {
-                        // Message handle
+                        HandleReceivedMessage(currentMessage);
                         messageQueueHandler.RemoveMessage(currentMessage);
                     }
                     else
                     {
-                        currentMessage.LastTransferNodeId = node.Id;
+                        ReTransferMessage(currentMessage, node);
+
+                        messageQueueHandler.RemoveMessage(currentMessage);
                     }
+                }
+            }
+        }
+
+        private void ReTransferMessage(Message message, Node node)
+        {
+            message.LastTransferNodeId = node.Id;
+
+            message.Route = message.Route
+                .Skip(1)
+                .DefaultIfEmpty()
+                .ToArray();
+
+            if (message.Route.Length != 0)
+            {
+                var destinationMessageQueue = node.MessageQueueHandlers
+                    .First(m => m.ChannelId == message.Route[0].Id);
+
+                destinationMessageQueue.AddMessage(message);
+
+                _handledMessages.Add(message);
+            }
+        }
+
+        private void HandleReceivedMessage(Message message)
+        {
+            if (message.MessageType == MessageType.InitializeMessage)
+            {
+                var currentNode = _network.GetNodeById(message.ReceiverId);
+
+                currentNode.IsActive = true;
+
+                InitializeLinkedNodes(currentNode);
+            }
+        }
+
+        private void InitializeLinkedNodes(Node node)
+        {
+            foreach (var linkedNodeId in node.LinkedNodesId)
+            {
+                var linkedNode = _network.GetNodeById(linkedNodeId);
+
+                if (!linkedNode.IsActive)
+                {
+                    CreateInitializeMessage(node, linkedNodeId);
                 }
             }
         }
@@ -117,28 +197,25 @@ namespace Coursework.Data.MessageServices
             return false;
         }
 
-        private void CreateInitializeMessage(Node centralMachine, uint receiverId)
+        private void CreateInitializeMessage(Node sender, uint receiverId)
         {
-            var receiver = _network.GetNodeById(receiverId);
+            var channel = _network.GetChannel(receiverId, sender.Id);
 
-            if (receiver.NodeType != NodeType.MainMetropolitanMachine)
-            {
-                return;
-            }
-
-            var channel = _network.GetChannel(receiverId, centralMachine.Id);
-
-            var messageQueue = centralMachine.MessageQueueHandlers
+            var messageQueue = sender.MessageQueueHandlers
                 .First(m => m.ChannelId == channel.Id);
 
             var message = new Message
             {
                 ReceiverId = receiverId,
                 MessageType = MessageType.InitializeMessage,
-                SenderId = centralMachine.Id,
-                LastTransferNodeId = centralMachine.Id,
+                SenderId = sender.Id,
+                LastTransferNodeId = sender.Id,
                 Size = AllConstants.InitializeMessageSize,
-                Data = null
+                Data = null,
+                Route = new[]
+                {
+                    channel
+                }
             };
 
             messageQueue.AddMessage(message);

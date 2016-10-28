@@ -42,6 +42,11 @@ namespace Coursework.Gui.Drawers
             }
         }
 
+        public void UpdateComponents()
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void RemoveCreatedElements()
         {
             foreach (var uiElement in CreatedGrids)

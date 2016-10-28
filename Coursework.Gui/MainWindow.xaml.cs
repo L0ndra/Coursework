@@ -24,6 +24,7 @@ namespace Coursework.Gui
         private IComponentDrawer _networkDrawer;
         private IComponentDrawer _nodeDrawer;
         private IComponentDrawer _channelDrawer;
+        private IMessageExchanger _messageExchanger;
         private readonly INetworkInfoRetriever _networkInfoRetriever;
         private readonly ChannelAddWindow _channelAddWindow;
         private Canvas GeneratedCanvas => NetworkArea.Children.OfType<Canvas>().First();
@@ -128,6 +129,19 @@ namespace Coursework.Gui
             return dialog.ShowDialog() == true
                 ? dialog.FileName
                 : null;
+        }
+
+        private void Init_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (_messageExchanger == null)
+            {
+                _messageExchanger = new MessageExchanger(_network);
+                _messageExchanger.Initialize();
+            }
+            else
+            {
+                _messageExchanger.HandleMessagesOnce();
+            }
         }
     }
 }

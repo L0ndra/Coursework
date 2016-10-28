@@ -35,6 +35,11 @@ namespace Coursework.Gui.Drawers
             _createdCanvases.Add(canvas);
         }
 
+        public void UpdateComponents()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public void RemoveCreatedElements()
         {
             foreach (var createdCanvas in _createdCanvases)
