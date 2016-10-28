@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.NetworkData;
@@ -8,6 +9,7 @@ namespace Coursework.Data.MessageServices
     public class MessageExchanger : IMessageExchanger
     {
         private readonly INetworkHandler _network;
+        private List<Message> _handledMessages;
 
         public MessageExchanger(INetworkHandler network)
         {
@@ -32,7 +34,87 @@ namespace Coursework.Data.MessageServices
 
         public void HandleMessagesOnce()
         {
+            _handledMessages = new List<Message>();
+
+            foreach (var node in _network.Nodes)
+            {
+                HandleMessagesInNodeQueues(node);
+            }
+
+            //TODO: implement this shit
+
+            //foreach (var channel in _network.Channels)
+            //{
+            //    HandleMessageInChannel(channel);
+            //}
+
+            //throw new System.NotImplementedException();
+        }
+
+        private void HandleMessageInChannel(Channel channel)
+        {
             throw new System.NotImplementedException();
+        }
+
+        private void HandleMessagesInNodeQueues(Node node)
+        {
+            foreach (var messageQueueHandler in node.MessageQueueHandlers)
+            {
+                var currentMessage = messageQueueHandler.Messages
+                    .FirstOrDefault();
+
+                var currentChannel = _network.Channels
+                    .First(c => c.Id == messageQueueHandler.ChannelId);
+
+                if (currentMessage != null)
+                {
+                    if (currentMessage.LastTransferNodeId == node.Id)
+                    {
+                        var result = TryMoveMessageToChannel(currentChannel, currentMessage);
+
+                        if (result)
+                        {
+                            messageQueueHandler.RemoveMessage(currentMessage);
+                            _handledMessages.Add(currentMessage);
+                        }
+                    }
+                    else if (currentMessage.ReceiverId == node.Id)
+                    {
+                        // Message handle
+                        messageQueueHandler.RemoveMessage(currentMessage);
+                    }
+                    else
+                    {
+                        currentMessage.LastTransferNodeId = node.Id;
+                    }
+                }
+            }
+        }
+
+        private bool TryMoveMessageToChannel(Channel channel, Message message)
+        {
+            if (channel.ConnectionType == ConnectionType.HalfDuplex
+                && channel.FirstMessage == null)
+            {
+                channel.FirstMessage = message;
+                return true;
+            }
+            if (channel.ConnectionType == ConnectionType.Duplex
+                && (channel.FirstMessage == null ||
+                channel.SecondMessage == null))
+            {
+                if (channel.FirstMessage == null)
+                {
+                    channel.FirstMessage = message;
+                }
+                else
+                {
+                    channel.SecondMessage = message;
+                }
+                return true;
+            }
+
+            return false;
         }
 
         private void CreateInitializeMessage(Node centralMachine, uint receiverId)

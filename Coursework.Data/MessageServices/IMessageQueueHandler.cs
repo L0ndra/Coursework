@@ -9,5 +9,6 @@ namespace Coursework.Data.MessageServices
         Message[] Messages { get; }
         Guid ChannelId { get; }
         void AddMessage(Message message);
+        void RemoveMessage(Message message);
     }
 }

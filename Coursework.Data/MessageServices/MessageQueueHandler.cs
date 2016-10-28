@@ -22,5 +22,10 @@ namespace Coursework.Data.MessageServices
         {
             _messages.Add(message);
         }
+
+        public void RemoveMessage(Message message)
+        {
+            _messages.Remove(message);
+        }
     }
 }

@@ -16,6 +16,7 @@ namespace Coursework.Tests
         private IMessageExchanger _messageExchanger;
         private Node[] _nodes;
         private Channel[] _channels;
+        private Message _message;
 
         [SetUp]
         public void Setup()
@@ -64,6 +65,13 @@ namespace Coursework.Tests
                 }
             };
 
+            _message = new Message
+            {
+                SenderId = 0,
+                LastTransferNodeId = 0,
+                ReceiverId = 1,
+            };
+
             _networkMock.Setup(n => n.Nodes)
                 .Returns(_nodes);
 
@@ -98,10 +106,48 @@ namespace Coursework.Tests
         }
 
         [Test]
-        [Ignore("Method Not Implemented")]
-        public void HandleMessagesOnceShouldReplaceMessageFromQueueToChannel()
+        public void HandleMessagesOnceShouldReplaceMessageToChannel()
         {
-            Assert.Fail();
+            // Arrange
+            var firstNode = _nodes.First();
+
+            firstNode.MessageQueueHandlers
+                .First().AddMessage(_message);
+
+            var firstChannel = _channels.First();
+
+            // Act
+            _messageExchanger.HandleMessagesOnce();
+
+            // Assert
+            Assert.IsNotNull(firstChannel.FirstMessage);
+        }
+
+        [Test]
+        [Ignore("Method Not Implemented!")]
+        public void HandleMessagesOnceShouldReplaceMessageFromChannelToNextNodeOrBackToSenderNode()
+        {
+            // Arrange
+            var firstNode = _nodes.First();
+            var secondNode = _nodes.Skip(1).First();
+
+            firstNode.MessageQueueHandlers
+                .First().AddMessage(_message);
+
+            var firstChannel = _channels.First();
+
+            _messageExchanger.HandleMessagesOnce();
+
+            Func<Node, bool> checkPredicate = node => node.MessageQueueHandlers
+                .First(m => m.ChannelId == firstChannel.Id)
+                .Messages
+                .Contains(_message);
+
+            // Act
+            _messageExchanger.HandleMessagesOnce();
+
+            // Assert
+            Assert.IsTrue(checkPredicate(firstNode) || checkPredicate(secondNode));
         }
     }
 }

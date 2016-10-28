@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Coursework.Data.Entities;
 using Coursework.Data.MessageServices;
 using NUnit.Framework;
@@ -31,6 +32,37 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(resultSize - initialSize, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void RemoveMessageShouldDoIt()
+        {
+            // Arrange
+            _messageQueueHandler.AddMessage(_message);
+            var initialSize = _messageQueueHandler.MessagesCount;
+            var messageToRemove = _message;
+            
+            // Act
+            _messageQueueHandler.RemoveMessage(messageToRemove);
+            var currentSize = _messageQueueHandler.MessagesCount;
+            
+            // Assert
+            Assert.That(currentSize, Is.EqualTo(initialSize - 1));
+        }
+
+        [Test]
+        public void RemoveMessageShouldDoNothingIfMessageNotExists()
+        {
+            // Arrange
+            var initialSize = _messageQueueHandler.MessagesCount;
+            var messageToRemove = _message;
+
+            // Act
+            _messageQueueHandler.RemoveMessage(messageToRemove);
+            var currentSize = _messageQueueHandler.MessagesCount;
+
+            // Assert
+            Assert.That(currentSize, Is.EqualTo(initialSize));
         }
     }
 }

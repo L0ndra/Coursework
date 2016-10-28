@@ -11,5 +11,7 @@ namespace Coursework.Data.Entities
         public uint SecondNodeId { get; set; }
         public ConnectionType ConnectionType { get; set; }
         public ChannelType ChannelType { get; set; }
+        public Message FirstMessage { get; set; }
+        public Message SecondMessage { get; set; }
     }
 }
