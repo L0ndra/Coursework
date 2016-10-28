@@ -67,6 +67,54 @@ namespace Coursework.Data.MessageServices
             }
         }
 
+        private void HandleMessagesInNodeQueues(Node node)
+        {
+            foreach (var messageQueueHandler in node.MessageQueueHandlers)
+            {
+                var currentMessage = messageQueueHandler.Messages
+                    .FirstOrDefault();
+
+                var currentChannel = _network.Channels
+                    .First(c => c.Id == messageQueueHandler.ChannelId);
+
+                if (currentMessage != null && !_handledMessages.Contains(currentMessage))
+                {
+                    if (currentMessage.LastTransferNodeId == node.Id)
+                    {
+                        var isSuccess = TryMoveMessageToChannel(currentChannel, currentMessage);
+
+                        if (isSuccess)
+                        {
+                            _handledMessages.Add(currentMessage);
+                            messageQueueHandler.RemoveMessage(currentMessage);
+                        }
+                    }
+                    else if (currentMessage.ReceiverId == node.Id)
+                    {
+                        HandleReceivedMessage(currentMessage);
+                        messageQueueHandler.RemoveMessage(currentMessage);
+                    }
+                    else
+                    {
+                        ReTransferMessage(currentMessage, node);
+                        messageQueueHandler.RemoveMessage(currentMessage);
+                    }
+                }
+            }
+        }
+
+        private void HandleReceivedMessage(Message message)
+        {
+            if (message.MessageType == MessageType.InitializeMessage)
+            {
+                var currentNode = _network.GetNodeById(message.ReceiverId);
+
+                currentNode.IsActive = true;
+
+                InitializeLinkedNodes(currentNode);
+            }
+        }
+
         private void ReplaceMessageToQueue(Channel channel, Message message)
         {
             Node node;
@@ -89,43 +137,6 @@ namespace Coursework.Data.MessageServices
             messageQueueHandler.AddMessage(message);
         }
 
-        private void HandleMessagesInNodeQueues(Node node)
-        {
-            foreach (var messageQueueHandler in node.MessageQueueHandlers)
-            {
-                var currentMessage = messageQueueHandler.Messages
-                    .FirstOrDefault();
-
-                var currentChannel = _network.Channels
-                    .First(c => c.Id == messageQueueHandler.ChannelId);
-
-                if (currentMessage != null && !_handledMessages.Contains(currentMessage))
-                {
-                    if (currentMessage.LastTransferNodeId == node.Id)
-                    {
-                        var result = TryMoveMessageToChannel(currentChannel, currentMessage);
-
-                        if (result)
-                        {
-                            messageQueueHandler.RemoveMessage(currentMessage);
-                            _handledMessages.Add(currentMessage);
-                        }
-                    }
-                    else if (currentMessage.ReceiverId == node.Id)
-                    {
-                        HandleReceivedMessage(currentMessage);
-                        messageQueueHandler.RemoveMessage(currentMessage);
-                    }
-                    else
-                    {
-                        ReTransferMessage(currentMessage, node);
-
-                        messageQueueHandler.RemoveMessage(currentMessage);
-                    }
-                }
-            }
-        }
-
         private void ReTransferMessage(Message message, Node node)
         {
             message.LastTransferNodeId = node.Id;
@@ -143,18 +154,6 @@ namespace Coursework.Data.MessageServices
                 destinationMessageQueue.AddMessage(message);
 
                 _handledMessages.Add(message);
-            }
-        }
-
-        private void HandleReceivedMessage(Message message)
-        {
-            if (message.MessageType == MessageType.InitializeMessage)
-            {
-                var currentNode = _network.GetNodeById(message.ReceiverId);
-
-                currentNode.IsActive = true;
-
-                InitializeLinkedNodes(currentNode);
             }
         }
 

@@ -81,5 +81,17 @@ namespace Coursework.Tests
             // Assert
             Assert.That(_panel.Children.Count, Is.Zero);
         }
+
+        [Test]
+        public void UpdateComponentsShouldCallItOnceFromNodeAndChannelDrawer()
+        {
+            // Arrange
+            // Act
+            _networkDrawer.UpdateComponents();
+
+            // Assert
+            _nodeDrawerMock.Verify(n => n.UpdateComponents(), Times.Once());
+            _channelDrawerMock.Verify(c => c.UpdateComponents(), Times.Once());
+        }
     }
 }

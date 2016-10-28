@@ -134,6 +134,17 @@ namespace Coursework.Tests
             Assert.That(_panel.Children.Count, Is.Zero);
         }
 
+        [Test]
+        public void UpdateShouldNotThrowAnyException()
+        {
+            // Arrange
+            // Act
+            TestDelegate testDelegate = () => _channelDrawer.UpdateComponents();
+
+            // Assert
+            Assert.That(testDelegate, Throws.Nothing);
+        }
+
         private void CreateGridsForTests()
         {
             for (var i = 0; i < _networkMock.Object.Nodes.Length; i++)

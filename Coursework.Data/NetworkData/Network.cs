@@ -24,6 +24,7 @@ namespace Coursework.Data.NetworkData
         {
             ThrowExceptionIfNodeCannotBeCreated(node);
 
+            node.MessageQueueHandlers = new List<MessageQueueHandler>();
             _nodes.Add(node);
         }
 
@@ -63,15 +64,15 @@ namespace Coursework.Data.NetworkData
 
             AddLinkToNodes(channel.FirstNodeId, channel.SecondNodeId);
             AddMessageQueueToNodes(channel);
-            
+
             _channels.Add(channel);
         }
 
         public void UpdateChannel(Channel newChannel)
         {
-            var oldChannel = GetChannel(newChannel.FirstNodeId, newChannel.SecondNodeId);
+            ThrowExceptionIfChannelWithSameIdNotExists(newChannel.Id);
 
-            _channels.Remove(oldChannel);
+            RemoveChannel(newChannel.FirstNodeId, newChannel.SecondNodeId);
             AddChannel(newChannel);
         }
 
@@ -79,7 +80,24 @@ namespace Coursework.Data.NetworkData
         {
             var channel = GetChannel(firstNodeId, secondNodeId);
 
-            _channels.Remove(channel);
+            if (channel != null)
+            {
+                RemoveMessageQueue(firstNodeId, channel.Id);
+                RemoveMessageQueue(secondNodeId, channel.Id);
+
+                _channels.Remove(channel);
+            }
+        }
+
+        private void RemoveMessageQueue(uint nodeId, Guid channelId)
+        {
+            var node = GetNodeById(nodeId);
+
+            var messageQueueHandler = node.MessageQueueHandlers
+                .First(m => channelId == m.ChannelId);
+
+            node.MessageQueueHandlers
+                .Remove(messageQueueHandler);
         }
 
         public Channel GetChannel(uint firstNodeId, uint secondNodeId)
@@ -118,7 +136,15 @@ namespace Coursework.Data.NetworkData
         {
             if (_channels.Any(c => c.Id == channelId))
             {
-                throw new ChannelException("Channel with same id is already exists in network");
+                throw new ChannelException("Channel with same id is already exist in network");
+            }
+        }
+
+        private void ThrowExceptionIfChannelWithSameIdNotExists(Guid channelId)
+        {
+            if (_channels.All(c => c.Id != channelId))
+            {
+                throw new ChannelException("Channel with same id isn't exist in network");
             }
         }
 
@@ -147,7 +173,7 @@ namespace Coursework.Data.NetworkData
         {
             if (_nodes.All(n => n.Id != nodeId))
             {
-                throw new NodeException("Node isn't exists");
+                throw new NodeException("Node isn't exist");
             }
         }
 
@@ -155,7 +181,7 @@ namespace Coursework.Data.NetworkData
         {
             if (_nodes.Any(n => n.Id == nodeId))
             {
-                throw new NodeException("Node is already exists");
+                throw new NodeException("Node is already exist");
             }
         }
 

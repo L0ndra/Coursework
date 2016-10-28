@@ -33,7 +33,7 @@ namespace Coursework.Gui.Drawers
             foreach (var node in Network.Nodes.Where(n => !createdNodes.Contains(n.Id)))
             {
                 var textBlock = CreateTextBlock(node.Id.ToString());
-                
+
                 var nodeDto = Mapper.Map<Node, NodeDto>(node);
                 var grid = CreateGrid(panel, nodeDto, textBlock);
 
@@ -42,9 +42,17 @@ namespace Coursework.Gui.Drawers
             }
         }
 
-        public void UpdateComponents()
+        public virtual void UpdateComponents()
         {
-            throw new NotImplementedException();
+            foreach (var createdGrid in CreatedGrids)
+            {
+                var nodeDto = (NodeDto)createdGrid.Tag;
+                var node = Network.GetNodeById(nodeDto.Id);
+                createdGrid.Tag = Mapper.Map<Node, NodeDto>(node);
+                nodeDto = (NodeDto)createdGrid.Tag;
+
+                createdGrid.Background = GetBackground(nodeDto);
+            }
         }
 
         public virtual void RemoveCreatedElements()
@@ -104,28 +112,28 @@ namespace Coursework.Gui.Drawers
             switch (nodeDto.NodeType)
             {
                 case NodeType.SimpleNode:
-                {
-                    return AllConstants.SimpleNodeBrush;
-                }
+                    {
+                        return AllConstants.SimpleNodeBrush;
+                    }
                 case NodeType.MainMetropolitanMachine:
-                {
-                    return AllConstants.MainMetropolitanMachineBrush;
-                }
+                    {
+                        return AllConstants.MainMetropolitanMachineBrush;
+                    }
                 case NodeType.CentralMachine:
-                {
-                    return AllConstants.CentralMachineBrush;
-                }
+                    {
+                        return AllConstants.CentralMachineBrush;
+                    }
                 default:
-                {
-                    throw new ArgumentOutOfRangeException(nameof(nodeDto));
-                }
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(nodeDto));
+                    }
             }
         }
 
         private static void Node_OnMouseMove(object sender, MouseEventArgs e)
         {
-            var concreteSender = (FrameworkElement) sender;
-            var parent = (FrameworkElement) concreteSender?.Parent;
+            var concreteSender = (FrameworkElement)sender;
+            var parent = (FrameworkElement)concreteSender?.Parent;
 
             if (parent != null)
             {
@@ -135,8 +143,8 @@ namespace Coursework.Gui.Drawers
                 {
                     var mainParent = parent.Parent as IInputElement;
 
-                    var currentYPosition = e.GetPosition(mainParent).Y - parent.Height/2;
-                    var currentXPosition = e.GetPosition(mainParent).X - parent.Width/2;
+                    var currentYPosition = e.GetPosition(mainParent).Y - parent.Height / 2;
+                    var currentXPosition = e.GetPosition(mainParent).X - parent.Width / 2;
 
                     Canvas.SetTop(parent, currentYPosition);
                     Canvas.SetLeft(parent, currentXPosition);

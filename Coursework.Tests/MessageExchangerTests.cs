@@ -124,7 +124,7 @@ namespace Coursework.Tests
         }
 
         [Test]
-        public void HandleMessagesOnceShouldReplaceMessageFromChannelToNextNodeOrBackToSenderNode()
+        public void HandleMessagesOnceShouldReplaceMessageFromChannelToNextNode()
         {
             // Arrange
             var firstNode = _nodes.First();
@@ -134,6 +134,7 @@ namespace Coursework.Tests
                 .First().AddMessage(_message);
 
             var firstChannel = _channels.First();
+            firstChannel.ErrorChance = 0.0;
 
             _messageExchanger.HandleMessagesOnce();
 
@@ -146,7 +147,61 @@ namespace Coursework.Tests
             _messageExchanger.HandleMessagesOnce();
 
             // Assert
-            Assert.IsTrue(checkPredicate(firstNode) || checkPredicate(secondNode));
+            Assert.IsTrue(checkPredicate(secondNode));
+        }
+
+        [Test]
+        public void HandleMessagesOnceShouldReplaceMessageFromChannelBackToSender()
+        {
+            // Arrange
+            var firstNode = _nodes.First();
+
+            firstNode.MessageQueueHandlers
+                .First().AddMessage(_message);
+
+            var firstChannel = _channels.First();
+            firstChannel.ErrorChance = 1.0;
+
+            _messageExchanger.HandleMessagesOnce();
+
+            Func<Node, bool> checkPredicate = node => node.MessageQueueHandlers
+                .First(m => m.ChannelId == firstChannel.Id)
+                .Messages
+                .Contains(_message);
+
+            // Act
+            _messageExchanger.HandleMessagesOnce();
+
+            // Assert
+            Assert.IsTrue(checkPredicate(firstNode));
+        }
+
+        [Test]
+        public void HandleMessagesShouldActiveNodeIfItReceiveInitializeMessage()
+        {
+            // Arrange
+            var firstNode = _nodes.First();
+            var secondNode = _nodes.Skip(1).First();
+
+            secondNode.IsActive = false;
+
+            _message.MessageType = MessageType.InitializeMessage;
+
+            firstNode.MessageQueueHandlers
+                .First().AddMessage(_message);
+
+            var firstChannel = _channels.First();
+            firstChannel.ErrorChance = 0.0;
+
+            _messageExchanger.HandleMessagesOnce();
+            _messageExchanger.HandleMessagesOnce();
+            _messageExchanger.HandleMessagesOnce();
+
+            // Act
+            var result = secondNode.IsActive;
+
+            // Assert
+            Assert.IsTrue(result);
         }
     }
 }

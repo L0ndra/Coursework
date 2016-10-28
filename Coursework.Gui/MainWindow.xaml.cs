@@ -142,6 +142,7 @@ namespace Coursework.Gui
             {
                 _messageExchanger.HandleMessagesOnce();
             }
+            _networkDrawer.UpdateComponents();
         }
     }
 }

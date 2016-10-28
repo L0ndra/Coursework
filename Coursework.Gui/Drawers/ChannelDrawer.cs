@@ -47,7 +47,7 @@ namespace Coursework.Gui.Drawers
 
         public void UpdateComponents()
         {
-            throw new System.NotImplementedException();
+            // TODO: update channel color when it got message
         }
 
         public void RemoveCreatedElements()

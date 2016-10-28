@@ -68,6 +68,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ChannelDrawerTests.cs" />
+    <Compile Include="MessageExchangerRunnerTests.cs" />
     <Compile Include="MessageExchangerTests.cs" />
     <Compile Include="MessageQueueHandlerTests.cs" />
     <Compile Include="MessageRouterTests.cs" />

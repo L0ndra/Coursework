@@ -92,5 +92,16 @@ namespace Coursework.Tests
             // Assert
             Assert.That(_panel.Children.Count, Is.Zero);
         }
+
+        [Test]
+        public void UpdateShouldNotThrowAnyException()
+        {
+            // Arrange
+            // Act
+            TestDelegate testDelegate = () => _nodeDrawer.UpdateComponents();
+
+            // Assert
+            Assert.That(testDelegate, Throws.Nothing);
+        }
     }
 }

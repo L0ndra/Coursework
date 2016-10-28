@@ -37,7 +37,8 @@ namespace Coursework.Gui.Drawers
 
         public void UpdateComponents()
         {
-            throw new System.NotImplementedException();
+            _nodeDrawer.UpdateComponents();
+            _channelDrawer.UpdateComponents();
         }
 
         public void RemoveCreatedElements()

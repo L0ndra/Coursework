@@ -52,9 +52,7 @@ namespace Coursework.Data.Builder
 
                 var numberOfChannels = AllConstants.RandomGenerator.Next(roundedPower) + 1 - currentChannelsNumber;
 
-                var maxChannelsCountInNode = Enumerable
-                    .Range(0, _network.Nodes.Length)
-                    .Count(id => _network.GetChannel(node.Id, (uint)id) == null) - 1;
+                var maxChannelsCountInNode = MaxChannelsCountInNode(node);
 
                 if (numberOfChannels > maxChannelsCountInNode)
                 {
@@ -68,6 +66,15 @@ namespace Coursework.Data.Builder
                     _network.AddChannel(channel);
                 }
             }
+        }
+
+        private int MaxChannelsCountInNode(Node node)
+        {
+            var maxChannelsCountInNode = _network.Nodes
+                .Select(checkNode => _network.GetChannel(checkNode.Id, node.Id))
+                .Count(channel => channel == null);
+
+            return maxChannelsCountInNode - 1;
         }
 
         private Channel GenerateChannel(uint currentNodeId)

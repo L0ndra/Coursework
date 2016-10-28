@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
@@ -26,17 +27,24 @@ namespace Coursework.Tests
             {
                 Id = 0,
                 LinkedNodesId = new SortedSet<uint>(),
-                MessageQueueHandlers = new List<MessageQueueHandler>()
+                MessageQueueHandlers = new List<MessageQueueHandler>
+                {
+                    new MessageQueueHandler(Guid.Empty)
+                }
             };
             _node2 = new Node
             {
                 Id = 1,
                 LinkedNodesId = new SortedSet<uint>(),
-                MessageQueueHandlers = new List<MessageQueueHandler>()
+                MessageQueueHandlers = new List<MessageQueueHandler>
+                {
+                    new MessageQueueHandler(Guid.Empty)
+                }
             };
 
             _channel = new Channel
             {
+                Id = Guid.Empty,
                 SecondNodeId = _node2.Id,
                 FirstNodeId = _node1.Id,
                 Price = AllConstants.AllPrices.ElementAt(0),
@@ -269,7 +277,7 @@ namespace Coursework.Tests
             TestDelegate testDelegate = () => _network.UpdateChannel(_channel);
 
             // Assert
-            Assert.That(testDelegate, Throws.TypeOf(typeof(NodeException)));
+            Assert.That(testDelegate, Throws.TypeOf(typeof(ChannelException)));
         }
 
         [Test]
@@ -286,6 +294,21 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(resultChannelCount, Is.EqualTo(initialChannelCount - 1));
+        }
+
+        [Test]
+        public void RemoveChannelShouldDropMessageQueues()
+        {
+            // Arrange
+            CreateTwoNodesForTests();
+            CreateChannelForTests();
+
+            // Act
+            _network.RemoveChannel(_node1.Id, _node2.Id);
+
+            // Assert
+            Assert.That(_node1.MessageQueueHandlers.Count, Is.Zero);
+            Assert.That(_node2.MessageQueueHandlers.Count, Is.Zero);
         }
 
         [Test]
