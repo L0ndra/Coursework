@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Coursework.Data.Entities;
 using Coursework.Data.NetworkData;
 
@@ -36,6 +37,7 @@ namespace Coursework.Data.MessageServices
             {
                 message = new Message
                 {
+                    ParentId = Guid.NewGuid(),
                     ReceiverId = messageInitializer.ReceiverId,
                     MessageType = messageInitializer.MessageType,
                     SenderId = sender.Id,

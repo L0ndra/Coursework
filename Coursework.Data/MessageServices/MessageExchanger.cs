@@ -136,7 +136,7 @@ namespace Coursework.Data.MessageServices
         {
             Node node;
 
-            var isSuccess = AllConstants.RandomGenerator.NextDouble() > channel.ErrorChance;
+            var isSuccess = AllConstants.RandomGenerator.NextDouble() >= channel.ErrorChance;
 
             if (message.LastTransferNodeId == channel.FirstNodeId && !isSuccess
                 || message.LastTransferNodeId != channel.FirstNodeId && isSuccess)

@@ -6,8 +6,8 @@ namespace Coursework.Data.Constants
 {
     public static class AllConstants
     {
-        public const uint NodeCount = 8;
-        public const int MetropolitanNetworksCount = 3;
+        public const uint NodeCountInMetropolitanNetwork = 2;
+        public const int MetropolitanNetworksCount = 5;
         public const int MetropolitanNetworkNodesInRow = 3;
         public const double NetworkPower = 2.5;
         public const double TimerInterval = 500.0;

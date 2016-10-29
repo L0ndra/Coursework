@@ -1,9 +1,10 @@
-﻿using Coursework.Data.Constants;
+﻿using System;
 
 namespace Coursework.Data.Entities
 {
     public class Message
     {
+        public Guid ParentId { get; set; }
         public int Size { get; set; }
         public uint SenderId { get; set; }
         public uint ReceiverId { get; set; }
@@ -12,6 +13,6 @@ namespace Coursework.Data.Entities
         public Channel[] Route { get; set; }
         public int SendAttempts { get; set; }
         public MessageType MessageType { get; set; }
-        public bool IsSuccess => Route.Length == 0 && SendAttempts < AllConstants.MaxAttempts;
+        public bool IsReceived => LastTransferNodeId == ReceiverId;
     }
 }

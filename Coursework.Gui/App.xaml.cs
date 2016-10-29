@@ -57,7 +57,7 @@ namespace Coursework.Gui
                 .To<NetworkBuilder>()
                 .InTransientScope()
                 .Named(simpleNetworkBuilder)
-                .WithConstructorArgument("nodeCount", AllConstants.NodeCount)
+                .WithConstructorArgument("nodeCount", AllConstants.NodeCountInMetropolitanNetwork)
                 .WithConstructorArgument("networkPower", AllConstants.NetworkPower)
                 .WithConstructorArgument("nodeGenerator", _container.Get<INodeGenerator>());
 

@@ -72,13 +72,19 @@ namespace Coursework.Data.NetworkData
         {
             ThrowExceptionIfChannelWithSameIdNotExists(newChannel.Id);
 
-            var oldChannel = GetChannel(newChannel.FirstNodeId, newChannel.SecondNodeId);
+            var oldChannel = _channels.FirstOrDefault(c => c.Id == newChannel.Id);
 
-            newChannel.FirstMessage = oldChannel.FirstMessage;
-            newChannel.SecondMessage = oldChannel.SecondMessage;
+            if (oldChannel != null)
+            {
+                ThrowExceptionIfChannelCannotBeUpdated(newChannel);
 
-            RemoveChannel(newChannel.FirstNodeId, newChannel.SecondNodeId);
-            AddChannel(newChannel);
+                oldChannel.ChannelType = newChannel.ChannelType;
+                oldChannel.ConnectionType = newChannel.ConnectionType;
+                oldChannel.ErrorChance = newChannel.ErrorChance;
+                oldChannel.Price = newChannel.Price;
+                oldChannel.FirstNodeId = newChannel.FirstNodeId;
+                oldChannel.SecondNodeId = newChannel.SecondNodeId;
+            }
         }
 
         public void RemoveChannel(uint firstNodeId, uint secondNodeId)
@@ -130,11 +136,16 @@ namespace Coursework.Data.NetworkData
 
         private void ThrowExceptionIfChannelCannotBeCreated(Channel channel)
         {
+            ThrowExceptionIfChannelCannotBeUpdated(channel);
+            ThrowExceptionIfChannelWithSameIdExists(channel.Id);
+        }
+
+        private void ThrowExceptionIfChannelCannotBeUpdated(Channel channel)
+        {
             ThrowExceptionIfNodeNotExists(channel.FirstNodeId);
             ThrowExceptionIfNodeNotExists(channel.SecondNodeId);
             ThrowExceptionIfPriceIsIncorrect(channel.Price);
             ThrowExceptionIfErrorChanceIsIncorrect(channel.ErrorChance);
-            ThrowExceptionIfChannelWithSameIdExists(channel.Id);
         }
 
         private void ThrowExceptionIfChannelWithSameIdExists(Guid channelId)

@@ -141,6 +141,7 @@ namespace Coursework.Gui
 
             _messageExchanger = new MessageExchanger(_network, messageSender, messageReceiver);
             _messageExchanger.Initialize();
+            _networkDrawer.UpdateComponents();
 
             _messageExchangerRunner = new MessageExchangerRunner(_messageExchanger);
             _redrawer = new AutoRedrawer(_networkDrawer);

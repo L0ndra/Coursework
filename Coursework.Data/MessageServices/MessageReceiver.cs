@@ -17,6 +17,9 @@ namespace Coursework.Data.MessageServices
 
         public void HandleReceivedMessage(Node node, Message message)
         {
+            message.LastTransferNodeId = node.Id;
+            message.Route = new Channel[0];
+
             if (message.MessageType == MessageType.InitializeMessage)
             {
                 var currentNode = _network.GetNodeById(message.ReceiverId);
