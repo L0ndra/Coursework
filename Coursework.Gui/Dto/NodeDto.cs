@@ -9,5 +9,6 @@ namespace Coursework.Gui.Dto
         public SortedSet<uint> LinkedNodesId { get; set; }
         public NodeType NodeType { get; set; }
         public bool IsActive { get; set; }
+        public bool GotReceivedMessages { get; set; }
     }
 }

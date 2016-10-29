@@ -258,6 +258,25 @@ namespace Coursework.Tests
             Assert.That(updatedChannel.ConnectionType, Is.EqualTo(_channel.ConnectionType));
         }
 
+        [Test]
+        public void UpdateChannelShouldChangeSaveMessages()
+        {
+            // Arrange
+            CreateTwoNodesForTests();
+            CreateChannelForTests();
+
+            var message = new Message();
+            _channel.FirstMessage = message;
+
+            // Act
+            _network.UpdateChannel(_channel);
+            var updatedChannel = _network.GetChannel(_channel.FirstNodeId, _channel.SecondNodeId);
+
+            // Assert
+            Assert.That(updatedChannel.FirstMessage, Is.EqualTo(message));
+            Assert.IsNull(updatedChannel.SecondMessage);
+        }
+
         private void CreateChannelForTests()
         {
             _network.AddChannel(_channel);

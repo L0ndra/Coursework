@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using Coursework.Data.Constants;
 using Coursework.Data.MessageServices;
 
 namespace Coursework.Tests
@@ -13,6 +14,8 @@ namespace Coursework.Tests
     public class MessageExchangerTests
     {
         private Mock<INetworkHandler> _networkMock;
+        private Mock<IMessageSender> _messageSenderMock;
+        private Mock<IMessageReceiver> _messageReceiverMock;
         private IMessageExchanger _messageExchanger;
         private Node[] _nodes;
         private Channel[] _channels;
@@ -22,8 +25,11 @@ namespace Coursework.Tests
         public void Setup()
         {
             _networkMock = new Mock<INetworkHandler>();
+            _messageSenderMock = new Mock<IMessageSender>();
+            _messageReceiverMock = new Mock<IMessageReceiver>();
 
-            _messageExchanger = new MessageExchanger(_networkMock.Object);
+            _messageExchanger = new MessageExchanger(_networkMock.Object, _messageSenderMock.Object,
+                _messageReceiverMock.Object);
 
             _channels = new[]
             {
@@ -61,7 +67,7 @@ namespace Coursework.Tests
                     {
                         new MessageQueueHandler(Guid.Empty)
                     },
-                    IsActive = true
+                    IsActive = false
                 }
             };
 
@@ -90,19 +96,14 @@ namespace Coursework.Tests
         {
             // Arrange
             var centralMachine = _nodes.First(n => n.NodeType == NodeType.CentralMachine);
+            var linkedNodesCount = centralMachine.LinkedNodesId.Count;
 
             // Act
             _messageExchanger.Initialize();
 
             // Assert
-            Assert.IsTrue(centralMachine.MessageQueueHandlers
-                .SelectMany(m => m.Messages)
-                .All(m => m.MessageType == MessageType.InitializeMessage));
-
-            foreach (var messageQueueHandler in centralMachine.MessageQueueHandlers)
-            {
-                Assert.That(messageQueueHandler.MessagesCount, Is.EqualTo(1));
-            }
+            _messageSenderMock.Verify(m => m.StartSendProcess(It.IsAny<MessageInitializer>()), 
+                Times.Exactly(linkedNodesCount));
         }
 
         [Test]
@@ -177,7 +178,7 @@ namespace Coursework.Tests
         }
 
         [Test]
-        public void HandleMessagesShouldActiveNodeIfItReceiveInitializeMessage()
+        public void HandleMessagesShouldCallHandleMessageFromReceiverOnce()
         {
             // Arrange
             var firstNode = _nodes.First();
@@ -195,13 +196,50 @@ namespace Coursework.Tests
 
             _messageExchanger.HandleMessagesOnce();
             _messageExchanger.HandleMessagesOnce();
-            _messageExchanger.HandleMessagesOnce();
 
             // Act
-            var result = secondNode.IsActive;
+            _messageExchanger.HandleMessagesOnce();
 
             // Assert
-            Assert.IsTrue(result);
+            _messageReceiverMock.Verify(m => m.HandleReceivedMessage(secondNode, _message), Times.Once());
+        }
+
+        [Test]
+        public void HandleMessagesInNodeQueuesShouldRemoveMessagesThatWasFailed()
+        {
+            // Arrange
+            _message.SendAttempts = AllConstants.MaxAttempts + 1;
+            var firstNode = _nodes.First();
+
+            var mesageQueueHandler = firstNode.MessageQueueHandlers.First();
+
+            mesageQueueHandler.AddMessage(_message);
+            
+            // Act
+            _messageExchanger.HandleMessagesOnce();
+
+            // Assert
+            Assert.That(mesageQueueHandler.Messages.Length, Is.Zero);
+        }
+
+        [Test]
+        public void HandleMessagesInNodeQueuesShouldRemoveInitializeMessagesIfReceiverIsActive()
+        {
+            // Arrange
+            var firstNode = _nodes.First();
+            var secondNode = _nodes.Skip(1).First();
+
+            secondNode.IsActive = true;
+
+            _message.MessageType = MessageType.InitializeMessage;
+
+            var mesageQueueHandler = firstNode.MessageQueueHandlers.First();
+
+            // Act
+            _messageExchanger.HandleMessagesOnce();
+
+            // Assert
+            Assert.That(mesageQueueHandler.Messages.Length, Is.Zero);
         }
     }
 }

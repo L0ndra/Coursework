@@ -47,7 +47,15 @@ namespace Coursework.Gui.Drawers
 
         public void UpdateComponents()
         {
-            // TODO: update channel color when it got message
+            foreach (var line in _uiElements.OfType<Line>())
+            {
+                var channelDto = (ChannelDto)line.Tag;
+
+                var channel = _network.Channels
+                    .First(c => c.Id == channelDto.Id);
+
+                line.Stroke = GetChannelBrush(channel);
+            }
         }
 
         public void RemoveCreatedElements()
@@ -104,6 +112,17 @@ namespace Coursework.Gui.Drawers
 
         private Brush GetChannelBrush(Channel channel)
         {
+            if (channel.FirstMessage != null
+                && channel.SecondMessage != null)
+            {
+                return AllConstants.TwoMessagesInChannelBrush;
+            }
+            if (channel.FirstMessage != null
+                || channel.SecondMessage != null)
+            {
+                return AllConstants.OneMessageInChannelBrush;
+            }
+
             return channel.ConnectionType == ConnectionType.Duplex
                 ? AllConstants.DuplexChannelBrush
                 : AllConstants.HalfduplexChannelBrush;

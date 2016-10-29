@@ -67,11 +67,14 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="AutoRedrawerTests.cs" />
     <Compile Include="ChannelDrawerTests.cs" />
     <Compile Include="MessageExchangerRunnerTests.cs" />
     <Compile Include="MessageExchangerTests.cs" />
     <Compile Include="MessageQueueHandlerTests.cs" />
+    <Compile Include="MessageReceiverTests.cs" />
     <Compile Include="MessageRouterTests.cs" />
+    <Compile Include="MessageSenderTests.cs" />
     <Compile Include="WideAreaNetworkBuilderTests.cs" />
     <Compile Include="WideAreaNetworkNodeDrawerTests.cs" />
     <Compile Include="NetworkBuilderTests.cs" />

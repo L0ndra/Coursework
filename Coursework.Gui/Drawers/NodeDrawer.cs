@@ -105,6 +105,10 @@ namespace Coursework.Gui.Drawers
 
         private static Brush GetBackground(NodeDto nodeDto)
         {
+            if (nodeDto.GotReceivedMessages)
+            {
+                return AllConstants.ReceiverNodeBrush;
+            }
             if (!nodeDto.IsActive)
             {
                 return AllConstants.UnactiveNodeBrush;

@@ -72,6 +72,11 @@ namespace Coursework.Data.NetworkData
         {
             ThrowExceptionIfChannelWithSameIdNotExists(newChannel.Id);
 
+            var oldChannel = GetChannel(newChannel.FirstNodeId, newChannel.SecondNodeId);
+
+            newChannel.FirstMessage = oldChannel.FirstMessage;
+            newChannel.SecondMessage = oldChannel.SecondMessage;
+
             RemoveChannel(newChannel.FirstNodeId, newChannel.SecondNodeId);
             AddChannel(newChannel);
         }

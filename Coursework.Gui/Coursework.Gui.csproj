@@ -84,6 +84,7 @@
     <Compile Include="Dialogs\ChannelInfoWindow.xaml.cs">
       <DependentUpon>ChannelInfoWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Drawers\AutoRedrawer.cs" />
     <Compile Include="Drawers\ChannelDrawer.cs" />
     <Compile Include="Drawers\IComponentDrawer.cs" />
     <Compile Include="Drawers\WideAreaNetworkNodeDrawer.cs" />

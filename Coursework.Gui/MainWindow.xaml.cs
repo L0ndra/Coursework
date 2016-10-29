@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using Coursework.Data.AutoRunners;
 using Coursework.Data.Entities;
 using Coursework.Data.IONetwork;
 using Coursework.Data.MessageServices;
@@ -25,6 +26,8 @@ namespace Coursework.Gui
         private IComponentDrawer _nodeDrawer;
         private IComponentDrawer _channelDrawer;
         private IMessageExchanger _messageExchanger;
+        private IAutoRunner _redrawer;
+        private IAutoRunner _messageExchangerRunner;
         private readonly INetworkInfoRetriever _networkInfoRetriever;
         private readonly ChannelAddWindow _channelAddWindow;
         private Canvas GeneratedCanvas => NetworkArea.Children.OfType<Canvas>().First();
@@ -133,16 +136,17 @@ namespace Coursework.Gui
 
         private void Init_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_messageExchanger == null)
-            {
-                _messageExchanger = new MessageExchanger(_network);
-                _messageExchanger.Initialize();
-            }
-            else
-            {
-                _messageExchanger.HandleMessagesOnce();
-            }
-            _networkDrawer.UpdateComponents();
+            var messageSender = new MessageSender(_network);
+            var messageReceiver = new MessageReceiver(_network, messageSender);
+
+            _messageExchanger = new MessageExchanger(_network, messageSender, messageReceiver);
+            _messageExchanger.Initialize();
+
+            _messageExchangerRunner = new MessageExchangerRunner(_messageExchanger);
+            _redrawer = new AutoRedrawer(_networkDrawer);
+
+            _messageExchangerRunner.Run();
+            _redrawer.Run();
         }
     }
 }

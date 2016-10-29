@@ -4,6 +4,7 @@ using System.Threading;
 using System.Windows.Controls;
 using AutoMapper;
 using Coursework.Data.Entities;
+using Coursework.Data.MessageServices;
 using Coursework.Data.NetworkData;
 using Coursework.Gui.Drawers;
 using Coursework.Gui.Initializers;
@@ -36,7 +37,12 @@ namespace Coursework.Tests
 
             var nodes = Enumerable
                 .Range(0, nodesCount)
-                .Select(i => new Node { Id = (uint)i, LinkedNodesId = new SortedSet<uint>()})
+                .Select(i => new Node
+                {
+                    Id = (uint)i,
+                    LinkedNodesId = new SortedSet<uint>(),
+                    MessageQueueHandlers = new List<MessageQueueHandler>()
+                })
                 .ToArray();
 
             _networkMock.Setup(n => n.Nodes)
