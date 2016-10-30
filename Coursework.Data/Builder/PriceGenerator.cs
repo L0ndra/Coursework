@@ -6,7 +6,7 @@ namespace Coursework.Data.Builder
 {
     public static class PriceGenerator
     {
-        private static SortedSet<int> UsedPrices => new SortedSet<int>();
+        private static SortedSet<int> UsedPrices { get; } = new SortedSet<int>();
 
         public static int GetRandomPrice()
         {

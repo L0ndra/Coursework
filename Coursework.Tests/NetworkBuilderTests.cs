@@ -73,6 +73,32 @@ namespace Coursework.Tests
         }
 
         [Test]
+        public void ConstrcutorShouldThrowExceptionIfNodePowerIsLessThanZero()
+        {
+            // Arrange
+            var nodePower = -1.0;
+
+            // Act
+            TestDelegate testDelegate = () => _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, 5, nodePower);
+
+            // Assert
+            Assert.That(testDelegate, Throws.ArgumentException);
+        }
+
+        [Test]
+        public void ConstrcutorShouldThrowExceptionIfNodeCountIsZero()
+        {
+            // Arrange
+            var nodeCount = 0U;
+
+            // Act
+            TestDelegate testDelegate = () => _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, 1.0);
+
+            // Assert
+            Assert.That(testDelegate, Throws.ArgumentException);
+        }
+
+        [Test]
         [TestCase((uint)5, 2.0)]
         public void BuildShouldTwoNetworksWithDifferentIds(uint nodeCount, double networkPower)
         {

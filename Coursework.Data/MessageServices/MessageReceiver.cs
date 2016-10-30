@@ -1,4 +1,5 @@
-﻿using Coursework.Data.Constants;
+﻿using System.Linq;
+using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.NetworkData;
 
@@ -18,15 +19,25 @@ namespace Coursework.Data.MessageServices
         public void HandleReceivedMessage(Node node, Message message)
         {
             message.LastTransferNodeId = node.Id;
-            message.Route = new Channel[0];
 
-            if (message.MessageType == MessageType.InitializeMessage)
+            message.Route = message.Route
+                .Skip(1)
+                .ToArray();
+
+            if (message.Route.Length != 0)
             {
-                var currentNode = _network.GetNodeById(message.ReceiverId);
+                var destinationMessageQueue = node.MessageQueueHandlers
+                    .First(m => m.ChannelId == message.Route[0].Id);
 
-                currentNode.IsActive = true;
-
-                InitializeLinkedNodes(currentNode);
+                destinationMessageQueue.AddMessage(message);
+            }
+            else
+            {
+                if (message.MessageType == MessageType.InitializeMessage)
+                {
+                    node.IsActive = true;
+                    InitializeLinkedNodes(node);
+                }
             }
         }
 

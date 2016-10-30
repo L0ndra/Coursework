@@ -29,9 +29,11 @@
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
                 </Grid.RowDefinitions>
-                
-                <Button Grid.Row="0" Content="INIT" Click="Init_OnClick"></Button>
+
+                <Button Grid.Row="0" Content="Start" Click="Start_OnClick"></Button>
+                <Button Grid.Row="1" Content="Pause" Click="Pause_OnClick"></Button>
             </Grid>
 
             <Border Grid.Column="1" Margin="10" BorderBrush="Black" BorderThickness="2">

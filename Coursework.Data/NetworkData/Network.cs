@@ -58,6 +58,17 @@ namespace Coursework.Data.NetworkData
             return channels;
         }
 
+        public void AddInQueue(Message message)
+        {
+            var firstChannel = message.Route.First();
+            var sender = GetNodeById(message.SenderId);
+
+            var messageQueue = sender.MessageQueueHandlers
+                .First(m => m.ChannelId == firstChannel.Id);
+
+            messageQueue.AddMessage(message);
+        }
+
         public void AddChannel(Channel channel)
         {
             ThrowExceptionIfChannelCannotBeCreated(channel);

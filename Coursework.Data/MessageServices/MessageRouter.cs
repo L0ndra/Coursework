@@ -20,7 +20,7 @@ namespace Coursework.Data.MessageServices
 
                 foreach (var node in network.Nodes)
                 {
-                    networkMatrix.NodeIdWithCurrentPrice[node.Id] = double.MaxValue;
+                    networkMatrix.NodeIdWithCurrentPrice[node.Id] = double.PositiveInfinity;
                 }
 
                 return networkMatrix;
@@ -67,9 +67,11 @@ namespace Coursework.Data.MessageServices
 
                 foreach (var linkedNodeId in currentNode.LinkedNodesId)
                 {
-                    if (Math.Abs(networkMatrix.NodeIdWithCurrentPrice[currentNodeId]
-                                 - networkMatrix.NodeIdWithCurrentPrice[linkedNodeId]
-                                 - CountPrice(currentNodeId, linkedNodeId)) < AllConstants.Eps)
+                    var difference = Math.Abs(networkMatrix.NodeIdWithCurrentPrice[currentNodeId]
+                                              - networkMatrix.NodeIdWithCurrentPrice[linkedNodeId]
+                                              - CountPrice(currentNodeId, linkedNodeId));
+
+                    if (difference < AllConstants.Eps)
                     {
                         var channel = _network.GetChannel(currentNodeId, linkedNodeId);
                         route.Add(channel);
@@ -107,9 +109,14 @@ namespace Coursework.Data.MessageServices
                 }
             }
 
-            foreach (var linkedNodeId in currentNode.LinkedNodesId)
+            var nextNodeId = matrix.NodeIdWithCurrentPrice
+                .Where(kv => !matrix.VisitedNodes.Contains(kv.Key))
+                .Aggregate((l, r) => l.Value < r.Value ? l : r)
+                .Key;
+
+            if (!double.IsInfinity(matrix.NodeIdWithCurrentPrice[nextNodeId]))
             {
-                CountPriceMatrix(linkedNodeId, receiverId, matrix);
+                CountPriceMatrix(nextNodeId, receiverId, matrix);
             }
         }
 
@@ -129,9 +136,9 @@ namespace Coursework.Data.MessageServices
                 .First(m => m.ChannelId == channel.Id);
 
             var destinationMessageQueue = destinationNode.MessageQueueHandlers
-                .First(m => m.ChannelId == channel.Id);          
+                .First(m => m.ChannelId == channel.Id);
 
-            return channel.Price * channel.ErrorChance * channel.ErrorChance
+            return channel.Price * (channel.ErrorChance + 1) * (channel.ErrorChance + 1)
                    * (startMessageQueue.MessagesCount + destinationMessageQueue.MessagesCount + 1)
                    * (startMessageQueue.MessagesCount + destinationMessageQueue.MessagesCount + 1);
         }

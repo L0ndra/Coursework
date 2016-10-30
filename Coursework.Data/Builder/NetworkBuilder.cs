@@ -19,6 +19,10 @@ namespace Coursework.Data.Builder
             {
                 throw new ArgumentException("networkPower");
             }
+            if (nodeCount == 0)
+            {
+                throw new ArgumentException("nodeCount");
+            }
 
             _nodeGenerator = nodeGenerator;
             _nodeCount = nodeCount;

@@ -44,12 +44,12 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoRunners\MessageExchangerRunner.cs" />
-    <Compile Include="AutoRunners\IAutoRunner.cs" />
+    <Compile Include="AutoRunners\IBackgroundWorker.cs" />
     <Compile Include="Builder\INetworkBuilder.cs" />
     <Compile Include="Builder\INodeGenerator.cs" />
     <Compile Include="Builder\WideAreaNetworkBuilder.cs" />
@@ -64,6 +64,8 @@
     <Compile Include="Entities\ChannelType.cs" />
     <Compile Include="Entities\Message.cs" />
     <Compile Include="Exceptions\ChannelException.cs" />
+    <Compile Include="MessageServices\MessageGenerator.cs" />
+    <Compile Include="MessageServices\IMessageGenerator.cs" />
     <Compile Include="MessageServices\IMessageReceiver.cs" />
     <Compile Include="MessageServices\IMessageRouter.cs" />
     <Compile Include="MessageServices\IMessageSender.cs" />

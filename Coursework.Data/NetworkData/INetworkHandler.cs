@@ -12,5 +12,6 @@ namespace Coursework.Data.NetworkData
         Node GetNodeById(uint id);
         void RemoveNode(uint nodeId);
         Channel[] GetChannels(uint nodeId);
+        void AddInQueue(Message message);
     }
 }

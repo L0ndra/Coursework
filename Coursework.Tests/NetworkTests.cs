@@ -27,19 +27,13 @@ namespace Coursework.Tests
             {
                 Id = 0,
                 LinkedNodesId = new SortedSet<uint>(),
-                MessageQueueHandlers = new List<MessageQueueHandler>
-                {
-                    new MessageQueueHandler(Guid.Empty)
-                }
+                MessageQueueHandlers = new List<MessageQueueHandler>()
             };
             _node2 = new Node
             {
                 Id = 1,
                 LinkedNodesId = new SortedSet<uint>(),
-                MessageQueueHandlers = new List<MessageQueueHandler>
-                {
-                    new MessageQueueHandler(Guid.Empty)
-                }
+                MessageQueueHandlers = new List<MessageQueueHandler>()
             };
 
             _channel = new Channel
@@ -420,6 +414,33 @@ namespace Coursework.Tests
 
             // Assert
             Assert.IsNull(result);
+        }
+
+        [Test]
+        public void AddInQueueShouldDoIt()
+        {
+            // Arrange
+            _network.AddNode(_node1);
+            _network.AddNode(_node2);
+            _network.AddChannel(_channel);
+
+            var message = new Message
+            {
+                SenderId = _node1.Id,
+                ReceiverId = _node2.Id,
+                Route = new[]
+                {
+                    _channel
+                },
+            };
+
+            var messageQueue = _node1.MessageQueueHandlers.First();
+
+            // Act
+            _network.AddInQueue(message);
+
+            // Assert
+            Assert.IsTrue(messageQueue.Messages.Contains(message));
         }
     }
 }

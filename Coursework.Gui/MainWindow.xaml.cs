@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Coursework.Data.AutoRunners;
+using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.IONetwork;
 using Coursework.Data.MessageServices;
@@ -26,8 +27,9 @@ namespace Coursework.Gui
         private IComponentDrawer _nodeDrawer;
         private IComponentDrawer _channelDrawer;
         private IMessageExchanger _messageExchanger;
-        private IAutoRunner _redrawer;
-        private IAutoRunner _messageExchangerRunner;
+        private IMessageRouter _messageRouter;
+        private MessageGenerator _messageGenerator;
+        private IBackgroundWorker _backgroundWorker;
         private readonly INetworkInfoRetriever _networkInfoRetriever;
         private readonly ChannelAddWindow _channelAddWindow;
         private Canvas GeneratedCanvas => NetworkArea.Children.OfType<Canvas>().First();
@@ -134,20 +136,44 @@ namespace Coursework.Gui
                 : null;
         }
 
-        private void Init_OnClick(object sender, RoutedEventArgs e)
+        private void Start_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (_backgroundWorker == null)
+            {
+                InitializeMessageExchanger();
+
+                _messageRouter = new MessageRouter(_network);
+                _messageGenerator = new MessageGenerator(_network, _messageRouter, AllConstants.MessageGenerateChance);
+
+                _backgroundWorker = new Background.BackgroundWorker(_messageExchanger, _messageGenerator,
+                    _networkDrawer);
+
+                _backgroundWorker.Run();
+            }
+        }
+
+        private void InitializeMessageExchanger()
         {
             var messageSender = new MessageSender(_network);
             var messageReceiver = new MessageReceiver(_network, messageSender);
 
             _messageExchanger = new MessageExchanger(_network, messageSender, messageReceiver);
+
             _messageExchanger.Initialize();
+
             _networkDrawer.UpdateComponents();
+        }
 
-            _messageExchangerRunner = new MessageExchangerRunner(_messageExchanger);
-            _redrawer = new AutoRedrawer(_networkDrawer);
-
-            _messageExchangerRunner.Run();
-            _redrawer.Run();
+        private void Pause_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (_backgroundWorker != null && _backgroundWorker.IsActive)
+            {
+                _backgroundWorker.Pause();
+            }
+            else
+            {
+                _backgroundWorker?.Resume();
+            }
         }
     }
 }
