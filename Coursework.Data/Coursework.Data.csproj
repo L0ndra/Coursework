@@ -71,6 +71,7 @@
     <Compile Include="MessageServices\IMessageSender.cs" />
     <Compile Include="MessageServices\MessageReceiver.cs" />
     <Compile Include="MessageServices\MessageRouter.cs" />
+    <Compile Include="MessageServices\SimpleMessageRouter.cs" />
     <Compile Include="MessageServices\IMessageExchanger.cs" />
     <Compile Include="MessageServices\MessageSender.cs" />
     <Compile Include="MessageServices\PackageMessageGenerator.cs" />

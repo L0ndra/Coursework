@@ -61,13 +61,11 @@ namespace Coursework.Gui.Background
         {
             _locker.WaitOne();
 
-            _messageGenerator.Generate();
+            _messageGenerator?.Generate();
 
-            _messageExchanger.HandleMessagesOnce();
+            _messageExchanger?.HandleMessagesOnce();
 
-            var dispatcher = Dispatcher.CurrentDispatcher;
-
-            dispatcher.Invoke(() => _networkDrawer.UpdateComponents());
+            _networkDrawer?.UpdateComponents();
 
             _locker.ReleaseMutex();
         }
