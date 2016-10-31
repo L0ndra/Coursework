@@ -4,6 +4,6 @@ namespace Coursework.Data.MessageServices
 {
     public interface IMessageGenerator
     {
-        Message Generate();
+        void Generate();
     }
 }

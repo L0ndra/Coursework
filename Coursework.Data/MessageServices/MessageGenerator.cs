@@ -8,9 +8,9 @@ namespace Coursework.Data.MessageServices
 {
     public class MessageGenerator : IMessageGenerator
     {
-        public Message LastGeneratedMessage { get; private set; }
-        private readonly INetworkHandler _network;
-        private readonly IMessageRouter _messageRouter;
+        public Message LastGeneratedMessage { get; protected set; }
+        protected readonly INetworkHandler Network;
+        protected readonly IMessageRouter MessageRouter;
         private readonly double _messageGenerateChance;
 
         public MessageGenerator(INetworkHandler network, IMessageRouter messageRouter,
@@ -22,57 +22,49 @@ namespace Coursework.Data.MessageServices
             }
 
             _messageGenerateChance = messageGenerateChance;
-            _network = network;
-            _messageRouter = messageRouter;
+            Network = network;
+            MessageRouter = messageRouter;
         }
 
-        public Message Generate()
+        public virtual void Generate()
         {
-            if (_messageGenerateChance <= AllConstants.RandomGenerator.NextDouble()
-                || _network.Nodes.Count(n => n.IsActive) < 2)
+            if (Network.Nodes.Count(n => n.IsActive) >= 2
+                && _messageGenerateChance > AllConstants.RandomGenerator.NextDouble())
             {
-                return null;
-            }
+                Tuple<Node, Node> senderAndReceiver;
 
-            var message = TryCreateRandomMessage();
-
-            if (message == null)
-            {
-                return null;
-            }
-
-            LastGeneratedMessage = message;
-
-            _network.AddInQueue(message);
-
-            return message;
-        }
-
-        private Message TryCreateRandomMessage()
-        {
-            while (true)
-            {
-                var nodesCount = _network.Nodes.Length;
-
-                var receiver = _network.Nodes
-                    .ElementAt(AllConstants.RandomGenerator.Next(nodesCount));
-
-                var sender = _network.Nodes
-                    .ElementAt(AllConstants.RandomGenerator.Next(nodesCount));
-
-                if (sender.IsActive && receiver.IsActive)
+                do
                 {
-                    var message = TryCreateMessage(sender, receiver);
+                    senderAndReceiver = ChooseRandomSenderAndReceiver();
 
-                    return message;
-                }
+                    if (senderAndReceiver.Item1.IsActive && senderAndReceiver.Item2.IsActive)
+                    {
+                        TryAddInQueueRandomMessage(senderAndReceiver.Item1, senderAndReceiver.Item2);
+                    }
+                    else
+                    {
+                        senderAndReceiver = null;
+                    }
+                } while (senderAndReceiver == null);
             }
         }
 
-        private Message TryCreateMessage(Node sender, Node receiver)
+        protected virtual void TryAddInQueueRandomMessage(Node sender, Node receiver)
         {
-            var messageSize = AllConstants.RandomGenerator.Next(AllConstants.MaxMessageSize);
-            var route = _messageRouter.GetRoute(sender.Id, receiver.Id);
+            var message = TryCreateMessage(sender, receiver);
+
+            if (message != null)
+            {
+                LastGeneratedMessage = message;
+
+                Network.AddInQueue(LastGeneratedMessage);
+            }
+        }
+
+        protected virtual Message TryCreateMessage(Node sender, Node receiver)
+        {
+            var messageSize = AllConstants.RandomGenerator.Next(AllConstants.MaxMessageSize) + 1;
+            var route = MessageRouter.GetRoute(sender.Id, receiver.Id);
 
             if (route == null || route.Length == 0)
             {
@@ -92,6 +84,19 @@ namespace Coursework.Data.MessageServices
             };
 
             return message;
+        }
+
+        private Tuple<Node, Node> ChooseRandomSenderAndReceiver()
+        {
+            var nodesCount = Network.Nodes.Length;
+
+            var receiver = Network.Nodes
+                .ElementAt(AllConstants.RandomGenerator.Next(nodesCount));
+
+            var sender = Network.Nodes
+                .ElementAt(AllConstants.RandomGenerator.Next(nodesCount));
+
+            return new Tuple<Node, Node>(sender, receiver);
         }
     }
 }

@@ -113,7 +113,7 @@ namespace Coursework.Tests
             var firstNode = _nodes.First();
 
             firstNode.MessageQueueHandlers
-                .First().AddMessage(_message);
+                .First().AppendMessage(_message);
 
             var firstChannel = _channels.First();
 
@@ -132,7 +132,7 @@ namespace Coursework.Tests
             var secondNode = _nodes.Skip(1).First();
 
             firstNode.MessageQueueHandlers
-                .First().AddMessage(_message);
+                .First().AppendMessage(_message);
 
             var firstChannel = _channels.First();
             firstChannel.ErrorChance = 0.0;
@@ -158,7 +158,7 @@ namespace Coursework.Tests
             var firstNode = _nodes.First();
 
             firstNode.MessageQueueHandlers
-                .First().AddMessage(_message);
+                .First().AppendMessage(_message);
 
             var firstChannel = _channels.First();
             firstChannel.ErrorChance = 1.0;
@@ -189,7 +189,7 @@ namespace Coursework.Tests
             _message.MessageType = MessageType.InitializeMessage;
 
             firstNode.MessageQueueHandlers
-                .First().AddMessage(_message);
+                .First().AppendMessage(_message);
 
             var firstChannel = _channels.First();
             firstChannel.ErrorChance = 0.0;
@@ -213,7 +213,7 @@ namespace Coursework.Tests
 
             var mesageQueueHandler = firstNode.MessageQueueHandlers.First();
 
-            mesageQueueHandler.AddMessage(_message);
+            mesageQueueHandler.AppendMessage(_message);
             
             // Act
             _messageExchanger.HandleMessagesOnce();

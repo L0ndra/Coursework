@@ -66,7 +66,18 @@ namespace Coursework.Data.NetworkData
             var messageQueue = sender.MessageQueueHandlers
                 .First(m => m.ChannelId == firstChannel.Id);
 
-            messageQueue.AddMessage(message);
+            messageQueue.AppendMessage(message);
+        }
+
+        public void RemoveFromQueue(Message message)
+        {
+            var firstChannel = message.Route.First();
+            var sender = GetNodeById(message.SenderId);
+
+            var messageQueue = sender.MessageQueueHandlers
+                .First(m => m.ChannelId == firstChannel.Id);
+
+            messageQueue.RemoveMessage(message);
         }
 
         public void AddChannel(Channel channel)

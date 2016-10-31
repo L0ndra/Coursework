@@ -104,7 +104,8 @@ namespace Coursework.Data.Builder
                     ChannelType = ChannelType.Ground,
                     ConnectionType = ConnectionType.Duplex,
                     ErrorChance = Math.Round(AllConstants.RandomGenerator.NextDouble() * 100.0) / 100.0,
-                    Price = price
+                    Price = price,
+                    IsFree = true
                 };
 
                 return channel;

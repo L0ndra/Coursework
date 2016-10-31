@@ -51,7 +51,7 @@ namespace Coursework.Data.MessageServices
                 };
             }
 
-            messageQueue.AddMessage(message);
+            messageQueue.AppendMessage(message);
         }
     }
 }

@@ -78,7 +78,8 @@ namespace Coursework.Data.IONetwork
                     FirstNodeId = (uint)channelInfo["FirstNodeId"],
                     SecondNodeId = (uint)channelInfo["SecondNodeId"],
                     ConnectionType = (ConnectionType)(int)channelInfo["ConnectionType"],
-                    ChannelType = (ChannelType)(int)channelInfo["ChannelType"]
+                    ChannelType = (ChannelType)(int)channelInfo["ChannelType"],
+                    IsFree = true
                 };
 
                 network.AddChannel(channel);

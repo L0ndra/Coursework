@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace Coursework.Tests
 {
     [TestFixture]
-    public class MessageGeneratorTests
+    public class PackageMessageGeneratorTests
     {
         private Mock<INetworkHandler> _networkMock;
         private Mock<IMessageRouter> _messageRouterMock;
@@ -24,7 +24,7 @@ namespace Coursework.Tests
             _networkMock = new Mock<INetworkHandler>();
             _messageRouterMock = new Mock<IMessageRouter>();
 
-            _messageGenerator = new MessageGenerator(_networkMock.Object,
+            _messageGenerator = new PackageMessageGenerator(_networkMock.Object,
                 _messageRouterMock.Object, 0.5);
 
             _channels = new[]
@@ -147,6 +147,12 @@ namespace Coursework.Tests
                         _channels.First(c => c.Id == sender.MessageQueueHandlers.First().ChannelId)
                     };
                 });
+
+            var randomMessageQueue = _nodes.First()
+                .MessageQueueHandlers.First();
+
+            _networkMock.Setup(n => n.AddInQueue(It.IsAny<Message>()))
+                .Callback((Message message) => randomMessageQueue.AppendMessage(message));
         }
 
         [Test]
@@ -157,7 +163,7 @@ namespace Coursework.Tests
             // Arrange
             // Act
             TestDelegate testDelegate =
-                () => _messageGenerator = new MessageGenerator(_networkMock.Object, _messageRouterMock.Object,
+                () => _messageGenerator = new PackageMessageGenerator(_networkMock.Object, _messageRouterMock.Object,
                     chance);
 
             // Assert
@@ -165,33 +171,22 @@ namespace Coursework.Tests
         }
 
         [Test]
-        public void GenerateShouldNeverGenerateMessages()
+        public void GenerateShouldGenerateAtLeastOneMessage()
         {
             // Arrange
-            _messageGenerator = new MessageGenerator(_networkMock.Object, _messageRouterMock.Object, 0.0);
-
-            // Act
-            for (var i = 0; i < 100; i++)
-            {
-                _messageGenerator.Generate();
-            }
-
-            // Assert
-            Assert.IsNull(_messageGenerator.LastGeneratedMessage);
-        }
-
-        [Test]
-        public void GenerateShouldGenerateMessage()
-        {
-            // Arrange
-            _messageGenerator = new MessageGenerator(_networkMock.Object, _messageRouterMock.Object, 1.0);
+            _messageGenerator = new PackageMessageGenerator(_networkMock.Object, _messageRouterMock.Object, 1.0);
 
             // Act
             _messageGenerator.Generate();
-            var message = _messageGenerator.LastGeneratedMessage;
+
+            var messagesInQueueCount = _nodes.SelectMany(n => n.MessageQueueHandlers)
+                .SelectMany(m => m.Messages)
+                .Count();
 
             // Assert
-            Assert.IsNotNull(message);
+            Console.WriteLine($"Message count = {messagesInQueueCount}");
+
+            Assert.That(messagesInQueueCount, Is.GreaterThanOrEqualTo(1));
         }
     }
 }

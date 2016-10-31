@@ -29,7 +29,7 @@ namespace Coursework.Data.MessageServices
                 var destinationMessageQueue = node.MessageQueueHandlers
                     .First(m => m.ChannelId == message.Route[0].Id);
 
-                destinationMessageQueue.AddMessage(message);
+                destinationMessageQueue.AppendMessage(message);
             }
             else
             {

@@ -117,10 +117,13 @@ namespace Coursework.Gui.Drawers
             {
                 return AllConstants.TwoMessagesInChannelBrush;
             }
-            if (channel.FirstMessage != null
-                || channel.SecondMessage != null)
+            if (channel.FirstMessage != null)
             {
-                return AllConstants.OneMessageInChannelBrush;
+                return AllConstants.FirstMessageInChannelBrush;
+            }
+            if (channel.SecondMessage != null)
+            {
+                return AllConstants.SecondMessageInChannelBrush;
             }
 
             return channel.ConnectionType == ConnectionType.Duplex

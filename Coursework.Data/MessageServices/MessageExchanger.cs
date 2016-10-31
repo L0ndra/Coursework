@@ -157,7 +157,7 @@ namespace Coursework.Data.MessageServices
             var messageQueueHandler = node.MessageQueueHandlers
                 .First(m => m.ChannelId == channel.Id);
 
-            messageQueueHandler.AddMessage(message);
+            messageQueueHandler.AddMessageInStart(message);
         }
 
         private bool TryMoveMessageToChannel(Channel channel, Message message)
@@ -168,17 +168,21 @@ namespace Coursework.Data.MessageServices
                 channel.FirstMessage = message;
                 return true;
             }
-            if (channel.ConnectionType == ConnectionType.Duplex
-                && (channel.FirstMessage == null ||
-                channel.SecondMessage == null))
+            if (channel.ConnectionType == ConnectionType.Duplex 
+                && channel.FirstMessage?.LastTransferNodeId != message.LastTransferNodeId 
+                && channel.SecondMessage?.LastTransferNodeId != message.LastTransferNodeId)
             {
                 if (channel.FirstMessage == null)
                 {
                     channel.FirstMessage = message;
                 }
-                else
+                else if (channel.SecondMessage == null)
                 {
                     channel.SecondMessage = message;
+                }
+                else
+                {
+                    return false;
                 }
                 return true;
             }

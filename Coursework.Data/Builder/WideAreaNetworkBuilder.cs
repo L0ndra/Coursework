@@ -79,7 +79,8 @@ namespace Coursework.Data.Builder
                     ConnectionType = ConnectionType.Duplex,
                     ChannelType = ChannelType.Satellite,
                     ErrorChance = AllConstants.RandomGenerator.NextDouble(),
-                    Price = PriceGenerator.GetRandomPrice()
+                    Price = PriceGenerator.GetRandomPrice(),
+                    IsFree = true
                 };
 
                 var metropolitanNode = _network.GetNodeById(nodeId);

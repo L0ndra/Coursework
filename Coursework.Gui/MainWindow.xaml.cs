@@ -143,7 +143,7 @@ namespace Coursework.Gui
                 InitializeMessageExchanger();
 
                 _messageRouter = new MessageRouter(_network);
-                _messageGenerator = new MessageGenerator(_network, _messageRouter, AllConstants.MessageGenerateChance);
+                _messageGenerator = new PackageMessageGenerator(_network, _messageRouter, AllConstants.MessageGenerateChance);
 
                 _backgroundWorker = new Background.BackgroundWorker(_messageExchanger, _messageGenerator,
                     _networkDrawer);

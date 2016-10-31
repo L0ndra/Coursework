@@ -84,7 +84,8 @@ namespace Coursework.Gui.Dialogs
                 ConnectionType = GetNewConnectionType(),
                 ChannelType = GetNewChannelType(),
                 FirstNodeId = uint.Parse(FirstNodeId.Text),
-                SecondNodeId = uint.Parse(SecondNodeId.Text)
+                SecondNodeId = uint.Parse(SecondNodeId.Text),
+                IsFree = true
             };
 
             _network.AddChannel(newChannel);

@@ -2,16 +2,10 @@
 
 namespace Coursework.Data.NetworkData
 {
-    public interface INetworkHandler : INetwork
+    public interface INetworkHandler : INetwork, IChannelHandler, INodeHandler
     {
-        void AddChannel(Channel channel);
-        Channel GetChannel(uint firstNodeId, uint secondNodeId);
-        void UpdateChannel(Channel newChannel);
-        void RemoveChannel(uint firstNodeId, uint secondNodeId);
-        void AddNode(Node node);
-        Node GetNodeById(uint id);
-        void RemoveNode(uint nodeId);
         Channel[] GetChannels(uint nodeId);
         void AddInQueue(Message message);
+        void RemoveFromQueue(Message message);
     }
 }

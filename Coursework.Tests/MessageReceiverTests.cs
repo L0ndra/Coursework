@@ -51,7 +51,7 @@ namespace Coursework.Tests
             };
 
             _node.MessageQueueHandlers
-                .First().AddMessage(_message);
+                .First().AppendMessage(_message);
 
             _networkMock.Setup(n => n.GetNodeById(It.IsAny<uint>()))
                 .Returns((uint id) => id == 0 ? _node : new Node { Id = 1, IsActive = false });

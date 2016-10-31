@@ -21,13 +21,13 @@ namespace Coursework.Tests
         }
 
         [Test]
-        public void AddMessageShouldAddMessageInQueue()
+        public void AppendMessageShouldAddMessageInQueue()
         {
             // Arrange
             var initialSize = _messageQueueHandler.MessagesCount;
 
             // Act
-            _messageQueueHandler.AddMessage(_message);
+            _messageQueueHandler.AppendMessage(_message);
             var resultSize = _messageQueueHandler.MessagesCount;
 
             // Assert
@@ -38,7 +38,7 @@ namespace Coursework.Tests
         public void RemoveMessageShouldDoIt()
         {
             // Arrange
-            _messageQueueHandler.AddMessage(_message);
+            _messageQueueHandler.AppendMessage(_message);
             var initialSize = _messageQueueHandler.MessagesCount;
             var messageToRemove = _message;
             
@@ -63,6 +63,26 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(currentSize, Is.EqualTo(initialSize));
+        }
+
+        [Test]
+        public void AddMessageInStartShouldAddMessageOnZeroPosition()
+        {
+            // Arrange
+            var newMessage = new Message();
+
+            _messageQueueHandler.AppendMessage(newMessage);
+
+            var initialSize = _messageQueueHandler.MessagesCount;
+
+            // Act
+            _messageQueueHandler.AddMessageInStart(_message);
+
+            var resultSize = _messageQueueHandler.MessagesCount;
+
+            // Assert
+            Assert.That(resultSize - initialSize, Is.EqualTo(1));
+            Assert.That(_messageQueueHandler.Messages.First(), Is.EqualTo(_message));
         }
     }
 }

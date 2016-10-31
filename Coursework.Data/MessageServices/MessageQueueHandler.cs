@@ -18,9 +18,14 @@ namespace Coursework.Data.MessageServices
             _messages = new List<Message>();
         }
 
-        public void AddMessage(Message message)
+        public void AppendMessage(Message message)
         {
             _messages.Add(message);
+        }
+
+        public void AddMessageInStart(Message message)
+        {
+            _messages.Insert(0, message);
         }
 
         public void RemoveMessage(Message message)

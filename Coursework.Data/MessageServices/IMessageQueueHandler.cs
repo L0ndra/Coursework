@@ -8,7 +8,8 @@ namespace Coursework.Data.MessageServices
         int MessagesCount { get; }
         Message[] Messages { get; }
         Guid ChannelId { get; }
-        void AddMessage(Message message);
+        void AppendMessage(Message message);
+        void AddMessageInStart(Message message);
         void RemoveMessage(Message message);
     }
 }
