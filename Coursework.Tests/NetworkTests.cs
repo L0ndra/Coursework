@@ -471,32 +471,5 @@ namespace Coursework.Tests
             // Assert
             Assert.IsFalse(messageQueue.Messages.Contains(message));
         }
-
-        [Test]
-        public void RemoveFromQueueShouldDoNothingIfMessageNotExists()
-        {
-            // Arrange
-            _network.AddNode(_node1);
-            _network.AddNode(_node2);
-            _network.AddChannel(_channel);
-
-            var message = new Message
-            {
-                SenderId = _node1.Id,
-                ReceiverId = _node2.Id,
-                Route = new[]
-                {
-                    _channel
-                },
-            };
-
-            var messageQueue = _node1.MessageQueueHandlers.First();
-
-            // Act
-            _network.RemoveFromQueue(message);
-
-            // Assert
-            Assert.IsFalse(messageQueue.Messages.Contains(message));
-        }
     }
 }

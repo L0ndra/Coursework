@@ -15,6 +15,7 @@ namespace Coursework.Tests
         private Mock<INetworkHandler> _networkMock;
         private Mock<IMessageRouter> _messageRouterMock;
         private Mock<IMessageCreator> _messageCreatorMock;
+        private Mock<IMessageReceiver> _messageReceiverMock;
         private MessageGenerator _messageGenerator;
         private Channel[] _channels;
         private Node[] _nodes;
@@ -25,9 +26,11 @@ namespace Coursework.Tests
             _networkMock = new Mock<INetworkHandler>();
             _messageRouterMock = new Mock<IMessageRouter>();
             _messageCreatorMock = new Mock<IMessageCreator>();
+            _messageReceiverMock = new Mock<IMessageReceiver>();
 
             _messageGenerator = new MessageGenerator(_networkMock.Object,
-                _messageRouterMock.Object, _messageCreatorMock.Object, 0.5);
+                _messageRouterMock.Object, _messageCreatorMock.Object,
+                _messageReceiverMock.Object, 0.5);
 
             _channels = new[]
             {
@@ -163,7 +166,7 @@ namespace Coursework.Tests
             // Act
             TestDelegate testDelegate =
                 () => _messageGenerator = new MessageGenerator(_networkMock.Object, _messageRouterMock.Object,
-                    _messageCreatorMock.Object, chance);
+                    _messageCreatorMock.Object, _messageReceiverMock.Object, chance);
 
             // Assert
             Assert.That(testDelegate, Throws.ArgumentException);
@@ -174,7 +177,7 @@ namespace Coursework.Tests
         {
             // Arrange
             _messageGenerator = new MessageGenerator(_networkMock.Object, _messageRouterMock.Object,
-                _messageCreatorMock.Object, 0.0);
+                _messageCreatorMock.Object, _messageReceiverMock.Object, 0.0);
 
             // Act
             for (var i = 0; i < 100; i++)
@@ -191,7 +194,7 @@ namespace Coursework.Tests
         {
             // Arrange
             _messageGenerator = new MessageGenerator(_networkMock.Object, _messageRouterMock.Object,
-                _messageCreatorMock.Object, 1.0);
+                _messageCreatorMock.Object, _messageReceiverMock.Object, 1.0);
 
             // Act
             _messageGenerator.Generate();

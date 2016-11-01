@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.MessageServices;
 using Coursework.Data.NetworkData;
@@ -11,22 +10,26 @@ using NUnit.Framework;
 namespace Coursework.Tests
 {
     [TestFixture]
-    public class PackageMessageCreatorTests
+    public class MessageHandlerTests
     {
         private Mock<INetworkHandler> _networkMock;
-        private Mock<IMessageRouter> _messageRouterMock;
-        private IMessageCreator _messageCreator;
-        private MessageInitializer _messageInitializer;
-        private Node[] _nodes;
+        private Mock<IMessageCreator> _messageCreatorMock;
+        private Mock<IMessageRouter> _messageRouter;
+        private MessageHandler _messageHandler;
         private Channel[] _channels;
+        private Node[] _nodes;
+        private Message _message;
+        private Node Receiver => _nodes.First(n => n.Id == _message.ReceiverId);
 
         [SetUp]
         public void Setup()
         {
             _networkMock = new Mock<INetworkHandler>();
-            _messageRouterMock = new Mock<IMessageRouter>();
+            _messageCreatorMock = new Mock<IMessageCreator>();
+            _messageRouter = new Mock<IMessageRouter>();
 
-            _messageCreator = new PackageMessageCreator(_networkMock.Object, _messageRouterMock.Object);
+            _messageHandler = new MessageHandler(_networkMock.Object, _messageCreatorMock.Object,
+                _messageRouter.Object);
 
             _channels = new[]
             {
@@ -83,7 +86,8 @@ namespace Coursework.Tests
                         new MessageQueueHandler(_channels[0].Id),
                         new MessageQueueHandler(_channels[1].Id)
                     },
-                    IsActive = true
+                    IsActive = false,
+                    NodeType = NodeType.CentralMachine
                 },
                 new Node
                 {
@@ -94,7 +98,7 @@ namespace Coursework.Tests
                         new MessageQueueHandler(_channels[0].Id),
                         new MessageQueueHandler(_channels[2].Id)
                     },
-                    IsActive = true
+                    IsActive = false
                 },
                 new Node
                 {
@@ -105,7 +109,7 @@ namespace Coursework.Tests
                         new MessageQueueHandler(_channels[1].Id),
                         new MessageQueueHandler(_channels[3].Id)
                     },
-                    IsActive = true
+                    IsActive = false
                 },
                 new Node
                 {
@@ -116,8 +120,21 @@ namespace Coursework.Tests
                         new MessageQueueHandler(_channels[2].Id),
                         new MessageQueueHandler(_channels[3].Id)
                     },
-                    IsActive = true
+                    IsActive = false
+                },
+                new Node
+                {
+                    Id = 4,
+                    LinkedNodesId = new SortedSet<uint>(),
+                    MessageQueueHandlers = new List<MessageQueueHandler>(),
+                    IsActive = false
                 }
+            };
+
+            _message = new Message
+            {
+                MessageType = MessageType.General,
+                ReceiverId = 0,
             };
 
             _networkMock.Setup(n => n.Nodes)
@@ -137,43 +154,87 @@ namespace Coursework.Tests
                                                          c.FirstNodeId == secondNodeId && c.SecondNodeId == firstNodeId);
                 }
             );
-
-            _messageRouterMock.Setup(m => m.GetRoute(It.IsAny<uint>(), It.IsAny<uint>()))
-                .Returns((uint senderId, uint receiverId) =>
-                {
-                    var sender = _nodes.First(n => n.Id == senderId);
-
-                    return new[]
-                    {
-                        _channels.First(c => c.Id == sender.MessageQueueHandlers.First().ChannelId)
-                    };
-                });
-
-            _messageInitializer = new MessageInitializer
-            {
-                MessageType = MessageType.General,
-                ReceiverId = 2,
-                SenderId = 0,
-                Data = null,
-                Size = AllConstants.MaxMessageSize
-            };
         }
 
         [Test]
-        public void GenerateShouldGenerateNewMessages()
+        public void HandleMessageShouldCreateInitializeMessages()
         {
             // Arrange
+            _message.MessageType = MessageType.InitializeMessage;
+            var linkedNodeCount = Receiver.LinkedNodesId.Count;
+
             // Act
-            var messages = _messageCreator.CreateMessages(_messageInitializer);
-            var firstMessage = messages.First();
+            _messageHandler.HandleMessage(_message);
 
             // Assert
-            Assert.That(messages.Length, Is.GreaterThanOrEqualTo(1));
-            Assert.That(firstMessage.ReceiverId, Is.EqualTo(_messageInitializer.ReceiverId));
-            Assert.That(firstMessage.SenderId, Is.EqualTo(_messageInitializer.SenderId));
-            Assert.That(firstMessage.Data, Is.EqualTo(_messageInitializer.Data));
-            Assert.That(firstMessage.MessageType, Is.EqualTo(_messageInitializer.MessageType));
-            Assert.That(messages.All(m => m.Size == AllConstants.PackageSize + AllConstants.ServicePartSize));
+            _messageCreatorMock.Verify(m => m.AddInQueue(It.Is<Message[]>
+                (m1 => m1.All(message => message.MessageType == MessageType.InitializeMessage))),
+                Times.Exactly(linkedNodeCount));
+
+            Assert.IsTrue(Receiver.IsActive);
+        }
+
+        [Test]
+        public void HandleMessageShouldCorrectHandleSendingRequest()
+        {
+            // Arrange
+            _message.MessageType = MessageType.SendingRequest;
+            _message.Data = new[]
+            {
+                new Message()
+            };
+
+            // Act
+            _messageHandler.HandleMessage(_message);
+
+            // Assert
+            _messageCreatorMock.Verify(m => m.CreateMessages(It.Is<MessageInitializer>
+                (m1 => m1.MessageType == MessageType.SendingResponse)),
+                Times.Exactly(1));
+
+            _messageCreatorMock.Verify(m => m.AddInQueue(It.Is<Message[]>
+                (m1 => m1.All(message => message.MessageType == MessageType.SendingResponse))),
+                Times.Exactly(1));
+        }
+
+        [Test]
+        public void HandleMessageShouldDoNothingIfReceiverIsNotCentralMachine()
+        {
+            // Arrange
+            _message.MessageType = MessageType.SendingRequest;
+            Receiver.NodeType = NodeType.SimpleNode;
+
+            // Act
+            _messageHandler.HandleMessage(_message);
+
+            // Assert
+            _messageCreatorMock.Verify(m => m.CreateMessages(It.Is<MessageInitializer>
+                (m1 => m1.MessageType == MessageType.SendingResponse)),
+                Times.Never());
+
+            _messageCreatorMock.Verify(m => m.AddInQueue(It.Is<Message[]>
+                (m1 => m1.All(message => message.MessageType == MessageType.SendingResponse))),
+                Times.Never());
+        }
+
+        [Test]
+        public void HandleMessageShouldAddInQueueAllMessagesFromData()
+        {
+            // Arrange
+            _message.MessageType = MessageType.SendingResponse;
+            _message.Data = new[]
+            {
+                new Message()
+            };
+
+            var messagesCount = ((Message[])_message.Data).Length;
+
+            // Act
+            _messageHandler.HandleMessage(_message);
+
+            // Assert
+            _messageCreatorMock.Verify(m => m.AddInQueue(It.IsAny<Message[]>()),
+                Times.Exactly(messagesCount));
         }
     }
 }

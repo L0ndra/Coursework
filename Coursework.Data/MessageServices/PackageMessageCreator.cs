@@ -44,14 +44,14 @@ namespace Coursework.Data.MessageServices
 
                 var message = new Message
                 {
-                    Data = null,
+                    Data = currentMessage.Data,
                     LastTransferNodeId = currentMessage.LastTransferNodeId,
                     MessageType = currentMessage.MessageType,
                     ParentId = currentMessage.ParentId,
                     ReceiverId = currentMessage.ReceiverId,
                     SendAttempts = currentMessage.SendAttempts,
                     SenderId = currentMessage.SenderId,
-                    Size = AllConstants.PackageSize + AllConstants.InformationPartSize,
+                    Size = AllConstants.PackageSize + AllConstants.ServicePartSize,
                     Route = route
                 };
 
@@ -59,15 +59,18 @@ namespace Coursework.Data.MessageServices
                     && currentMessage.Size % AllConstants.PackageSize != 0)
                 {
                     message.Size = currentMessage.Size % AllConstants.PackageSize
-                                   + AllConstants.InformationPartSize;
+                                   + AllConstants.ServicePartSize;
                 }
 
                 messages.Add(message);
 
-                AddInQueue(new[] { message });
+                if (message.Route.Length != 0)
+                {
+                    AddInQueue(new[] { message });
+                }
             }
 
-            RemoveFromQueue(messages.ToArray());
+            RemoveFromQueue(messages.Where(m => m.Route.Length != 0).ToArray());
             return messages.ToArray();
         }
     }

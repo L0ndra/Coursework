@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Coursework.Data.Entities;
 using Coursework.Data.MessageServices;
-using Coursework.Data.NetworkData;
 using Moq;
 using NUnit.Framework;
 
@@ -12,19 +11,16 @@ namespace Coursework.Tests
     [TestFixture]
     public class MessageReceiverTests
     {
-        private Mock<INetworkHandler> _networkMock;
-        private Mock<IMessageCreator> _messageCreatorMock;
+        private Mock<IMessageHandler> _messageHandlerMock;
         private IMessageReceiver _messageReceiver;
-        private Node _node;
         private Message _message;
+        private Node _node;
 
         [SetUp]
         public void Setup()
         {
-            _networkMock = new Mock<INetworkHandler>();
-            _messageCreatorMock = new Mock<IMessageCreator>();
-
-            _messageReceiver = new MessageReceiver(_networkMock.Object, _messageCreatorMock.Object);
+            _messageHandlerMock = new Mock<IMessageHandler>();
+            _messageReceiver = new MessageReceiver(_messageHandlerMock.Object);
 
             _message = new Message
             {
@@ -34,42 +30,40 @@ namespace Coursework.Tests
                 MessageType = MessageType.InitializeMessage,
                 Route = new[]
                 {
+                    new Channel(),
                     new Channel()
                 }
             };
 
             _node = new Node
             {
-                Id = 0,
+                Id = 2,
                 MessageQueueHandlers = new List<MessageQueueHandler>
                 {
                     new MessageQueueHandler(Guid.Empty)
                 },
-                LinkedNodesId = new SortedSet<uint>(new uint[] { 1 }),
                 IsActive = false,
                 NodeType = NodeType.SimpleNode
             };
-
-            _node.MessageQueueHandlers
-                .First().AppendMessage(_message);
-
-            _networkMock.Setup(n => n.GetNodeById(It.IsAny<uint>()))
-                .Returns((uint id) => id == 0 ? _node : new Node { Id = 1, IsActive = false });
         }
 
         [Test]
-        public void HandleReceivedMessageShouldActivateNodeIfReceiverMessageIsInitialized()
+        public void HandleReceivedMessageShouldCallHandleMessageFromHandlerOnceIfNodeIsReceiver()
         {
             // Arrange
+            _message.Route = _message.Route
+                .Skip(1)
+                .ToArray();
+
             // Act
             _messageReceiver.HandleReceivedMessage(_node, _message);
 
             // Assert
-            Assert.IsTrue(_node.IsActive);
+            _messageHandlerMock.Verify(m => m.HandleMessage(_message), Times.Once());
         }
 
         [Test]
-        public void HandleReceivedMessageShouldCreateNewInitializeMessagesToUnactiveLinkedNodes()
+        public void HandleReceivedMessageShouldReplaceMessageToAnotherQueue()
         {
             // Arrange
             // Act
@@ -79,9 +73,6 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(messagesCount, Is.EqualTo(1));
-            _messageCreatorMock.Verify(m => m.AddInQueue(It.Is<Message[]>
-                (messages => messages.All(m1 => m1.MessageType == MessageType.InitializeMessage))),
-                Times.Once());
         }
     }
 }

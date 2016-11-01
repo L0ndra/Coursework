@@ -61,6 +61,7 @@ namespace Coursework.Data.NetworkData
         public void AddInQueue(Message message)
         {
             var firstChannel = message.Route.First();
+
             var sender = GetNodeById(message.SenderId);
 
             var messageQueue = sender.MessageQueueHandlers
@@ -72,6 +73,7 @@ namespace Coursework.Data.NetworkData
         public void RemoveFromQueue(Message message)
         {
             var firstChannel = message.Route.First();
+
             var sender = GetNodeById(message.SenderId);
 
             var messageQueue = sender.MessageQueueHandlers

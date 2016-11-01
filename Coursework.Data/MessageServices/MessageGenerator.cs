@@ -12,10 +12,12 @@ namespace Coursework.Data.MessageServices
         protected readonly INetworkHandler Network;
         protected readonly IMessageRouter MessageRouter;
         private readonly IMessageCreator _messageCreator;
+        private readonly IMessageReceiver _messageReceiver;
         private readonly double _messageGenerateChance;
 
         public MessageGenerator(INetworkHandler network, IMessageRouter messageRouter,
             IMessageCreator messageCreator,
+            IMessageReceiver messageReceiver,
             double messageGenerateChance)
         {
             if (messageGenerateChance > 1.0 || messageGenerateChance < 0.0)
@@ -26,6 +28,7 @@ namespace Coursework.Data.MessageServices
             _messageGenerateChance = messageGenerateChance;
             Network = network;
             _messageCreator = messageCreator;
+            _messageReceiver = messageReceiver;
             MessageRouter = messageRouter;
         }
 
@@ -70,10 +73,17 @@ namespace Coursework.Data.MessageServices
 
             if (messages != null)
             {
-                _messageCreator.AddInQueue(messages);
-            }
+                _messageCreator.AddInQueue(messages
+                    .Where(m => m.ReceiverId != m.SenderId)
+                    .ToArray());
 
-            LastGeneratedMessage = messages.LastOrDefault();
+                foreach (var message in messages.Where(m => m.ReceiverId == m.SenderId))
+                {
+                    _messageReceiver.HandleReceivedMessage(sender, message);
+                }
+
+                LastGeneratedMessage = messages.LastOrDefault();
+            }
         }
 
         private Tuple<Node, Node> ChooseRandomSenderAndReceiver()

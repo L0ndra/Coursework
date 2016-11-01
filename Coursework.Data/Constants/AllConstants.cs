@@ -22,7 +22,9 @@ namespace Coursework.Data.Constants
         public const int MaxAttemptsToGenerateMessage = 100;
         public const int MaxMessageSize = 100;
         public const int PackageSize = 10;
-        public const int InformationPartSize = 1;
+        public const int ServicePartSize = 1;
+        public const int SendingRequestMessageSize = 10;
+        public const int SendingResponseMessageSize = 10;
         public static readonly DoubleCollection StrokeDashArrayForSatteliteConnection = new DoubleCollection(new[]{ 2.0, 2.0 });
         public static readonly DoubleCollection StrokeDashArrayForGroundConnection = new DoubleCollection(new[] { 1.0, 0.0 });
         public static readonly Brush SimpleNodeBrush = Brushes.Aqua;

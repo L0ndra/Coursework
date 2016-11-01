@@ -21,7 +21,13 @@ namespace Coursework.Data.MessageServices
 
             var channel = Network.GetChannel(startId, destinationId);
 
-            return channel.Price;
+            var startMessageQueue = startNode.MessageQueueHandlers
+                .First(m => m.ChannelId == channel.Id);
+
+            return channel.Price * (channel.ErrorChance + 1)
+                   * (channel.ErrorChance + 1)
+                   * (startMessageQueue.MessagesCount + 1)
+                   * (startMessageQueue.MessagesCount + 1);
         }
     }
 }

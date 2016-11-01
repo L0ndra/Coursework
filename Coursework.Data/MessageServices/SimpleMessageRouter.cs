@@ -67,13 +67,7 @@ namespace Coursework.Data.MessageServices
 
             var channel = Network.GetChannel(startId, destinationId);
 
-            var startMessageQueue = startNode.MessageQueueHandlers
-                .First(m => m.ChannelId == channel.Id);
-
-            return channel.Price * (channel.ErrorChance + 1)
-                   * (channel.ErrorChance + 1)
-                   * (startMessageQueue.MessagesCount + 1)
-                   * (startMessageQueue.MessagesCount + 1);
+            return channel.Price;
         }
 
         private List<Channel> BuildRoute(NetworkMatrix networkMatrix, uint senderId, uint receiverId)
@@ -90,7 +84,7 @@ namespace Coursework.Data.MessageServices
                 {
                     var difference = Math.Abs(networkMatrix.NodeIdWithCurrentPrice[currentNodeId]
                                               - networkMatrix.NodeIdWithCurrentPrice[linkedNodeId]
-                                              - CountPrice(currentNodeId, linkedNodeId));
+                                              - CountPrice(linkedNodeId, currentNodeId));
 
                     if (difference < AllConstants.Eps)
                     {

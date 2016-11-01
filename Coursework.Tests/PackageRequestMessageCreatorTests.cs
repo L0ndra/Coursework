@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Coursework.Tests
 {
     [TestFixture]
-    public class PackageMessageCreatorTests
+    public class PackageRequestMessageCreatorTests
     {
         private Mock<INetworkHandler> _networkMock;
         private Mock<IMessageRouter> _messageRouterMock;
@@ -26,7 +26,7 @@ namespace Coursework.Tests
             _networkMock = new Mock<INetworkHandler>();
             _messageRouterMock = new Mock<IMessageRouter>();
 
-            _messageCreator = new PackageMessageCreator(_networkMock.Object, _messageRouterMock.Object);
+            _messageCreator = new PackageRequestMessageCreator(_networkMock.Object, _messageRouterMock.Object);
 
             _channels = new[]
             {
@@ -83,7 +83,8 @@ namespace Coursework.Tests
                         new MessageQueueHandler(_channels[0].Id),
                         new MessageQueueHandler(_channels[1].Id)
                     },
-                    IsActive = true
+                    IsActive = true,
+                    NodeType = NodeType.CentralMachine
                 },
                 new Node
                 {
@@ -160,20 +161,22 @@ namespace Coursework.Tests
         }
 
         [Test]
-        public void GenerateShouldGenerateNewMessages()
+        public void GenerateShouldGenerateNewRequestMessages()
         {
             // Arrange
+            var centralMachine = _nodes.First(n => n.NodeType == NodeType.CentralMachine);
+
             // Act
             var messages = _messageCreator.CreateMessages(_messageInitializer);
             var firstMessage = messages.First();
 
             // Assert
             Assert.That(messages.Length, Is.GreaterThanOrEqualTo(1));
-            Assert.That(firstMessage.ReceiverId, Is.EqualTo(_messageInitializer.ReceiverId));
+            Assert.That(firstMessage.ReceiverId, Is.EqualTo(centralMachine.Id));
             Assert.That(firstMessage.SenderId, Is.EqualTo(_messageInitializer.SenderId));
-            Assert.That(firstMessage.Data, Is.EqualTo(_messageInitializer.Data));
-            Assert.That(firstMessage.MessageType, Is.EqualTo(_messageInitializer.MessageType));
-            Assert.That(messages.All(m => m.Size == AllConstants.PackageSize + AllConstants.ServicePartSize));
+            Assert.That(firstMessage.Data, Is.TypeOf(typeof(Message[])));
+            Assert.That(firstMessage.MessageType, Is.EqualTo(MessageType.SendingRequest));
+            Assert.That(messages.All(m => m.Size == AllConstants.SendingRequestMessageSize));
         }
     }
 }

@@ -28,10 +28,13 @@ namespace Coursework.Gui
         private IComponentDrawer _channelDrawer;
         private IMessageExchanger _messageExchanger;
         private IMessageRouter _messageRouter;
-        private MessageGenerator _messageGenerator;
+        private IMessageRouter _simpleMessageRouter;
+        private IMessageGenerator _messageGenerator;
         private IBackgroundWorker _backgroundWorker;
-        private IMessageCreator _messageCreator;
+        private IMessageCreator _packageRequestMessageCreator;
+        private IMessageCreator _packageMessageCreator;
         private IMessageReceiver _messageReceiver;
+        private IMessageHandler _messageHandler;
         private readonly INetworkInfoRetriever _networkInfoRetriever;
         private readonly ChannelAddWindow _channelAddWindow;
         private Canvas GeneratedCanvas => NetworkArea.Children.OfType<Canvas>().First();
@@ -142,12 +145,14 @@ namespace Coursework.Gui
         {
             if (_backgroundWorker == null)
             {
-                _messageRouter = new MessageRouter(_network);
-
                 InitializeMessageExchanger();
 
-                _messageGenerator = new MessageGenerator(_network, _messageRouter, 
-                    _messageCreator, AllConstants.MessageGenerateChance);
+                _simpleMessageRouter = new SimpleMessageRouter(_network);
+
+                _packageRequestMessageCreator = new PackageRequestMessageCreator(_network, _messageRouter);
+
+                _messageGenerator = new MessageGenerator(_network, _simpleMessageRouter,
+                    _packageRequestMessageCreator, _messageReceiver, AllConstants.MessageGenerateChance);
 
                 _backgroundWorker = new Background.BackgroundWorker(_messageExchanger, _messageGenerator,
                     _networkDrawer);
@@ -158,10 +163,13 @@ namespace Coursework.Gui
 
         private void InitializeMessageExchanger()
         {
-            _messageCreator = new PackageMessageCreator(_network, _messageRouter);
-            _messageReceiver = new MessageReceiver(_network, _messageCreator);
+            _messageRouter = new MessageRouter(_network);
 
-            _messageExchanger = new MessageExchanger(_network, _messageCreator, _messageReceiver);
+            _packageMessageCreator = new PackageMessageCreator(_network, _messageRouter);
+            _messageHandler = new MessageHandler(_network, _packageMessageCreator, _messageRouter);
+            _messageReceiver = new MessageReceiver(_messageHandler);
+
+            _messageExchanger = new MessageExchanger(_network, _packageMessageCreator, _messageReceiver);
 
             _messageExchanger.Initialize();
 
