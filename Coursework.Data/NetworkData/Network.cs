@@ -58,25 +58,25 @@ namespace Coursework.Data.NetworkData
             return channels;
         }
 
-        public void AddInQueue(Message message)
+        public void AddInQueue(Message message, uint nodeId)
         {
             var firstChannel = message.Route.First();
 
-            var sender = GetNodeById(message.SenderId);
+            var node = GetNodeById(nodeId);
 
-            var messageQueue = sender.MessageQueueHandlers
+            var messageQueue = node.MessageQueueHandlers
                 .First(m => m.ChannelId == firstChannel.Id);
 
             messageQueue.AppendMessage(message);
         }
 
-        public void RemoveFromQueue(Message message)
+        public void RemoveFromQueue(Message message, uint nodeId)
         {
             var firstChannel = message.Route.First();
 
-            var sender = GetNodeById(message.SenderId);
+            var node = GetNodeById(nodeId);
 
-            var messageQueue = sender.MessageQueueHandlers
+            var messageQueue = node.MessageQueueHandlers
                 .First(m => m.ChannelId == firstChannel.Id);
 
             messageQueue.RemoveMessage(message);

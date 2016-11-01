@@ -13,8 +13,6 @@ namespace Coursework.Tests
     public class MessageHandlerTests
     {
         private Mock<INetworkHandler> _networkMock;
-        private Mock<IMessageCreator> _messageCreatorMock;
-        private Mock<IMessageRouter> _messageRouter;
         private MessageHandler _messageHandler;
         private Channel[] _channels;
         private Node[] _nodes;
@@ -25,11 +23,8 @@ namespace Coursework.Tests
         public void Setup()
         {
             _networkMock = new Mock<INetworkHandler>();
-            _messageCreatorMock = new Mock<IMessageCreator>();
-            _messageRouter = new Mock<IMessageRouter>();
 
-            _messageHandler = new MessageHandler(_networkMock.Object, _messageCreatorMock.Object,
-                _messageRouter.Object);
+            _messageHandler = new MessageHandler(_networkMock.Object);
 
             _channels = new[]
             {
@@ -160,81 +155,45 @@ namespace Coursework.Tests
         public void HandleMessageShouldCreateInitializeMessages()
         {
             // Arrange
-            _message.MessageType = MessageType.InitializeMessage;
+            _message.MessageType = MessageType.MatrixUpdateMessage;
+            _message.Data = new Dictionary<uint, NetworkMatrix>
+            {
+                [0] = NetworkMatrix.Initialize(_networkMock.Object),
+                [1] = NetworkMatrix.Initialize(_networkMock.Object),
+                [2] = NetworkMatrix.Initialize(_networkMock.Object),
+                [3] = NetworkMatrix.Initialize(_networkMock.Object),
+                [4] = NetworkMatrix.Initialize(_networkMock.Object),
+            };
             var linkedNodeCount = Receiver.LinkedNodesId.Count;
 
+            var firstNode = _nodes.First();
+
             // Act
             _messageHandler.HandleMessage(_message);
 
+            var messageCount = firstNode.MessageQueueHandlers
+                .SelectMany(m => m.Messages)
+                .Count(m => m.MessageType == MessageType.MatrixUpdateMessage);
+
             // Assert
-            _messageCreatorMock.Verify(m => m.AddInQueue(It.Is<Message[]>
-                (m1 => m1.All(message => message.MessageType == MessageType.InitializeMessage))),
-                Times.Exactly(linkedNodeCount));
+            Assert.That(messageCount, Is.EqualTo(linkedNodeCount));
 
             Assert.IsTrue(Receiver.IsActive);
+            Assert.That(Receiver.NetworkMatrix, 
+                Is.EqualTo(((Dictionary<uint, NetworkMatrix>)_message.Data)[0]));
         }
 
         [Test]
-        public void HandleMessageShouldCorrectHandleSendingRequest()
+        public void HandleMessageShouldRemovegeneralMessageFromQueue()
         {
             // Arrange
-            _message.MessageType = MessageType.SendingRequest;
-            _message.Data = new[]
-            {
-                new Message()
-            };
+            _message.MessageType = MessageType.General;
 
             // Act
             _messageHandler.HandleMessage(_message);
 
             // Assert
-            _messageCreatorMock.Verify(m => m.CreateMessages(It.Is<MessageInitializer>
-                (m1 => m1.MessageType == MessageType.SendingResponse)),
-                Times.Exactly(1));
-
-            _messageCreatorMock.Verify(m => m.AddInQueue(It.Is<Message[]>
-                (m1 => m1.All(message => message.MessageType == MessageType.SendingResponse))),
-                Times.Exactly(1));
-        }
-
-        [Test]
-        public void HandleMessageShouldDoNothingIfReceiverIsNotCentralMachine()
-        {
-            // Arrange
-            _message.MessageType = MessageType.SendingRequest;
-            Receiver.NodeType = NodeType.SimpleNode;
-
-            // Act
-            _messageHandler.HandleMessage(_message);
-
-            // Assert
-            _messageCreatorMock.Verify(m => m.CreateMessages(It.Is<MessageInitializer>
-                (m1 => m1.MessageType == MessageType.SendingResponse)),
-                Times.Never());
-
-            _messageCreatorMock.Verify(m => m.AddInQueue(It.Is<Message[]>
-                (m1 => m1.All(message => message.MessageType == MessageType.SendingResponse))),
-                Times.Never());
-        }
-
-        [Test]
-        public void HandleMessageShouldAddInQueueAllMessagesFromData()
-        {
-            // Arrange
-            _message.MessageType = MessageType.SendingResponse;
-            _message.Data = new[]
-            {
-                new Message()
-            };
-
-            var messagesCount = ((Message[])_message.Data).Length;
-
-            // Act
-            _messageHandler.HandleMessage(_message);
-
-            // Assert
-            _messageCreatorMock.Verify(m => m.AddInQueue(It.IsAny<Message[]>()),
-                Times.Exactly(messagesCount));
+            _networkMock.Verify(n => n.RemoveFromQueue(_message, 0), Times.Once());
         }
     }
 }

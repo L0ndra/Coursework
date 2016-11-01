@@ -26,17 +26,15 @@ namespace Coursework.Gui
         private IComponentDrawer _networkDrawer;
         private IComponentDrawer _nodeDrawer;
         private IComponentDrawer _channelDrawer;
-        private IMessageExchanger _messageExchanger;
-        private IMessageRouter _messageRouter;
-        private IMessageRouter _simpleMessageRouter;
-        private IMessageGenerator _messageGenerator;
         private IBackgroundWorker _backgroundWorker;
-        private IMessageCreator _packageRequestMessageCreator;
-        private IMessageCreator _packageMessageCreator;
-        private IMessageReceiver _messageReceiver;
-        private IMessageHandler _messageHandler;
         private readonly INetworkInfoRetriever _networkInfoRetriever;
         private readonly ChannelAddWindow _channelAddWindow;
+        private IMessageRouter _messageRouter;
+        private IMessageCreator _messageCreator;
+        private IMessageHandler _messageHandler;
+        private IMessageReceiver _messageReceiver;
+        private IMessageExchanger _messageExchanger;
+        private IMessageGenerator _messageGenerator;
         private Canvas GeneratedCanvas => NetworkArea.Children.OfType<Canvas>().First();
 
         public MainWindow(INetworkHandler network, INetworkInfoRetriever networkInfoRetriever)
@@ -145,17 +143,19 @@ namespace Coursework.Gui
         {
             if (_backgroundWorker == null)
             {
-                InitializeMessageExchanger();
+                _messageRouter = new MessageRouter(_network);
+                _messageCreator = new PackageMessageCreator(_network, _messageRouter);
+                _messageHandler = new MessageHandler(_network);
+                _messageReceiver = new MessageReceiver(_messageHandler);
+                _messageExchanger = new MessageExchanger(_network, _messageReceiver);
 
-                _simpleMessageRouter = new SimpleMessageRouter(_network);
+                _messageCreator.UpdateTables();
 
-                _packageRequestMessageCreator = new PackageRequestMessageCreator(_network, _messageRouter);
-
-                _messageGenerator = new MessageGenerator(_network, _simpleMessageRouter,
-                    _packageRequestMessageCreator, _messageReceiver, AllConstants.MessageGenerateChance);
+                _messageGenerator = new MessageGenerator(_network, _messageCreator, 
+                    AllConstants.MessageGenerateChance);
 
                 _backgroundWorker = new Background.BackgroundWorker(_messageExchanger, _messageGenerator,
-                    _networkDrawer);
+                    _networkDrawer, _messageCreator, AllConstants.UpdateTablePeriod);
 
                 _backgroundWorker.Run();
             }
@@ -163,15 +163,6 @@ namespace Coursework.Gui
 
         private void InitializeMessageExchanger()
         {
-            _messageRouter = new MessageRouter(_network);
-
-            _packageMessageCreator = new PackageMessageCreator(_network, _messageRouter);
-            _messageHandler = new MessageHandler(_network, _packageMessageCreator, _messageRouter);
-            _messageReceiver = new MessageReceiver(_messageHandler);
-
-            _messageExchanger = new MessageExchanger(_network, _packageMessageCreator, _messageReceiver);
-
-            _messageExchanger.Initialize();
 
             _networkDrawer.UpdateComponents();
         }

@@ -14,7 +14,6 @@ namespace Coursework.Tests
     public class MessageExchangerTests
     {
         private Mock<INetworkHandler> _networkMock;
-        private Mock<IMessageCreator> _messageCreatorMock;
         private Mock<IMessageReceiver> _messageReceiverMock;
         private IMessageExchanger _messageExchanger;
         private Node[] _nodes;
@@ -25,11 +24,9 @@ namespace Coursework.Tests
         public void Setup()
         {
             _networkMock = new Mock<INetworkHandler>();
-            _messageCreatorMock = new Mock<IMessageCreator>();
             _messageReceiverMock = new Mock<IMessageReceiver>();
 
-            _messageExchanger = new MessageExchanger(_networkMock.Object, _messageCreatorMock.Object,
-                _messageReceiverMock.Object);
+            _messageExchanger = new MessageExchanger(_networkMock.Object, _messageReceiverMock.Object);
 
             _channels = new[]
             {
@@ -91,21 +88,7 @@ namespace Coursework.Tests
                 .Returns(_channels.First());
         }
 
-        [Test]
-        public void InitializeShouldStartSendingInformationMessagesToMetropolitanNetworks()
-        {
-            // Arrange
-            var centralMachine = _nodes.First(n => n.NodeType == NodeType.CentralMachine);
-            var linkedNodesCount = centralMachine.LinkedNodesId.Count;
-
-            // Act
-            _messageExchanger.Initialize();
-
-            // Assert
-            _messageCreatorMock.Verify(m => m.AddInQueue(It.Is<Message[]>
-                (messages => messages.All(m1 => m1.MessageType == MessageType.InitializeMessage))),
-                Times.Exactly(linkedNodesCount));
-        }
+        
 
         [Test]
         public void HandleMessagesOnceShouldReplaceMessageToChannel()
@@ -187,7 +170,7 @@ namespace Coursework.Tests
 
             secondNode.IsActive = false;
 
-            _message.MessageType = MessageType.InitializeMessage;
+            _message.MessageType = MessageType.MatrixUpdateMessage;
 
             firstNode.MessageQueueHandlers
                 .First().AppendMessage(_message);
@@ -232,7 +215,7 @@ namespace Coursework.Tests
 
             secondNode.IsActive = true;
 
-            _message.MessageType = MessageType.InitializeMessage;
+            _message.MessageType = MessageType.MatrixUpdateMessage;
 
             var mesageQueueHandler = firstNode.MessageQueueHandlers.First();
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.MessageServices;
 using Coursework.Data.NetworkData;
@@ -146,6 +147,10 @@ namespace Coursework.Tests
         public void GetRouteShouldReturnOptimalRouteToNode()
         {
             // Arrange
+            var firstNode = _nodes.First();
+
+            firstNode.NetworkMatrix = _messageRouter.CountPriceMatrix(firstNode.Id);
+
             // Act
             var result = _messageRouter.GetRoute(0, 3);
 
@@ -159,6 +164,10 @@ namespace Coursework.Tests
         public void GetRouteShouldReturnNullIfRouteNotExists()
         {
             // Arrange
+            var firstNode = _nodes.First();
+
+            firstNode.NetworkMatrix = _messageRouter.CountPriceMatrix(firstNode.Id);
+
             // Act
             var result = _messageRouter.GetRoute(0, 4);
 
@@ -175,6 +184,54 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(result.Length, Is.Zero);
+        }
+
+        [Test]
+        public void CountPriceShouldReturnCorrectPrice()
+        {
+            // Arrange
+            var channel = _channels.First();
+
+            var firstNode = _nodes.First(n => n.Id == channel.FirstNodeId);
+
+            var messageQueue = firstNode.MessageQueueHandlers
+                .First(m => m.ChannelId == channel.Id);
+
+            var realPrice = channel.Price
+                            * (channel.ErrorChance + 1)
+                            * (channel.ErrorChance + 1)
+                            * (messageQueue.Messages.Length + 1)
+                            * (messageQueue.Messages.Length + 1);
+
+            // Act
+            var result = _messageRouter.CountPrice(channel.FirstNodeId, channel.SecondNodeId);
+
+            // Assert
+            Assert.That(Math.Abs(result - realPrice), Is.LessThanOrEqualTo(AllConstants.Eps));
+        }
+
+        [Test]
+        public void CountPriceShouldReturnPositiveInfiniteIfChannelNotExists()
+        {
+            // Arrange
+            var channel = _channels.First();
+
+            // Act
+            var result = _messageRouter.CountPrice(channel.FirstNodeId, 3);
+
+            // Assert
+            Assert.IsTrue(double.IsInfinity(result));
+        }
+
+        [Test]
+        public void CountPriceShouldReturnZeroIfSenderAndReceiverIsTheSameNode()
+        {
+            // Arrange
+            // Act
+            var result = _messageRouter.CountPrice(0, 0);
+
+            // Assert
+            Assert.That(result, Is.Zero);
         }
     }
 }

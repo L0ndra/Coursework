@@ -2,7 +2,6 @@
 {
     public interface IMessageExchanger
     {
-        void Initialize();
         void HandleMessagesOnce();
     }
 }

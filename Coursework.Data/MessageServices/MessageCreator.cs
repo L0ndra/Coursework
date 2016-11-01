@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.NetworkData;
 
@@ -13,6 +16,43 @@ namespace Coursework.Data.MessageServices
         {
             Network = network;
             MessageRouter = messageRouter;
+        }
+
+        public void UpdateTables()
+        {
+            var centralMachine = Network.Nodes
+                .FirstOrDefault(n => n.NodeType == NodeType.CentralMachine);
+
+            if (centralMachine != null)
+            {
+                centralMachine.IsActive = true;
+
+                var networkMatrises = new Dictionary<uint, NetworkMatrix>();
+
+                foreach (var node in Network.Nodes)
+                {
+                    var networkMatrix = MessageRouter.CountPriceMatrix(node.Id);
+
+                    node.IsTableUpdated = false;
+                    networkMatrises[node.Id] = networkMatrix;
+                }
+
+                foreach (var linkedNodeId in centralMachine.LinkedNodesId)
+                {
+                    var initializeMessage = CreateInitializeMessage(centralMachine.Id, linkedNodeId,
+                        networkMatrises);
+
+                    var channel = initializeMessage.Route.First();
+
+                    var messageQueue = centralMachine.MessageQueueHandlers
+                        .First(m => m.ChannelId == channel.Id);
+
+                    messageQueue.AddMessageInStart(initializeMessage);
+                }
+
+                centralMachine.NetworkMatrix = networkMatrises[centralMachine.Id];
+                centralMachine.IsTableUpdated = true;
+            }
         }
 
         public virtual Message[] CreateMessages(MessageInitializer messageInitializer)
@@ -41,20 +81,39 @@ namespace Coursework.Data.MessageServices
             return new[] { message };
         }
 
-        public void AddInQueue(Message[] messages)
+        public void AddInQueue(Message[] messages, uint nodeId)
         {
             foreach (var message in messages)
             {
-                Network.AddInQueue(message);
+                Network.AddInQueue(message, nodeId);
             }
         }
 
-        public void RemoveFromQueue(Message[] messages)
+        public void RemoveFromQueue(Message[] messages, uint nodeId)
         {
             foreach (var message in messages)
             {
-                Network.RemoveFromQueue(message);
+                Network.RemoveFromQueue(message, nodeId);
             }
+        }
+
+        private Message CreateInitializeMessage(uint senderId, uint receiverId,
+            IDictionary<uint, NetworkMatrix> networkMatrises)
+        {
+            var channel = Network.GetChannel(senderId, receiverId);
+
+            return new Message
+            {
+                MessageType = MessageType.MatrixUpdateMessage,
+                ReceiverId = receiverId,
+                SenderId = senderId,
+                Data = networkMatrises,
+                Size = AllConstants.InitializeMessageSize,
+                LastTransferNodeId = senderId,
+                Route = new[] { channel },
+                ParentId = Guid.NewGuid(),
+                SendAttempts = 0
+            };
         }
     }
 }

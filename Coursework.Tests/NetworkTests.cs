@@ -437,7 +437,7 @@ namespace Coursework.Tests
             var messageQueue = _node1.MessageQueueHandlers.First();
 
             // Act
-            _network.AddInQueue(message);
+            _network.AddInQueue(message, 0);
 
             // Assert
             Assert.IsTrue(messageQueue.Messages.Contains(message));
@@ -463,10 +463,10 @@ namespace Coursework.Tests
 
             var messageQueue = _node1.MessageQueueHandlers.First();
 
-            _network.AddInQueue(message);
+            _network.AddInQueue(message, 0);
 
             // Act
-            _network.RemoveFromQueue(message);
+            _network.RemoveFromQueue(message, 0);
 
             // Assert
             Assert.IsFalse(messageQueue.Messages.Contains(message));

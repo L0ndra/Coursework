@@ -11,6 +11,8 @@ namespace Coursework.Data.Entities
         public SortedSet<uint> LinkedNodesId { get; set; }
         public NodeType NodeType { get; set; }
         public bool IsActive { get; set; }
+        public bool IsTableUpdated { get; set; }
+        public NetworkMatrix NetworkMatrix { get; set; }
         public bool GotReceivedMessages
         {
             get

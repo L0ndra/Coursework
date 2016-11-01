@@ -44,7 +44,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -59,6 +58,7 @@
     <Compile Include="Constants\AllConstants.cs" />
     <Compile Include="Entities\MessageInitializer.cs" />
     <Compile Include="Entities\MessageType.cs" />
+    <Compile Include="Entities\NetworkMatrix.cs" />
     <Compile Include="Entities\NodeType.cs" />
     <Compile Include="IONetwork\ChannelIoDto.cs" />
     <Compile Include="Entities\ChannelType.cs" />
@@ -74,7 +74,6 @@
     <Compile Include="MessageServices\MessageReceiver.cs" />
     <Compile Include="MessageServices\MessageRouter.cs" />
     <Compile Include="MessageServices\PackageMessageCreator.cs" />
-    <Compile Include="MessageServices\PackageRequestMessageCreator.cs" />
     <Compile Include="MessageServices\SimpleMessageRouter.cs" />
     <Compile Include="MessageServices\IMessageExchanger.cs" />
     <Compile Include="MessageServices\MessageCreator.cs" />

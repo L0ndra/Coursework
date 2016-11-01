@@ -13,9 +13,7 @@ namespace Coursework.Tests
     public class MessageGeneratorTests
     {
         private Mock<INetworkHandler> _networkMock;
-        private Mock<IMessageRouter> _messageRouterMock;
         private Mock<IMessageCreator> _messageCreatorMock;
-        private Mock<IMessageReceiver> _messageReceiverMock;
         private MessageGenerator _messageGenerator;
         private Channel[] _channels;
         private Node[] _nodes;
@@ -24,13 +22,9 @@ namespace Coursework.Tests
         public void Setup()
         {
             _networkMock = new Mock<INetworkHandler>();
-            _messageRouterMock = new Mock<IMessageRouter>();
             _messageCreatorMock = new Mock<IMessageCreator>();
-            _messageReceiverMock = new Mock<IMessageReceiver>();
 
-            _messageGenerator = new MessageGenerator(_networkMock.Object,
-                _messageRouterMock.Object, _messageCreatorMock.Object,
-                _messageReceiverMock.Object, 0.5);
+            _messageGenerator = new MessageGenerator(_networkMock.Object, _messageCreatorMock.Object, 0.5);
 
             _channels = new[]
             {
@@ -142,17 +136,6 @@ namespace Coursework.Tests
                 }
             );
 
-            _messageRouterMock.Setup(m => m.GetRoute(It.IsAny<uint>(), It.IsAny<uint>()))
-                .Returns((uint senderId, uint receiverId) =>
-                {
-                    var sender = _nodes.First(n => n.Id == senderId);
-
-                    return new[]
-                    {
-                        _channels.First(c => c.Id == sender.MessageQueueHandlers.First().ChannelId)
-                    };
-                });
-
             _messageCreatorMock.Setup(m => m.CreateMessages(It.IsAny<MessageInitializer>()))
                 .Returns(new[] { new Message() });
         }
@@ -165,8 +148,8 @@ namespace Coursework.Tests
             // Arrange
             // Act
             TestDelegate testDelegate =
-                () => _messageGenerator = new MessageGenerator(_networkMock.Object, _messageRouterMock.Object,
-                    _messageCreatorMock.Object, _messageReceiverMock.Object, chance);
+                () => _messageGenerator = new MessageGenerator(_networkMock.Object, _messageCreatorMock.Object, 
+                    chance);
 
             // Assert
             Assert.That(testDelegate, Throws.ArgumentException);
@@ -176,8 +159,7 @@ namespace Coursework.Tests
         public void GenerateShouldNeverGenerateMessages()
         {
             // Arrange
-            _messageGenerator = new MessageGenerator(_networkMock.Object, _messageRouterMock.Object,
-                _messageCreatorMock.Object, _messageReceiverMock.Object, 0.0);
+            _messageGenerator = new MessageGenerator(_networkMock.Object, _messageCreatorMock.Object, 0.0);
 
             // Act
             for (var i = 0; i < 100; i++)
@@ -193,8 +175,7 @@ namespace Coursework.Tests
         public void GenerateShouldGenerateMessage()
         {
             // Arrange
-            _messageGenerator = new MessageGenerator(_networkMock.Object, _messageRouterMock.Object,
-                _messageCreatorMock.Object, _messageReceiverMock.Object, 1.0);
+            _messageGenerator = new MessageGenerator(_networkMock.Object, _messageCreatorMock.Object, 1.0);
 
             // Act
             _messageGenerator.Generate();

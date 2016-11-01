@@ -1,4 +1,5 @@
 ﻿using Coursework.Data.AutoRunners;
+using Coursework.Data.Constants;
 using Coursework.Data.MessageServices;
 using Coursework.Gui.Background;
 using Coursework.Gui.Drawers;
@@ -13,6 +14,7 @@ namespace Coursework.Tests
         private Mock<IMessageExchanger> _messageExchangerMock;
         private Mock<IMessageGenerator> _messageGeneratorMock;
         private Mock<IComponentDrawer> _networkDrawerMock;
+        private Mock<IMessageCreator> _messageCreatorMock;
         private IBackgroundWorker _backgroundWorker;
 
         [SetUp]
@@ -21,9 +23,10 @@ namespace Coursework.Tests
             _messageExchangerMock = new Mock<IMessageExchanger>();
             _messageGeneratorMock = new Mock<IMessageGenerator>();
             _networkDrawerMock = new Mock<IComponentDrawer>();
+            _messageCreatorMock = new Mock<IMessageCreator>();
 
             _backgroundWorker = new BackgroundWorker(_messageExchangerMock.Object, _messageGeneratorMock.Object,
-                _networkDrawerMock.Object);
+                _networkDrawerMock.Object, _messageCreatorMock.Object, AllConstants.UpdateTablePeriod);
         }
 
         [Test]

@@ -83,7 +83,8 @@ namespace Coursework.Tests
                         new MessageQueueHandler(_channels[0].Id),
                         new MessageQueueHandler(_channels[1].Id)
                     },
-                    IsActive = true
+                    IsActive = true,
+                    NodeType = NodeType.CentralMachine
                 },
                 new Node
                 {
@@ -160,7 +161,39 @@ namespace Coursework.Tests
         }
 
         [Test]
-        public void GenerateShouldGenerateNewMessage()
+        public void UpdateTablesShouldStartSendingInformationMessagesToMetropolitanNetworks()
+        {
+            // Arrange
+            var centralMachine = _nodes.First(n => n.NodeType == NodeType.CentralMachine);
+
+            // Act
+            _messageCreator.UpdateTables();
+
+            var messageCount = centralMachine.MessageQueueHandlers
+                .SelectMany(m => m.Messages)
+                .Count(m => m.MessageType == MessageType.MatrixUpdateMessage);
+
+            // Assert
+            Assert.That(messageCount, Is.EqualTo(messageCount));
+
+            Assert.IsTrue(centralMachine.IsActive);
+        }
+
+        [Test]
+        public void UpdateTablesShouldDoAllNodesOutdated()
+        {
+            // Arrange
+            // Act
+            _messageCreator.UpdateTables();
+
+            // Assert
+            Assert.IsTrue(_nodes
+                .Where(n => n.NodeType != NodeType.CentralMachine)
+                .All(n => !n.IsTableUpdated));
+        }
+
+        [Test]
+        public void CreateMessagesShouldDoIt()
         {
             // Arrange
             // Act
@@ -177,16 +210,31 @@ namespace Coursework.Tests
         }
 
         [Test]
+        public void CreateMessageShouldDoNothingIfRouteIsNull()
+        {
+            // Arrange
+            _messageRouterMock.Setup(m => m.GetRoute(It.IsAny<uint>(), It.IsAny<uint>()))
+                .Returns((Channel[])null);
+
+            // Act
+            var messages = _messageCreator.CreateMessages(_messageInitializer);
+
+            // Assert
+            Assert.IsNull(messages);
+        }
+
+        [Test]
         public void AddInQueueShouldDoIt()
         {
             // Arrange
             var messages = _messageCreator.CreateMessages(_messageInitializer);
 
             // Act
-            _messageCreator.AddInQueue(messages);
+            _messageCreator.AddInQueue(messages, 0);
 
             // Assert
-            _networkMock.Verify(n => n.AddInQueue(It.IsAny<Message>()), Times.Exactly(messages.Length));
+            _networkMock.Verify(n => n.AddInQueue(It.IsAny<Message>(), It.IsAny<uint>()), 
+                Times.Exactly(messages.Length));
         }
 
         [Test]
@@ -194,13 +242,14 @@ namespace Coursework.Tests
         {
             // Arrange
             var messages = _messageCreator.CreateMessages(_messageInitializer);
-            _messageCreator.AddInQueue(messages);
+            _messageCreator.AddInQueue(messages, 0);
 
             // Act
-            _messageCreator.RemoveFromQueue(messages);
+            _messageCreator.RemoveFromQueue(messages, 0);
 
             // Assert
-            _networkMock.Verify(n => n.RemoveFromQueue(It.IsAny<Message>()), Times.Exactly(messages.Length));
+            _networkMock.Verify(n => n.RemoveFromQueue(It.IsAny<Message>(), It.IsAny<uint>()), 
+                Times.Exactly(messages.Length));
         }
     }
 }

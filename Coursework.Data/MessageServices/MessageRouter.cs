@@ -9,17 +9,22 @@ namespace Coursework.Data.MessageServices
         {
         }
 
-        protected override double CountPrice(uint startId, uint destinationId)
+        public override double CountPrice(uint startId, uint destinationId)
         {
+            if (startId == destinationId)
+            {
+                return 0.0;
+            }
+
             var startNode = Network.GetNodeById(startId);
             var destinationNode = Network.GetNodeById(destinationId);
 
-            if (!startNode.IsActive || !destinationNode.IsActive)
+            var channel = Network.GetChannel(startId, destinationId);
+
+            if (!startNode.IsActive || !destinationNode.IsActive || channel == null)
             {
                 return double.PositiveInfinity;
             }
-
-            var channel = Network.GetChannel(startId, destinationId);
 
             var startMessageQueue = startNode.MessageQueueHandlers
                 .First(m => m.ChannelId == channel.Id);

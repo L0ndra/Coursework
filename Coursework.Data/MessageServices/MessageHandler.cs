@@ -10,136 +10,77 @@ namespace Coursework.Data.MessageServices
     public class MessageHandler : IMessageHandler
     {
         private readonly INetworkHandler _network;
-        private readonly IMessageCreator _messageCreator;
-        private readonly IMessageRouter _messageRouter;
 
-        public MessageHandler(INetworkHandler network, IMessageCreator messageCreator, IMessageRouter messageRouter)
+        public MessageHandler(INetworkHandler network)
         {
             _network = network;
-            _messageCreator = messageCreator;
-            _messageRouter = messageRouter;
         }
 
         public void HandleMessage(Message message)
         {
-            if (message.MessageType == MessageType.InitializeMessage)
+            switch (message.MessageType)
             {
-                HandleInitializeMessage(message);
-            }
-            else if (message.MessageType == MessageType.SendingRequest)
-            {
-                HandleSendingRequest(message);
-            }
-            else if (message.MessageType == MessageType.SendingResponse)
-            {
-                HandleSendingResponse(message);
+                case MessageType.General:
+                    {
+                        _network.RemoveFromQueue(message, message.ReceiverId);
+                        break;
+                    }
+                case MessageType.MatrixUpdateMessage:
+                    {
+                        HandleUpdateTableMessage(message);
+                        break;
+                    }
+                default:
+                    {
+                        throw new ArgumentOutOfRangeException();
+                    }
             }
         }
 
-        private void HandleInitializeMessage(Message message)
+        private void HandleUpdateTableMessage(Message message)
         {
             var currentNode = _network.GetNodeById(message.ReceiverId);
 
+            var networkMatrises = (IDictionary<uint, NetworkMatrix>)message.Data;
+
             currentNode.IsActive = true;
-            InitializeLinkedNodes(currentNode);
+            currentNode.IsTableUpdated = true;
+            currentNode.NetworkMatrix = networkMatrises[currentNode.Id];
+
+            InitializeLinkedNodes(currentNode, networkMatrises);
         }
 
-        private void HandleSendingResponse(Message message)
-        {
-            var messages = message.Data as Message[];
-
-            _messageCreator.AddInQueue(messages);
-        }
-
-        private void HandleSendingRequest(Message currentMessage)
-        {
-            var requestReceiver = _network.GetNodeById(currentMessage.ReceiverId);
-
-            if (requestReceiver.NodeType == NodeType.CentralMachine)
-            {
-                var messages = (Message[])currentMessage.Data;
-
-                if (!TryRebuildRoutes(messages))
-                {
-                    return;
-                }
-
-                var responseInitializer = CreateResponseMessage(messages, requestReceiver.Id);
-
-                var responseMessage = _messageCreator.CreateMessages(responseInitializer);
-
-                if (responseMessage != null)
-                {
-                    _messageCreator.AddInQueue(responseMessage
-                        .Where(m => m.SenderId != m.ReceiverId)
-                        .ToArray());
-
-                    foreach (var message in responseMessage.Where(m => m.SenderId == m.ReceiverId))
-                    {
-                        HandleMessage(message);
-                    }
-                }
-            }
-        }
-
-        private void InitializeLinkedNodes(Node node)
+        private void InitializeLinkedNodes(Node node, IDictionary<uint, NetworkMatrix> networkMatrises)
         {
             foreach (var linkedNodeId in node.LinkedNodesId)
             {
                 var linkedNode = _network.GetNodeById(linkedNodeId);
 
-                if (!linkedNode.IsActive)
+                if (!linkedNode.IsTableUpdated)
                 {
-                    var initializeMessage = CreateInitializeMessage(node.Id, linkedNodeId);
-                    _messageCreator.AddInQueue(new[] { initializeMessage });
+                    var initializeMessage = CreateInitializeMessage(node.Id, linkedNodeId, networkMatrises);
+
+                    var channel = initializeMessage.Route.First();
+
+                    var messageQueue = node.MessageQueueHandlers
+                        .First(m => m.ChannelId == channel.Id);
+
+                    messageQueue.AddMessageInStart(initializeMessage);
                 }
             }
         }
 
-        private bool TryRebuildRoutes(Message[] messages)
-        {
-            foreach (var message in messages)
-            {
-                var route = _messageRouter.GetRoute(message.SenderId, message.ReceiverId);
-
-                if (route == null)
-                {
-                    _messageCreator.RemoveFromQueue(messages);
-                    return false;
-                }
-
-                message.Route = route;
-
-                _messageCreator.AddInQueue(new[] { message });
-            }
-
-            _messageCreator.RemoveFromQueue(messages);
-
-            return true;
-        }
-
-        private MessageInitializer CreateResponseMessage(Message[] messages, uint centralMachineId)
-        {
-            return new MessageInitializer
-            {
-                MessageType = MessageType.SendingResponse,
-                ReceiverId = messages.First().SenderId,
-                SenderId = centralMachineId,
-                Data = messages,
-                Size = AllConstants.SendingResponseMessageSize,
-            };
-        }
-
-        private Message CreateInitializeMessage(uint senderId, uint receiverId)
+        private Message CreateInitializeMessage(uint senderId, uint receiverId,
+            IDictionary<uint, NetworkMatrix> networkMatrses)
         {
             var channel = _network.GetChannel(senderId, receiverId);
 
             return new Message
             {
-                MessageType = MessageType.InitializeMessage,
+                MessageType = MessageType.MatrixUpdateMessage,
                 ReceiverId = receiverId,
                 SenderId = senderId,
-                Data = null,
+                Data = networkMatrses,
                 Size = AllConstants.InitializeMessageSize,
                 LastTransferNodeId = senderId,
                 Route = new[] { channel },

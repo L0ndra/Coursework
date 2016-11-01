@@ -113,6 +113,10 @@ namespace Coursework.Gui.Drawers
             {
                 return AllConstants.UnactiveNodeBrush;
             }
+            if (!nodeDto.IsTableUpdated)
+            {
+                return AllConstants.OutdatedNodeBrush;
+            }
             switch (nodeDto.NodeType)
             {
                 case NodeType.SimpleNode:

@@ -38,7 +38,7 @@ namespace Coursework.Data.MessageServices
 
                 if (route == null)
                 {
-                    RemoveFromQueue(messages.ToArray());
+                    RemoveFromQueue(messages.ToArray(), currentMessage.SenderId);
                     return null;
                 }
 
@@ -66,11 +66,12 @@ namespace Coursework.Data.MessageServices
 
                 if (message.Route.Length != 0)
                 {
-                    AddInQueue(new[] { message });
+                    AddInQueue(new[] { message }, currentMessage.SenderId);
                 }
             }
 
-            RemoveFromQueue(messages.Where(m => m.Route.Length != 0).ToArray());
+            RemoveFromQueue(messages.Where(m => m.Route.Length != 0)
+                .ToArray(), currentMessage.SenderId);
             return messages.ToArray();
         }
     }

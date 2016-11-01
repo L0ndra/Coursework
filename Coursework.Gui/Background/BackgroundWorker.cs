@@ -14,15 +14,20 @@ namespace Coursework.Gui.Background
         private readonly IMessageExchanger _messageExchanger;
         private readonly IMessageGenerator _messageGenerator;
         private readonly IComponentDrawer _networkDrawer;
+        private readonly IMessageCreator _messageCreator;
+        private readonly int _updatePeriod;
+        private int _accumulator;
         private readonly Mutex _locker;
         private DispatcherTimer _timer;
 
         public BackgroundWorker(IMessageExchanger messageExchanger, IMessageGenerator messageGenerator,
-            IComponentDrawer networkDrawer)
+            IComponentDrawer networkDrawer, IMessageCreator messageCreator, int updatePeriod)
         {
             _messageExchanger = messageExchanger;
             _messageGenerator = messageGenerator;
             _networkDrawer = networkDrawer;
+            _messageCreator = messageCreator;
+            _updatePeriod = updatePeriod;
             _locker = new Mutex();
         }
 
@@ -60,6 +65,13 @@ namespace Coursework.Gui.Background
         private void TimerOnElapsed(object sender, EventArgs e)
         {
             _locker.WaitOne();
+
+            _accumulator++;
+
+            if (_accumulator % _updatePeriod == 0)
+            {
+                _messageCreator.UpdateTables();
+            }
 
             _messageGenerator?.Generate();
 

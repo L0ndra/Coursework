@@ -16,12 +16,12 @@ namespace Coursework.Data.MessageServices
         {
             message.LastTransferNodeId = node.Id;
 
-            message.Route = message.Route
-                .Skip(1)
-                .ToArray();
-
-            if (message.Route.Length != 0)
+            if (message.Route.Length != 1)
             {
+                message.Route = message.Route
+                    .Skip(1)
+                    .ToArray();
+
                 var destinationMessageQueue = node.MessageQueueHandlers
                     .First(m => m.ChannelId == message.Route[0].Id);
 

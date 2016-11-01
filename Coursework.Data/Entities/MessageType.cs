@@ -3,8 +3,6 @@
     public enum MessageType
     {
         General,
-        InitializeMessage,
-        SendingRequest,
-        SendingResponse
+        MatrixUpdateMessage
     }
 }

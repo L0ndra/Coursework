@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
@@ -11,34 +10,13 @@ namespace Coursework.Data.MessageServices
     {
         private readonly INetworkHandler _network;
         private readonly IMessageReceiver _messageReceiver;
-        private readonly IMessageCreator _messageCreator;
         private List<Message> _handledMessagesInNode;
 
-        public MessageExchanger(INetworkHandler network, IMessageCreator messageCreator,
-            IMessageReceiver messageReceiver)
+        public MessageExchanger(INetworkHandler network, IMessageReceiver messageReceiver)
         {
             _network = network;
             _messageReceiver = messageReceiver;
-            _messageCreator = messageCreator;
             _handledMessagesInNode = new List<Message>();
-        }
-
-        public void Initialize()
-        {
-            var centralMachine = _network.Nodes
-                .FirstOrDefault(n => n.NodeType == NodeType.CentralMachine);
-
-            if (centralMachine != null)
-            {
-                centralMachine.IsActive = true;
-
-                foreach (var linkedNodeId in centralMachine.LinkedNodesId)
-                {
-                    var initializeMessage = CreateInitializeMessage(centralMachine.Id, linkedNodeId);
-
-                    _messageCreator.AddInQueue(new [] { initializeMessage });
-                }
-            }
         }
 
         public void HandleMessagesOnce()
@@ -120,8 +98,8 @@ namespace Coursework.Data.MessageServices
                     .Where(message => message.SendAttempts >= AllConstants.MaxAttempts);
 
                 var outdatedMessages = messageQueueHandler.Messages
-                    .Where(message => message.MessageType == MessageType.InitializeMessage)
-                    .Where(message => _network.GetNodeById(message.ReceiverId).IsActive);
+                    .Where(message => message.MessageType == MessageType.MatrixUpdateMessage)
+                    .Where(message => _network.GetNodeById(message.ReceiverId).IsTableUpdated);
 
                 foreach (var message in messagesToRemove.Union(outdatedMessages))
                 {
@@ -169,44 +147,28 @@ namespace Coursework.Data.MessageServices
                 channel.FirstMessage = message;
                 return true;
             }
-            if (channel.ConnectionType == ConnectionType.Duplex 
-                && channel.FirstMessage?.LastTransferNodeId != message.LastTransferNodeId 
-                && channel.SecondMessage?.LastTransferNodeId != message.LastTransferNodeId)
+
+            if (channel.ConnectionType != ConnectionType.Duplex ||
+                channel.FirstMessage?.LastTransferNodeId == message.LastTransferNodeId ||
+                channel.SecondMessage?.LastTransferNodeId == message.LastTransferNodeId)
             {
-                if (channel.FirstMessage == null)
-                {
-                    channel.FirstMessage = message;
-                }
-                else if (channel.SecondMessage == null)
-                {
-                    channel.SecondMessage = message;
-                }
-                else
-                {
-                    return false;
-                }
-                return true;
+                return false;
             }
 
-            return false;
-        }
-
-        private Message CreateInitializeMessage(uint senderId, uint receiverId)
-        {
-            var channel = _network.GetChannel(senderId, receiverId);
-
-            return new Message
+            if (channel.FirstMessage == null)
             {
-                MessageType = MessageType.InitializeMessage,
-                ReceiverId = receiverId,
-                SenderId = senderId,
-                Data = null,
-                Size = AllConstants.InitializeMessageSize,
-                LastTransferNodeId = senderId,
-                Route = new []{ channel },
-                ParentId = Guid.NewGuid(),
-                SendAttempts = 0
-            };
+                channel.FirstMessage = message;
+            }
+            else if (channel.SecondMessage == null)
+            {
+                channel.SecondMessage = message;
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

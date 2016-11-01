@@ -76,7 +76,6 @@
     <Compile Include="MessageReceiverTests.cs" />
     <Compile Include="MessageRouterTests.cs" />
     <Compile Include="PackageMessageCreatorTests.cs" />
-    <Compile Include="PackageRequestMessageCreatorTests.cs" />
     <Compile Include="SimpleMessageRouterTests.cs" />
     <Compile Include="MessageCreatorTests.cs" />
     <Compile Include="WideAreaNetworkBuilderTests.cs" />

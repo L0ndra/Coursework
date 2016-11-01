@@ -10,14 +10,10 @@ namespace Coursework.Data.MessageServices
     {
         public Message LastGeneratedMessage { get; protected set; }
         protected readonly INetworkHandler Network;
-        protected readonly IMessageRouter MessageRouter;
         private readonly IMessageCreator _messageCreator;
-        private readonly IMessageReceiver _messageReceiver;
         private readonly double _messageGenerateChance;
 
-        public MessageGenerator(INetworkHandler network, IMessageRouter messageRouter,
-            IMessageCreator messageCreator,
-            IMessageReceiver messageReceiver,
+        public MessageGenerator(INetworkHandler network, IMessageCreator messageCreator,
             double messageGenerateChance)
         {
             if (messageGenerateChance > 1.0 || messageGenerateChance < 0.0)
@@ -28,8 +24,6 @@ namespace Coursework.Data.MessageServices
             _messageGenerateChance = messageGenerateChance;
             Network = network;
             _messageCreator = messageCreator;
-            _messageReceiver = messageReceiver;
-            MessageRouter = messageRouter;
         }
 
         public virtual void Generate()
@@ -73,14 +67,7 @@ namespace Coursework.Data.MessageServices
 
             if (messages != null)
             {
-                _messageCreator.AddInQueue(messages
-                    .Where(m => m.ReceiverId != m.SenderId)
-                    .ToArray());
-
-                foreach (var message in messages.Where(m => m.ReceiverId == m.SenderId))
-                {
-                    _messageReceiver.HandleReceivedMessage(sender, message);
-                }
+                _messageCreator.AddInQueue(messages, messages.First().SenderId);
 
                 LastGeneratedMessage = messages.LastOrDefault();
             }

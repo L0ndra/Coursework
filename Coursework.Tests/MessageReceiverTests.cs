@@ -27,7 +27,7 @@ namespace Coursework.Tests
                 SenderId = 1,
                 LastTransferNodeId = 0,
                 ReceiverId = 0,
-                MessageType = MessageType.InitializeMessage,
+                MessageType = MessageType.MatrixUpdateMessage,
                 Route = new[]
                 {
                     new Channel(),

@@ -9,24 +9,6 @@ namespace Coursework.Data.MessageServices
 {
     public class SimpleMessageRouter : IMessageRouter
     {
-        private class NetworkMatrix
-        {
-            public readonly IDictionary<uint, double> NodeIdWithCurrentPrice = new Dictionary<uint, double>();
-            public readonly SortedSet<uint> VisitedNodes = new SortedSet<uint>();
-
-            public static NetworkMatrix Initialize(INetwork network)
-            {
-                var networkMatrix = new NetworkMatrix();
-
-                foreach (var node in network.Nodes)
-                {
-                    networkMatrix.NodeIdWithCurrentPrice[node.Id] = double.PositiveInfinity;
-                }
-
-                return networkMatrix;
-            }
-        }
-
         protected readonly INetworkHandler Network;
 
         public SimpleMessageRouter(INetworkHandler network)
@@ -41,31 +23,84 @@ namespace Coursework.Data.MessageServices
                 return new Channel[0];
             }
 
-            var networkMatrix = NetworkMatrix.Initialize(Network);
-            networkMatrix.NodeIdWithCurrentPrice[senderId] = 0.0;
+            var sender = Network.GetNodeById(senderId);
 
-            CountPriceMatrix(senderId, receiverId, networkMatrix);
+            var networkMatrix = sender.NetworkMatrix;
 
-            if (!networkMatrix.VisitedNodes.Contains(receiverId))
+            if (double.IsInfinity(networkMatrix.NodeIdWithCurrentPrice[receiverId]))
             {
                 return null;
             }
 
             var route = BuildRoute(networkMatrix, senderId, receiverId);
+
             return route.ToArray();
         }
 
-        protected virtual double CountPrice(uint startId, uint destinationId)
+        public NetworkMatrix CountPriceMatrix(uint currentId, NetworkMatrix matrix = null,
+            SortedSet<uint> visitedNodes = null)
         {
+            if (visitedNodes == null || matrix == null)
+            {
+                matrix = NetworkMatrix.Initialize(Network);
+                matrix.NodeIdWithCurrentPrice[currentId] = 0.0;
+                visitedNodes = new SortedSet<uint>();
+            }
+
+            if (visitedNodes.Contains(currentId))
+            {
+                visitedNodes.Add(currentId);
+                return matrix;
+            }
+
+            visitedNodes.Add(currentId);
+            var currentNode = Network.GetNodeById(currentId);
+
+            foreach (var linkedNodeId in currentNode.LinkedNodesId)
+            {
+                matrix.PriceMatrix[currentId][linkedNodeId] = CountPrice(currentId, linkedNodeId);
+
+                var currentPrice = matrix.NodeIdWithCurrentPrice[currentId]
+                    + matrix.PriceMatrix[currentId][linkedNodeId];
+
+                if (matrix.NodeIdWithCurrentPrice[linkedNodeId] > currentPrice)
+                {
+                    matrix.NodeIdWithCurrentPrice[linkedNodeId] = currentPrice;
+                }
+            }
+
+            if (!Network.Nodes.All(n => visitedNodes.Contains(n.Id)))
+            {
+                var nextNodeId = matrix.NodeIdWithCurrentPrice
+                .Where(kv => !visitedNodes.Contains(kv.Key))
+                .Aggregate((l, r) => l.Value < r.Value ? l : r)
+                .Key;
+
+                if (!double.IsInfinity(matrix.NodeIdWithCurrentPrice[nextNodeId]))
+                {
+                    return CountPriceMatrix(nextNodeId, matrix, visitedNodes);
+                }
+            }
+
+            return matrix;
+        }
+
+        public virtual double CountPrice(uint startId, uint destinationId)
+        {
+            if (startId == destinationId)
+            {
+                return 0.0;
+            }
+
             var startNode = Network.GetNodeById(startId);
             var destinationNode = Network.GetNodeById(destinationId);
 
-            if (!startNode.IsActive || !destinationNode.IsActive)
+            var channel = Network.GetChannel(startId, destinationId);
+
+            if (!startNode.IsActive || !destinationNode.IsActive || channel == null)
             {
                 return double.PositiveInfinity;
             }
-
-            var channel = Network.GetChannel(startId, destinationId);
 
             return channel.Price;
         }
@@ -84,7 +119,7 @@ namespace Coursework.Data.MessageServices
                 {
                     var difference = Math.Abs(networkMatrix.NodeIdWithCurrentPrice[currentNodeId]
                                               - networkMatrix.NodeIdWithCurrentPrice[linkedNodeId]
-                                              - CountPrice(linkedNodeId, currentNodeId));
+                                              - networkMatrix.PriceMatrix[linkedNodeId][currentNodeId]);
 
                     if (difference < AllConstants.Eps)
                     {
@@ -99,40 +134,6 @@ namespace Coursework.Data.MessageServices
 
             route.Reverse();
             return route;
-        }
-
-        private void CountPriceMatrix(uint currentId, uint receiverId, NetworkMatrix matrix)
-        {
-            if (Network.Nodes.All(n => matrix.VisitedNodes.Contains(n.Id))
-                || matrix.VisitedNodes.Contains(currentId)
-                || currentId == receiverId)
-            {
-                matrix.VisitedNodes.Add(currentId);
-                return;
-            }
-
-            matrix.VisitedNodes.Add(currentId);
-            var currentNode = Network.GetNodeById(currentId);
-
-            foreach (var linkedNodeId in currentNode.LinkedNodesId)
-            {
-                var currentPrice = matrix.NodeIdWithCurrentPrice[currentId] + CountPrice(currentId, linkedNodeId);
-
-                if (matrix.NodeIdWithCurrentPrice[linkedNodeId] > currentPrice)
-                {
-                    matrix.NodeIdWithCurrentPrice[linkedNodeId] = currentPrice;
-                }
-            }
-
-            var nextNodeId = matrix.NodeIdWithCurrentPrice
-                .Where(kv => !matrix.VisitedNodes.Contains(kv.Key))
-                .Aggregate((l, r) => l.Value < r.Value ? l : r)
-                .Key;
-
-            if (!double.IsInfinity(matrix.NodeIdWithCurrentPrice[nextNodeId]))
-            {
-                CountPriceMatrix(nextNodeId, receiverId, matrix);
-            }
         }
     }
 }
