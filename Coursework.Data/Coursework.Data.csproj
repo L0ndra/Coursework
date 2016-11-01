@@ -68,13 +68,13 @@
     <Compile Include="MessageServices\IMessageGenerator.cs" />
     <Compile Include="MessageServices\IMessageReceiver.cs" />
     <Compile Include="MessageServices\IMessageRouter.cs" />
-    <Compile Include="MessageServices\IMessageSender.cs" />
+    <Compile Include="MessageServices\IMessageCreator.cs" />
     <Compile Include="MessageServices\MessageReceiver.cs" />
     <Compile Include="MessageServices\MessageRouter.cs" />
+    <Compile Include="MessageServices\PackageMessageCreator.cs" />
     <Compile Include="MessageServices\SimpleMessageRouter.cs" />
     <Compile Include="MessageServices\IMessageExchanger.cs" />
-    <Compile Include="MessageServices\MessageSender.cs" />
-    <Compile Include="MessageServices\PackageMessageGenerator.cs" />
+    <Compile Include="MessageServices\MessageCreator.cs" />
     <Compile Include="NetworkData\IChannelHandler.cs" />
     <Compile Include="NetworkData\INetwork.cs" />
     <Compile Include="NetworkData\INetworkHandler.cs" />

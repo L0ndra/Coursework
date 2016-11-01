@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.NetworkData;
@@ -8,12 +9,12 @@ namespace Coursework.Data.MessageServices
     public class MessageReceiver : IMessageReceiver
     {
         private readonly INetworkHandler _network;
-        private readonly IMessageSender _messageSender;
+        private readonly IMessageCreator _messageCreator;
 
-        public MessageReceiver(INetworkHandler network, IMessageSender messageSender)
+        public MessageReceiver(INetworkHandler network, IMessageCreator messageCreator)
         {
             _network = network;
-            _messageSender = messageSender;
+            _messageCreator = messageCreator;
         }
 
         public void HandleReceivedMessage(Node node, Message message)
@@ -50,21 +51,26 @@ namespace Coursework.Data.MessageServices
                 if (!linkedNode.IsActive)
                 {
                     var initializeMessage = CreateInitializeMessage(node.Id, linkedNodeId);
-
-                    _messageSender.StartSendProcess(initializeMessage);
+                    _messageCreator.AddInQueue(new[] { initializeMessage });
                 }
             }
         }
 
-        private MessageInitializer CreateInitializeMessage(uint senderId, uint receiverId)
+        private Message CreateInitializeMessage(uint senderId, uint receiverId)
         {
-            return new MessageInitializer
+            var channel = _network.GetChannel(senderId, receiverId);
+
+            return new Message
             {
                 MessageType = MessageType.InitializeMessage,
                 ReceiverId = receiverId,
                 SenderId = senderId,
                 Data = null,
-                Size = AllConstants.InitializeMessageSize
+                Size = AllConstants.InitializeMessageSize,
+                LastTransferNodeId = senderId,
+                Route = new[] { channel },
+                ParentId = Guid.NewGuid(),
+                SendAttempts = 0
             };
         }
     }

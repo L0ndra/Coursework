@@ -30,6 +30,8 @@ namespace Coursework.Gui
         private IMessageRouter _messageRouter;
         private MessageGenerator _messageGenerator;
         private IBackgroundWorker _backgroundWorker;
+        private IMessageCreator _messageCreator;
+        private IMessageReceiver _messageReceiver;
         private readonly INetworkInfoRetriever _networkInfoRetriever;
         private readonly ChannelAddWindow _channelAddWindow;
         private Canvas GeneratedCanvas => NetworkArea.Children.OfType<Canvas>().First();
@@ -140,10 +142,12 @@ namespace Coursework.Gui
         {
             if (_backgroundWorker == null)
             {
+                _messageRouter = new MessageRouter(_network);
+
                 InitializeMessageExchanger();
 
-                _messageRouter = new MessageRouter(_network);
-                _messageGenerator = new PackageMessageGenerator(_network, _messageRouter, AllConstants.MessageGenerateChance);
+                _messageGenerator = new MessageGenerator(_network, _messageRouter, 
+                    _messageCreator, AllConstants.MessageGenerateChance);
 
                 _backgroundWorker = new Background.BackgroundWorker(_messageExchanger, _messageGenerator,
                     _networkDrawer);
@@ -154,10 +158,10 @@ namespace Coursework.Gui
 
         private void InitializeMessageExchanger()
         {
-            var messageSender = new MessageSender(_network);
-            var messageReceiver = new MessageReceiver(_network, messageSender);
+            _messageCreator = new PackageMessageCreator(_network, _messageRouter);
+            _messageReceiver = new MessageReceiver(_network, _messageCreator);
 
-            _messageExchanger = new MessageExchanger(_network, messageSender, messageReceiver);
+            _messageExchanger = new MessageExchanger(_network, _messageCreator, _messageReceiver);
 
             _messageExchanger.Initialize();
 

@@ -14,7 +14,7 @@ namespace Coursework.Tests
     public class MessageExchangerTests
     {
         private Mock<INetworkHandler> _networkMock;
-        private Mock<IMessageSender> _messageSenderMock;
+        private Mock<IMessageCreator> _messageCreatorMock;
         private Mock<IMessageReceiver> _messageReceiverMock;
         private IMessageExchanger _messageExchanger;
         private Node[] _nodes;
@@ -25,10 +25,10 @@ namespace Coursework.Tests
         public void Setup()
         {
             _networkMock = new Mock<INetworkHandler>();
-            _messageSenderMock = new Mock<IMessageSender>();
+            _messageCreatorMock = new Mock<IMessageCreator>();
             _messageReceiverMock = new Mock<IMessageReceiver>();
 
-            _messageExchanger = new MessageExchanger(_networkMock.Object, _messageSenderMock.Object,
+            _messageExchanger = new MessageExchanger(_networkMock.Object, _messageCreatorMock.Object,
                 _messageReceiverMock.Object);
 
             _channels = new[]
@@ -102,7 +102,8 @@ namespace Coursework.Tests
             _messageExchanger.Initialize();
 
             // Assert
-            _messageSenderMock.Verify(m => m.StartSendProcess(It.IsAny<MessageInitializer>()), 
+            _messageCreatorMock.Verify(m => m.AddInQueue(It.Is<Message[]>
+                (messages => messages.All(m1 => m1.MessageType == MessageType.InitializeMessage))),
                 Times.Exactly(linkedNodesCount));
         }
 

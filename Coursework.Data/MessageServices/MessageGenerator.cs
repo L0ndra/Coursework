@@ -11,9 +11,11 @@ namespace Coursework.Data.MessageServices
         public Message LastGeneratedMessage { get; protected set; }
         protected readonly INetworkHandler Network;
         protected readonly IMessageRouter MessageRouter;
+        private readonly IMessageCreator _messageCreator;
         private readonly double _messageGenerateChance;
 
         public MessageGenerator(INetworkHandler network, IMessageRouter messageRouter,
+            IMessageCreator messageCreator,
             double messageGenerateChance)
         {
             if (messageGenerateChance > 1.0 || messageGenerateChance < 0.0)
@@ -23,6 +25,7 @@ namespace Coursework.Data.MessageServices
 
             _messageGenerateChance = messageGenerateChance;
             Network = network;
+            _messageCreator = messageCreator;
             MessageRouter = messageRouter;
         }
 
@@ -37,9 +40,10 @@ namespace Coursework.Data.MessageServices
                 {
                     senderAndReceiver = ChooseRandomSenderAndReceiver();
 
-                    if (senderAndReceiver.Item1.IsActive && senderAndReceiver.Item2.IsActive)
+                    if (senderAndReceiver.Item1.IsActive && senderAndReceiver.Item2.IsActive
+                        && senderAndReceiver.Item1.Id != senderAndReceiver.Item2.Id)
                     {
-                        TryAddInQueueRandomMessage(senderAndReceiver.Item1, senderAndReceiver.Item2);
+                        CreateRandomMessages(senderAndReceiver.Item1, senderAndReceiver.Item2);
                     }
                     else
                     {
@@ -49,41 +53,27 @@ namespace Coursework.Data.MessageServices
             }
         }
 
-        protected virtual void TryAddInQueueRandomMessage(Node sender, Node receiver)
-        {
-            var message = TryCreateMessage(sender, receiver);
-
-            if (message != null)
-            {
-                LastGeneratedMessage = message;
-
-                Network.AddInQueue(LastGeneratedMessage);
-            }
-        }
-
-        protected virtual Message TryCreateMessage(Node sender, Node receiver)
+        private void CreateRandomMessages(Node sender, Node receiver)
         {
             var messageSize = AllConstants.RandomGenerator.Next(AllConstants.MaxMessageSize) + 1;
-            var route = MessageRouter.GetRoute(sender.Id, receiver.Id);
 
-            if (route == null || route.Length == 0)
+            var messageInitializer = new MessageInitializer
             {
-                return null;
-            }
-
-            var message = new Message
-            {
-                ParentId = Guid.NewGuid(),
-                LastTransferNodeId = sender.Id,
-                SenderId = sender.Id,
                 ReceiverId = receiver.Id,
                 MessageType = MessageType.General,
+                SenderId = sender.Id,
                 Data = null,
-                Size = messageSize,
-                Route = route
+                Size = messageSize
             };
 
-            return message;
+            var messages = _messageCreator.CreateMessages(messageInitializer);
+
+            if (messages != null)
+            {
+                _messageCreator.AddInQueue(messages);
+            }
+
+            LastGeneratedMessage = messages.LastOrDefault();
         }
 
         private Tuple<Node, Node> ChooseRandomSenderAndReceiver()

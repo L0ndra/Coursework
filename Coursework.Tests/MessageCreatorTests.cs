@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.MessageServices;
 using Coursework.Data.NetworkData;
@@ -10,13 +11,14 @@ using NUnit.Framework;
 namespace Coursework.Tests
 {
     [TestFixture]
-    public class PackageMessageGeneratorTests
+    public class MessageCreatorTests
     {
         private Mock<INetworkHandler> _networkMock;
         private Mock<IMessageRouter> _messageRouterMock;
-        private MessageGenerator _messageGenerator;
-        private Channel[] _channels;
+        private IMessageCreator _messageCreator;
+        private MessageInitializer _messageInitializer;
         private Node[] _nodes;
+        private Channel[] _channels;
 
         [SetUp]
         public void Setup()
@@ -24,8 +26,7 @@ namespace Coursework.Tests
             _networkMock = new Mock<INetworkHandler>();
             _messageRouterMock = new Mock<IMessageRouter>();
 
-            _messageGenerator = new PackageMessageGenerator(_networkMock.Object,
-                _messageRouterMock.Object, 0.5);
+            _messageCreator = new MessageCreator(_networkMock.Object, _messageRouterMock.Object);
 
             _channels = new[]
             {
@@ -148,45 +149,58 @@ namespace Coursework.Tests
                     };
                 });
 
-            var randomMessageQueue = _nodes.First()
-                .MessageQueueHandlers.First();
-
-            _networkMock.Setup(n => n.AddInQueue(It.IsAny<Message>()))
-                .Callback((Message message) => randomMessageQueue.AppendMessage(message));
+            _messageInitializer = new MessageInitializer
+            {
+                MessageType = MessageType.General,
+                ReceiverId = 2,
+                SenderId = 0,
+                Data = null,
+                Size = AllConstants.MaxMessageSize
+            };
         }
 
         [Test]
-        [TestCase(1.1)]
-        [TestCase(-1.1)]
-        public void ConstrcutorShouldThrowExceptionIfErrorChanceIsIncorrect(double chance)
+        public void GenerateShouldGenerateNewMessage()
         {
             // Arrange
             // Act
-            TestDelegate testDelegate =
-                () => _messageGenerator = new PackageMessageGenerator(_networkMock.Object, _messageRouterMock.Object,
-                    chance);
+            var messages = _messageCreator.CreateMessages(_messageInitializer);
+            var firstMessage = messages.First();
 
             // Assert
-            Assert.That(testDelegate, Throws.ArgumentException);
+            Assert.That(messages.Length, Is.EqualTo(1));
+            Assert.That(firstMessage.ReceiverId, Is.EqualTo(_messageInitializer.ReceiverId));
+            Assert.That(firstMessage.SenderId, Is.EqualTo(_messageInitializer.SenderId));
+            Assert.That(firstMessage.Data, Is.EqualTo(_messageInitializer.Data));
+            Assert.That(firstMessage.MessageType, Is.EqualTo(_messageInitializer.MessageType));
+            Assert.That(firstMessage.Size, Is.EqualTo(_messageInitializer.Size));
         }
 
         [Test]
-        public void GenerateShouldGenerateAtLeastOneMessage()
+        public void AddInQueueShouldDoIt()
         {
             // Arrange
-            _messageGenerator = new PackageMessageGenerator(_networkMock.Object, _messageRouterMock.Object, 1.0);
+            var messages = _messageCreator.CreateMessages(_messageInitializer);
 
             // Act
-            _messageGenerator.Generate();
-
-            var messagesInQueueCount = _nodes.SelectMany(n => n.MessageQueueHandlers)
-                .SelectMany(m => m.Messages)
-                .Count();
+            _messageCreator.AddInQueue(messages);
 
             // Assert
-            Console.WriteLine($"Message count = {messagesInQueueCount}");
+            _networkMock.Verify(n => n.AddInQueue(It.IsAny<Message>()), Times.Exactly(messages.Length));
+        }
 
-            Assert.That(messagesInQueueCount, Is.GreaterThanOrEqualTo(1));
+        [Test]
+        public void RemoveFromQueueShouldDoIt()
+        {
+            // Arrange
+            var messages = _messageCreator.CreateMessages(_messageInitializer);
+            _messageCreator.AddInQueue(messages);
+
+            // Act
+            _messageCreator.RemoveFromQueue(messages);
+
+            // Assert
+            _networkMock.Verify(n => n.RemoveFromQueue(It.IsAny<Message>()), Times.Exactly(messages.Length));
         }
     }
 }

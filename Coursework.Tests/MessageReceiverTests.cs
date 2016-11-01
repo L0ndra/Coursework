@@ -13,7 +13,7 @@ namespace Coursework.Tests
     public class MessageReceiverTests
     {
         private Mock<INetworkHandler> _networkMock;
-        private Mock<IMessageSender> _messageSenderMock;
+        private Mock<IMessageCreator> _messageCreatorMock;
         private IMessageReceiver _messageReceiver;
         private Node _node;
         private Message _message;
@@ -22,9 +22,9 @@ namespace Coursework.Tests
         public void Setup()
         {
             _networkMock = new Mock<INetworkHandler>();
-            _messageSenderMock = new Mock<IMessageSender>();
+            _messageCreatorMock = new Mock<IMessageCreator>();
 
-            _messageReceiver = new MessageReceiver(_networkMock.Object, _messageSenderMock.Object);
+            _messageReceiver = new MessageReceiver(_networkMock.Object, _messageCreatorMock.Object);
 
             _message = new Message
             {
@@ -72,8 +72,6 @@ namespace Coursework.Tests
         public void HandleReceivedMessageShouldCreateNewInitializeMessagesToUnactiveLinkedNodes()
         {
             // Arrange
-            var linkedNodesCount = _node.LinkedNodesId.Count;
-
             // Act
             _messageReceiver.HandleReceivedMessage(_node, _message);
 
@@ -81,8 +79,9 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(messagesCount, Is.EqualTo(1));
-            _messageSenderMock.Verify(m => m.StartSendProcess(It.Is<MessageInitializer>
-                (m1 => m1.MessageType == MessageType.InitializeMessage)), Times.Exactly(linkedNodesCount));
+            _messageCreatorMock.Verify(m => m.AddInQueue(It.Is<Message[]>
+                (messages => messages.All(m1 => m1.MessageType == MessageType.InitializeMessage))),
+                Times.Once());
         }
     }
 }

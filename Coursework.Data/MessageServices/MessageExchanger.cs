@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
@@ -10,15 +11,15 @@ namespace Coursework.Data.MessageServices
     {
         private readonly INetworkHandler _network;
         private readonly IMessageReceiver _messageReceiver;
-        private readonly IMessageSender _messageSender;
+        private readonly IMessageCreator _messageCreator;
         private List<Message> _handledMessagesInNode;
 
-        public MessageExchanger(INetworkHandler network, IMessageSender messageSender,
+        public MessageExchanger(INetworkHandler network, IMessageCreator messageCreator,
             IMessageReceiver messageReceiver)
         {
             _network = network;
             _messageReceiver = messageReceiver;
-            _messageSender = messageSender;
+            _messageCreator = messageCreator;
             _handledMessagesInNode = new List<Message>();
         }
 
@@ -35,7 +36,7 @@ namespace Coursework.Data.MessageServices
                 {
                     var initializeMessage = CreateInitializeMessage(centralMachine.Id, linkedNodeId);
 
-                    _messageSender.StartSendProcess(initializeMessage);
+                    _messageCreator.AddInQueue(new [] { initializeMessage });
                 }
             }
         }
@@ -190,15 +191,21 @@ namespace Coursework.Data.MessageServices
             return false;
         }
 
-        private MessageInitializer CreateInitializeMessage(uint senderId, uint receiverId)
+        private Message CreateInitializeMessage(uint senderId, uint receiverId)
         {
-            return new MessageInitializer
+            var channel = _network.GetChannel(senderId, receiverId);
+
+            return new Message
             {
                 MessageType = MessageType.InitializeMessage,
                 ReceiverId = receiverId,
                 SenderId = senderId,
                 Data = null,
-                Size = AllConstants.InitializeMessageSize
+                Size = AllConstants.InitializeMessageSize,
+                LastTransferNodeId = senderId,
+                Route = new []{ channel },
+                ParentId = Guid.NewGuid(),
+                SendAttempts = 0
             };
         }
     }

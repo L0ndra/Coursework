@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.MessageServices;
 using Coursework.Data.NetworkData;
@@ -10,24 +11,22 @@ using NUnit.Framework;
 namespace Coursework.Tests
 {
     [TestFixture]
-    public class MessageGeneratorTests
+    public class PackageMessageCreatorTests
     {
         private Mock<INetworkHandler> _networkMock;
         private Mock<IMessageRouter> _messageRouterMock;
-        private Mock<IMessageCreator> _messageCreatorMock;
-        private MessageGenerator _messageGenerator;
-        private Channel[] _channels;
+        private IMessageCreator _messageCreator;
+        private MessageInitializer _messageInitializer;
         private Node[] _nodes;
+        private Channel[] _channels;
 
         [SetUp]
         public void Setup()
         {
             _networkMock = new Mock<INetworkHandler>();
             _messageRouterMock = new Mock<IMessageRouter>();
-            _messageCreatorMock = new Mock<IMessageCreator>();
 
-            _messageGenerator = new MessageGenerator(_networkMock.Object,
-                _messageRouterMock.Object, _messageCreatorMock.Object, 0.5);
+            _messageCreator = new PackageMessageCreator(_networkMock.Object, _messageRouterMock.Object);
 
             _channels = new[]
             {
@@ -150,55 +149,30 @@ namespace Coursework.Tests
                     };
                 });
 
-            _messageCreatorMock.Setup(m => m.CreateMessages(It.IsAny<MessageInitializer>()))
-                .Returns(new[] { new Message() });
-        }
-
-        [Test]
-        [TestCase(1.1)]
-        [TestCase(-1.1)]
-        public void ConstrcutorShouldThrowExceptionIfErrorChanceIsIncorrect(double chance)
-        {
-            // Arrange
-            // Act
-            TestDelegate testDelegate =
-                () => _messageGenerator = new MessageGenerator(_networkMock.Object, _messageRouterMock.Object,
-                    _messageCreatorMock.Object, chance);
-
-            // Assert
-            Assert.That(testDelegate, Throws.ArgumentException);
-        }
-
-        [Test]
-        public void GenerateShouldNeverGenerateMessages()
-        {
-            // Arrange
-            _messageGenerator = new MessageGenerator(_networkMock.Object, _messageRouterMock.Object,
-                _messageCreatorMock.Object, 0.0);
-
-            // Act
-            for (var i = 0; i < 100; i++)
+            _messageInitializer = new MessageInitializer
             {
-                _messageGenerator.Generate();
-            }
-
-            // Assert
-            Assert.IsNull(_messageGenerator.LastGeneratedMessage);
+                MessageType = MessageType.General,
+                ReceiverId = 2,
+                SenderId = 0,
+                Data = null,
+                Size = AllConstants.MaxMessageSize
+            };
         }
 
         [Test]
-        public void GenerateShouldGenerateMessage()
+        public void GenerateShouldGenerateNewMessages()
         {
             // Arrange
-            _messageGenerator = new MessageGenerator(_networkMock.Object, _messageRouterMock.Object,
-                _messageCreatorMock.Object, 1.0);
-
             // Act
-            _messageGenerator.Generate();
-            var message = _messageGenerator.LastGeneratedMessage;
+            var messages = _messageCreator.CreateMessages(_messageInitializer);
+            var firstMessage = messages.First();
 
             // Assert
-            Assert.IsNotNull(message);
+            Assert.That(messages.Length, Is.GreaterThanOrEqualTo(1));
+            Assert.That(firstMessage.ReceiverId, Is.EqualTo(_messageInitializer.ReceiverId));
+            Assert.That(firstMessage.SenderId, Is.EqualTo(_messageInitializer.SenderId));
+            Assert.That(firstMessage.Data, Is.EqualTo(_messageInitializer.Data));
+            Assert.That(firstMessage.MessageType, Is.EqualTo(_messageInitializer.MessageType));
         }
     }
 }
