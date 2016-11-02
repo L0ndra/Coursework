@@ -47,21 +47,9 @@ namespace Coursework.Data.Builder
 
         private void CreateChannels()
         {
-            var roundedPower = (int)Math.Ceiling(_networkPower);
-
             foreach (var node in _network.Nodes)
             {
-                var currentChannelsNumber = _network.Channels
-                    .Count(c => c.SecondNodeId == node.Id);
-
-                var numberOfChannels = AllConstants.RandomGenerator.Next(roundedPower) + 1 - currentChannelsNumber;
-
-                var maxChannelsCountInNode = MaxChannelsCountInNode(node);
-
-                if (numberOfChannels > maxChannelsCountInNode)
-                {
-                    numberOfChannels = maxChannelsCountInNode;
-                }
+                var numberOfChannels = GetNumberOfChannels(node);
 
                 for (var i = 0; i < numberOfChannels; i++)
                 {
@@ -70,6 +58,45 @@ namespace Coursework.Data.Builder
                     _network.AddChannel(channel);
                 }
             }
+        }
+
+        private int GetNumberOfChannels(Node node)
+        {
+            var roundedPower = (int)Math.Ceiling(_networkPower);
+
+            var currentChannelsNumber = _network.Channels.Length;
+
+            var maxChannelsCountInNode = MaxChannelsCountInNode(node);
+
+            var nodesWithChannelsCount = _network.Nodes
+                .Select(n => _network.GetChannels(n.Id))
+                .Count(c => c.Length != 0);
+
+            var currentNodePower = 2 * currentChannelsNumber / (double)nodesWithChannelsCount;
+
+            int numberOfChannels;
+
+            if (_network.Channels.Length == 0
+                || Math.Abs(_networkPower - currentNodePower) < AllConstants.Eps)
+            {
+                numberOfChannels = AllConstants.RandomGenerator.Next(roundedPower) + 1;
+            }
+            else
+            {
+                numberOfChannels = nodesWithChannelsCount * roundedPower - 2 * currentChannelsNumber;
+
+                if (numberOfChannels < 0)
+                {
+                    numberOfChannels = 0;
+                }
+            }
+
+            if (numberOfChannels > maxChannelsCountInNode)
+            {
+                numberOfChannels = maxChannelsCountInNode;
+            }
+
+            return numberOfChannels;
         }
 
         private int MaxChannelsCountInNode(Node node)

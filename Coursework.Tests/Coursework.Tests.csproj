@@ -74,7 +74,9 @@
     <Compile Include="MessageHandlerTests.cs" />
     <Compile Include="MessageQueueHandlerTests.cs" />
     <Compile Include="MessageReceiverTests.cs" />
+    <Compile Include="MessageRepositoryTests.cs" />
     <Compile Include="MessageRouterTests.cs" />
+    <Compile Include="MessageViewUpdaterTests.cs" />
     <Compile Include="PackageMessageCreatorTests.cs" />
     <Compile Include="SimpleMessageRouterTests.cs" />
     <Compile Include="MessageCreatorTests.cs" />

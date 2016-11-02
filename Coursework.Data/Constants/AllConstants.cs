@@ -9,12 +9,12 @@ namespace Coursework.Data.Constants
         public const uint NodeCountInMetropolitanNetwork = 8;
         public const int MetropolitanNetworksCount = 3;
         public const int MetropolitanNetworkNodesInRow = 3;
-        public const double NetworkPower = 2.5;
+        public const double NetworkPower = 5.0;
         public const double TimerInterval = 500.0;
         public const double SquareSize = 30.0;
         public const double LineThickness = 2.0;
         public const double Eps = 0.002;
-        public const double MessageGenerateChance = 0.5;
+        public const double MessageGenerateChance = 0.2;
         public const int InitializeMessageSize = 5;
         public const int LineZIndex = int.MaxValue - 2;
         public const int PriceZIndex = int.MaxValue - 1;

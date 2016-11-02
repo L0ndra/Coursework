@@ -65,6 +65,7 @@
     <Compile Include="Entities\Message.cs" />
     <Compile Include="Exceptions\ChannelException.cs" />
     <Compile Include="MessageServices\IMessageHandler.cs" />
+    <Compile Include="MessageServices\IMessageRepository.cs" />
     <Compile Include="MessageServices\MessageGenerator.cs" />
     <Compile Include="MessageServices\IMessageGenerator.cs" />
     <Compile Include="MessageServices\IMessageReceiver.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="MessageServices\IMessageCreator.cs" />
     <Compile Include="MessageServices\MessageHandler.cs" />
     <Compile Include="MessageServices\MessageReceiver.cs" />
+    <Compile Include="MessageServices\MessageRepository.cs" />
     <Compile Include="MessageServices\MessageRouter.cs" />
     <Compile Include="MessageServices\PackageMessageCreator.cs" />
     <Compile Include="MessageServices\SimpleMessageRouter.cs" />

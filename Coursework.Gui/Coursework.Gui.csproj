@@ -107,6 +107,8 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessageService\IMessageViewUpdater.cs" />
+    <Compile Include="MessageService\MessageViewUpdater.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -45,9 +45,11 @@ namespace Coursework.Tests
 
         [Test]
         [TestCase((uint)5, 2.0, 0.9)]
-        [TestCase((uint)20, 2.0, 0.9)]
-        [TestCase((uint)20, 19.0, 19.0)]
-        [TestCase((uint)10, 1.0, 0.9)]
+        [TestCase((uint)20, 2.0, 1.5)]
+        [TestCase((uint)20, 19.0, 0.7)]
+        [TestCase((uint)10, 1.0, 0.7)]
+        [TestCase((uint)8, 5.0, 1.5)]
+        [TestCase((uint)8, 2.5, 1.5)]
         public void BuildShouldCreateCorrectNetworkSpecifiedNumberOfTimesWithSpecifiedParameters(uint nodeCount, double networkPower, double eps)
         {
             for (var i = 0; i < TimesToCreateNetwork; i++)

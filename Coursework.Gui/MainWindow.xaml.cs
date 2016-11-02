@@ -12,6 +12,7 @@ using Coursework.Data.MessageServices;
 using Coursework.Data.NetworkData;
 using Coursework.Gui.Dialogs;
 using Coursework.Gui.Drawers;
+using Coursework.Gui.MessageService;
 using MahApps.Metro.Controls;
 using Microsoft.Win32;
 
@@ -35,6 +36,8 @@ namespace Coursework.Gui
         private IMessageReceiver _messageReceiver;
         private IMessageExchanger _messageExchanger;
         private IMessageGenerator _messageGenerator;
+        private IMessageRepository _messageRepository;
+        private IMessageViewUpdater _messageViewUpdater;
         private Canvas GeneratedCanvas => NetworkArea.Children.OfType<Canvas>().First();
 
         public MainWindow(INetworkHandler network, INetworkInfoRetriever networkInfoRetriever)
@@ -154,17 +157,14 @@ namespace Coursework.Gui
                 _messageGenerator = new MessageGenerator(_network, _messageCreator, 
                     AllConstants.MessageGenerateChance);
 
+                _messageRepository = new MessageRepository(_network);
+                _messageViewUpdater = new MessageViewUpdater(_messageRepository, Messages);
+
                 _backgroundWorker = new Background.BackgroundWorker(_messageExchanger, _messageGenerator,
-                    _networkDrawer, _messageCreator, AllConstants.UpdateTablePeriod);
+                   _networkDrawer, _messageCreator, _messageViewUpdater, AllConstants.UpdateTablePeriod);
 
                 _backgroundWorker.Run();
             }
-        }
-
-        private void InitializeMessageExchanger()
-        {
-
-            _networkDrawer.UpdateComponents();
         }
 
         private void Pause_OnClick(object sender, RoutedEventArgs e)
