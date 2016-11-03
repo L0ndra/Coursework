@@ -135,6 +135,7 @@ namespace Coursework.Tests
             {
                 MessageType = MessageType.General,
                 ReceiverId = 0,
+                Route = new Channel[1]
             };
 
             _networkMock.Setup(n => n.Nodes)
