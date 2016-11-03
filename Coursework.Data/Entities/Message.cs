@@ -13,6 +13,7 @@ namespace Coursework.Data.Entities
         public Channel[] Route { get; set; }
         public int SendAttempts { get; set; }
         public MessageType MessageType { get; set; }
+        public int NumberInPackage { get; set; }
         public bool IsReceived => LastTransferNodeId == ReceiverId;
     }
 }

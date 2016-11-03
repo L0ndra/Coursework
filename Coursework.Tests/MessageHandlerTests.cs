@@ -82,7 +82,8 @@ namespace Coursework.Tests
                         new MessageQueueHandler(_channels[1].Id)
                     },
                     IsActive = false,
-                    NodeType = NodeType.CentralMachine
+                    NodeType = NodeType.CentralMachine,
+                    ReceivedMessages = new List<Message>()
                 },
                 new Node
                 {
@@ -93,7 +94,8 @@ namespace Coursework.Tests
                         new MessageQueueHandler(_channels[0].Id),
                         new MessageQueueHandler(_channels[2].Id)
                     },
-                    IsActive = false
+                    IsActive = false,
+                    ReceivedMessages = new List<Message>()
                 },
                 new Node
                 {
@@ -104,7 +106,8 @@ namespace Coursework.Tests
                         new MessageQueueHandler(_channels[1].Id),
                         new MessageQueueHandler(_channels[3].Id)
                     },
-                    IsActive = false
+                    IsActive = false,
+                    ReceivedMessages = new List<Message>()
                 },
                 new Node
                 {
@@ -115,14 +118,16 @@ namespace Coursework.Tests
                         new MessageQueueHandler(_channels[2].Id),
                         new MessageQueueHandler(_channels[3].Id)
                     },
-                    IsActive = false
+                    IsActive = false,
+                    ReceivedMessages = new List<Message>()
                 },
                 new Node
                 {
                     Id = 4,
                     LinkedNodesId = new SortedSet<uint>(),
                     MessageQueueHandlers = new List<MessageQueueHandler>(),
-                    IsActive = false
+                    IsActive = false,
+                    ReceivedMessages = new List<Message>()
                 }
             };
 
@@ -184,7 +189,7 @@ namespace Coursework.Tests
         }
 
         [Test]
-        public void HandleMessageShouldRemovegeneralMessageFromQueue()
+        public void HandleMessageShouldRemoveItFromQueue()
         {
             // Arrange
             _message.MessageType = MessageType.General;
@@ -194,6 +199,19 @@ namespace Coursework.Tests
 
             // Assert
             _networkMock.Verify(n => n.RemoveFromQueue(_message, 0), Times.Once());
+        }
+
+        [Test]
+        public void HandleMessageShouldReplaceReceivedMessage()
+        {
+            // Arrange
+            var receiver = _nodes.First(n => n.Id == _message.ReceiverId);
+
+            // Act
+            _messageHandler.HandleMessage(_message);
+
+            // Assert
+            Assert.IsTrue(receiver.ReceivedMessages.Contains(_message));
         }
     }
 }

@@ -1,5 +1,9 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.MessageServices;
 
@@ -22,29 +26,146 @@ namespace Coursework.Gui.MessageService
 
             RemoveAllChildren();
 
-            foreach (var message in messages
+            var groupedMessages = messages
                 .Where(m => m != null)
-                .OrderBy(m => m.ParentId))
+                .GroupBy(m => m.ParentId)
+                .OrderBy(m => m.Select(m1 => m1.IsReceived).Aggregate((b, b1) => b && b1))
+                .ThenBy(m => m.Key)
+                .Select(g => new
+                {
+                    ParentId = g.Key,
+                    Messages = g
+                        .OrderBy(m => m.IsReceived)
+                        .ThenBy(m => m.NumberInPackage)
+                });
+
+            foreach (var groupOfMessages in groupedMessages)
             {
-                _treeView.Items.Add(ConvertToTreeViewItem(message));
+                _treeView.Items.Add(ConvertToTreeViewItem(groupOfMessages.Messages.ToArray()));
             }
+        }
+
+        private TreeViewItem ConvertToTreeViewItem(Message[] messages)
+        {
+            var header = messages.First().ParentId;
+
+            var element = new TreeViewItem
+            {
+                Header = header,
+                Foreground = GetForeground(messages)
+            };
+
+            foreach (var message in messages)
+            {
+                element.Items.Add(ConvertToTreeViewItem(message));
+            }
+
+            element.MouseLeftButtonUp += Element_OnMouseDoubleClick;
+
+            return element;
+        }
+
+        private void Element_OnMouseDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+        {
+            var treeViewItem = (TreeViewItem)sender;
+
+            treeViewItem.IsExpanded = !treeViewItem.IsExpanded;
+
+            foreach (var treeViewInnerItem in treeViewItem.Items.OfType<TreeViewItem>())
+            {
+                Element_OnMouseDoubleClick(treeViewInnerItem, mouseButtonEventArgs);
+            }
+        }
+
+        private Brush GetForeground(IEnumerable<Message> messages)
+        {
+            return messages.All(m => m.IsReceived)
+                ? AllConstants.ReceivedMessagesForeground
+                : AllConstants.UnreceivedMessagesForeground;
         }
 
         private TreeViewItem ConvertToTreeViewItem(Message message)
         {
+            var foreground = GetForeground(new[] { message });
+
             var element = new TreeViewItem
             {
-                Header = message.ParentId.ToString()
+                Header = $"Message Number - {message.NumberInPackage}",
+                Foreground = foreground
             };
 
-            element.Items.Add($"Message type - {message.MessageType}");
-            element.Items.Add($"Last transfer ID - {message.LastTransferNodeId}");
-            element.Items.Add($"Receiver ID - {message.ReceiverId}");
-            element.Items.Add($"Sender ID - {message.SenderId}");
-            element.Items.Add($"Send Attempts - {message.SendAttempts}" );
-            element.Items.Add($"Message Size - {message.Size}");
+            AddBlocks(message, element);
+
+            var routeElement = CreateRoute(message);
+
+            element.Items.Add(routeElement);
 
             return element;
+        }
+
+        private void AddBlocks(Message message, ItemsControl element)
+        {
+            var foreground = GetForeground(new[] { message });
+
+            element.Items.Add(CreateNestedTreeViewItem($"Message type - {message.MessageType}",
+                foreground));
+
+            element.Items.Add(CreateNestedTreeViewItem($"Last transfer ID - {message.LastTransferNodeId}",
+                foreground));
+
+            element.Items.Add(CreateNestedTreeViewItem($"Receiver ID - {message.ReceiverId}",
+                foreground));
+
+            element.Items.Add(CreateNestedTreeViewItem($"Sender ID - {message.SenderId}",
+                foreground));
+
+            element.Items.Add(CreateNestedTreeViewItem($"Send Attempts - {message.SendAttempts}",
+                foreground));
+
+            element.Items.Add(CreateNestedTreeViewItem($"Message Size - {message.Size}",
+                foreground));
+        }
+
+        private TextBlock CreateNestedTreeViewItem(string text, Brush foreground)
+        {
+            return new TextBlock
+            {
+                Text = text,
+                Foreground = foreground
+            };
+        }
+
+        private TreeViewItem CreateRoute(Message message)
+        {
+            var foreground = GetForeground(new[] { message });
+
+            var routeElement = new TreeViewItem
+            {
+                Header = "Route",
+                Foreground = foreground
+            };
+
+            var startId = message.LastTransferNodeId;
+
+            foreach (var channel in message.Route)
+            {
+                if (channel.FirstNodeId == startId)
+                {
+                    routeElement.Items.Add(CreateNestedTreeViewItem($"From {channel.FirstNodeId} to {channel.SecondNodeId} " +
+                                           $"({channel.Price}/{channel.ErrorChance:N})", foreground));
+
+                    startId = channel.SecondNodeId;
+                }
+                else
+                {
+                    routeElement.Items.Add(CreateNestedTreeViewItem($"From {channel.SecondNodeId} to {channel.FirstNodeId} " +
+                                           $"({channel.Price}/{channel.ErrorChance:N})", foreground));
+
+                    startId = channel.FirstNodeId;
+                }
+            }
+
+            return routeElement;
         }
 
         private void RemoveAllChildren()

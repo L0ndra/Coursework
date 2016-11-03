@@ -65,18 +65,7 @@ namespace Coursework.Data.MessageServices
                 return null;
             }
 
-            var message = new Message
-            {
-                MessageType = messageInitializer.MessageType,
-                ReceiverId = messageInitializer.ReceiverId,
-                LastTransferNodeId = messageInitializer.SenderId,
-                Route = route,
-                SenderId = messageInitializer.SenderId,
-                Data = messageInitializer.Data,
-                Size = messageInitializer.Size,
-                ParentId = Guid.NewGuid(),
-                SendAttempts = 0
-            };
+            var message = CreateMessage(messageInitializer, route);
 
             return new[] { message };
         }
@@ -95,6 +84,22 @@ namespace Coursework.Data.MessageServices
             {
                 Network.RemoveFromQueue(message, nodeId);
             }
+        }
+
+        private Message CreateMessage(MessageInitializer messageInitializer, Channel[] route)
+        {
+            return new Message
+            {
+                MessageType = messageInitializer.MessageType,
+                ReceiverId = messageInitializer.ReceiverId,
+                LastTransferNodeId = messageInitializer.SenderId,
+                Route = route,
+                SenderId = messageInitializer.SenderId,
+                Data = messageInitializer.Data,
+                Size = messageInitializer.Size,
+                ParentId = Guid.NewGuid(),
+                SendAttempts = 0
+            };
         }
 
         private Message CreateInitializeMessage(uint senderId, uint receiverId,

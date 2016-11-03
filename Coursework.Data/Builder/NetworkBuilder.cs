@@ -130,7 +130,7 @@ namespace Coursework.Data.Builder
                     SecondNodeId = destinationNodeId,
                     ChannelType = ChannelType.Ground,
                     ConnectionType = ConnectionType.Duplex,
-                    ErrorChance = Math.Round(AllConstants.RandomGenerator.NextDouble() * 100.0) / 100.0,
+                    ErrorChance = Math.Floor(AllConstants.RandomGenerator.NextDouble() * 100.0) / 100.0,
                     Price = price,
                     IsFree = true
                 };

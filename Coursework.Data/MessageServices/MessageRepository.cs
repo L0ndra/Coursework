@@ -24,8 +24,12 @@ namespace Coursework.Data.MessageServices
                 .Union(_network.Channels
                     .Select(c => c.SecondMessage));
 
+            var receivedMessages = _network.Nodes
+                .SelectMany(n => n.ReceivedMessages);
+
             return messageInNodes
                 .Union(messageInChannels)
+                .Union(receivedMessages)
                 .ToArray();
         }
 

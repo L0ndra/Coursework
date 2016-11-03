@@ -72,7 +72,9 @@ namespace Coursework.Gui
                 Id = _network.Nodes.Max(n => n.Id) + 1,
                 LinkedNodesId = new SortedSet<uint>(),
                 MessageQueueHandlers = new List<MessageQueueHandler>(),
-                IsActive = false
+                IsActive = false,
+                NodeType = NodeType.SimpleNode,
+                ReceivedMessages = new List<Message>()
             };
 
             _network.AddNode(node);
@@ -120,6 +122,10 @@ namespace Coursework.Gui
                 MessageBox.Show("File loaded!", "OK", MessageBoxButton.OK, MessageBoxImage.Information,
                     MessageBoxResult.OK,
                     MessageBoxOptions.None);
+
+                _backgroundWorker?.Stop();
+
+                _backgroundWorker = null;
             }
             catch (Exception ex)
             {

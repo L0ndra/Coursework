@@ -187,6 +187,21 @@ namespace Coursework.Tests
         }
 
         [Test]
+        public void GetRouteShouldReturnNullIfNetworkMatrixIsNull()
+        {
+            // Arrange
+            var firstNode = _nodes.First();
+
+            firstNode.NetworkMatrix = null;
+
+            // Act
+            var result = _messageRouter.GetRoute(0, 2);
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [Test]
         public void CountPriceShouldReturnCorrectPrice()
         {
             // Arrange

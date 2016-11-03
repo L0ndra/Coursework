@@ -175,5 +175,17 @@ namespace Coursework.Tests
             Assert.That(firstMessage.MessageType, Is.EqualTo(_messageInitializer.MessageType));
             Assert.That(messages.All(m => m.Size == AllConstants.PackageSize + AllConstants.ServicePartSize));
         }
+
+        [Test]
+        public void GenerateShouldNumerateMessages()
+        {
+            // Arrange
+            // Act
+            var messages = _messageCreator.CreateMessages(_messageInitializer);
+            var numbers = Enumerable.Range(0, messages.Length);
+
+            // Assert
+            Assert.IsTrue(numbers.All(n => messages.Any(m => m.NumberInPackage == n)));
+        }
     }
 }

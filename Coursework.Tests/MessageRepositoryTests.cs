@@ -34,6 +34,10 @@ namespace Coursework.Tests
                     {
                         new MessageQueueHandler(Guid.Empty)
                     },
+                    ReceivedMessages = new List<Message>
+                    {
+                        new Message()
+                    }
                 }
             };
 
@@ -69,11 +73,15 @@ namespace Coursework.Tests
             var messageCountInChannels = _channels.Select(c => c.FirstMessage).Count()
                 + _channels.Select(c => c.SecondMessage).Count();
 
+            var receivedMessages = _nodes.SelectMany(n => n.ReceivedMessages)
+                .Count();
+
             // Act
             var result = _messageRepository.GetAllMessages();
 
             // Assert
-            Assert.That(result.Length, Is.EqualTo(messageCountInChannels + messageCountInNodes));
+            Assert.That(result.Length, Is.EqualTo(messageCountInChannels + messageCountInNodes
+                + receivedMessages));
         }
 
         [Test]

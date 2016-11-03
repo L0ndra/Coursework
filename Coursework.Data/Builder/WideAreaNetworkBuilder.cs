@@ -45,7 +45,8 @@ namespace Coursework.Data.Builder
                 LinkedNodesId = new SortedSet<uint>(),
                 MessageQueueHandlers = new List<MessageQueueHandler>(),
                 NodeType = NodeType.CentralMachine,
-                IsActive = false
+                IsActive = false,
+                ReceivedMessages = new List<Message>(),
             };
 
             return centralMachine;

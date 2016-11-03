@@ -42,18 +42,7 @@ namespace Coursework.Data.MessageServices
                     return null;
                 }
 
-                var message = new Message
-                {
-                    Data = currentMessage.Data,
-                    LastTransferNodeId = currentMessage.LastTransferNodeId,
-                    MessageType = currentMessage.MessageType,
-                    ParentId = currentMessage.ParentId,
-                    ReceiverId = currentMessage.ReceiverId,
-                    SendAttempts = currentMessage.SendAttempts,
-                    SenderId = currentMessage.SenderId,
-                    Size = AllConstants.PackageSize + AllConstants.ServicePartSize,
-                    Route = route
-                };
+                var message = CreateMessage(currentMessage, route, i);
 
                 if (i == messageCount - 1
                     && currentMessage.Size % AllConstants.PackageSize != 0)
@@ -73,6 +62,23 @@ namespace Coursework.Data.MessageServices
             RemoveFromQueue(messages.Where(m => m.Route.Length != 0)
                 .ToArray(), currentMessage.SenderId);
             return messages.ToArray();
+        }
+
+        private Message CreateMessage(Message currentMessage, Channel[] route, int number)
+        {
+            return new Message
+            {
+                Data = currentMessage.Data,
+                LastTransferNodeId = currentMessage.LastTransferNodeId,
+                MessageType = currentMessage.MessageType,
+                ParentId = currentMessage.ParentId,
+                ReceiverId = currentMessage.ReceiverId,
+                SendAttempts = currentMessage.SendAttempts,
+                SenderId = currentMessage.SenderId,
+                Size = AllConstants.PackageSize + AllConstants.ServicePartSize,
+                Route = route,
+                NumberInPackage = number
+            };
         }
     }
 }

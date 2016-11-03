@@ -18,6 +18,9 @@ namespace Coursework.Data.MessageServices
 
         public void HandleMessage(Message message)
         {
+            var receiver = _network.GetNodeById(message.ReceiverId);
+            receiver.ReceivedMessages.Add(message);
+
             switch (message.MessageType)
             {
                 case MessageType.General:
@@ -35,6 +38,10 @@ namespace Coursework.Data.MessageServices
                         throw new ArgumentOutOfRangeException();
                     }
             }
+
+            message.Route = message.Route
+                    .Skip(1)
+                    .ToArray();
         }
 
         private void HandleUpdateTableMessage(Message message)

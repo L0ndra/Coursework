@@ -27,7 +27,8 @@ namespace Coursework.Data.MessageServices
 
             var networkMatrix = sender.NetworkMatrix;
 
-            if (double.IsInfinity(networkMatrix.NodeIdWithCurrentPrice[receiverId]))
+            if (networkMatrix == null 
+                || double.IsInfinity(networkMatrix.NodeIdWithCurrentPrice[receiverId]))
             {
                 return null;
             }
