@@ -10,6 +10,7 @@ using Coursework.Data.Entities;
 using Coursework.Data.IONetwork;
 using Coursework.Data.MessageServices;
 using Coursework.Data.NetworkData;
+using Coursework.Data.Util;
 using Coursework.Gui.Dialogs;
 using Coursework.Gui.Drawers;
 using Coursework.Gui.MessageService;
@@ -44,6 +45,8 @@ namespace Coursework.Gui
         {
             InitializeComponent();
 
+            InitializeFiltrationModeComboBox();
+
             _network = network;
             _networkInfoRetriever = networkInfoRetriever;
 
@@ -51,6 +54,22 @@ namespace Coursework.Gui
             _channelAddWindow = new ChannelAddWindow(network, channel => _channelDrawer.DrawComponents(GeneratedCanvas));
 
             Loaded += OnWindowLoaded;
+        }
+
+        private void InitializeFiltrationModeComboBox()
+        {
+            foreach (var value in Enum.GetValues(typeof(MessageFiltrationMode))
+                .Cast<MessageFiltrationMode>())
+            {
+                var comboBoxItem = new ComboBoxItem
+                {
+                    Content = value.GetDescriptionOfEnum()
+                };
+
+                FiltrationModeSelect.Items.Add(comboBoxItem);
+            }
+
+            FiltrationModeSelect.SelectedItem = FiltrationModeSelect.Items[0];
         }
 
         private void InitializeDrawers()
@@ -74,7 +93,8 @@ namespace Coursework.Gui
                 MessageQueueHandlers = new List<MessageQueueHandler>(),
                 IsActive = false,
                 NodeType = NodeType.SimpleNode,
-                ReceivedMessages = new List<Message>()
+                ReceivedMessages = new List<Message>(),
+                CanceledMessages = new List<Message>()
             };
 
             _network.AddNode(node);
@@ -160,7 +180,7 @@ namespace Coursework.Gui
 
                 _messageCreator.UpdateTables();
 
-                _messageGenerator = new MessageGenerator(_network, _messageCreator, 
+                _messageGenerator = new MessageGenerator(_network, _messageCreator,
                     AllConstants.MessageGenerateChance);
 
                 _messageRepository = new MessageRepository(_network);
@@ -168,6 +188,8 @@ namespace Coursework.Gui
 
                 _backgroundWorker = new Background.BackgroundWorker(_messageExchanger, _messageGenerator,
                    _networkDrawer, _messageCreator, _messageViewUpdater, AllConstants.UpdateTablePeriod);
+
+                FiltrationModeSelect_OnSelectionChanged(FiltrationModeSelect, null);
 
                 _backgroundWorker.Run();
             }
@@ -178,10 +200,29 @@ namespace Coursework.Gui
             if (_backgroundWorker != null && _backgroundWorker.IsActive)
             {
                 _backgroundWorker.Pause();
+
+                PauseResumeButton.Content = "Resume";
             }
             else
             {
                 _backgroundWorker?.Resume();
+
+                PauseResumeButton.Content = "Pause";
+            }
+        }
+
+        private void FiltrationModeSelect_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var comboBox = (ComboBox)sender;
+
+            var values = EnumHelper.GetEnumValueByDescription<MessageFiltrationMode>(
+                    ((ComboBoxItem)comboBox.SelectedItem).Content as string);
+
+            if (_messageViewUpdater != null)
+            {
+                _messageViewUpdater.MessageFiltrationMode = values.First();
+
+                _messageViewUpdater.Show();
             }
         }
     }

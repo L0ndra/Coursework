@@ -40,7 +40,7 @@ namespace Coursework.Tests
                 }
             };
 
-            _messageRepoMock.Setup(m => m.GetAllMessages())
+            _messageRepoMock.Setup(m => m.GetAllMessages(It.IsAny<uint?>(), It.IsAny<MessageFiltrationMode>()))
                 .Returns(_messages);
         }
 

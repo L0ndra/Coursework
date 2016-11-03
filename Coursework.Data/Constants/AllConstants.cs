@@ -42,6 +42,7 @@ namespace Coursework.Data.Constants
         public static readonly Brush SecondMessageInChannelBrush = Brushes.DarkOrange;
         public static readonly Brush ReceivedMessagesForeground = Brushes.Green;
         public static readonly Brush UnreceivedMessagesForeground = Brushes.Black;
+        public static readonly Brush CanceledMessagesForeground = Brushes.Red;
         public static readonly Random RandomGenerator = new Random((int)(DateTime.Now.Ticks & 0xFFFF));
         public static readonly ImmutableSortedSet<int> AllPrices = new[] { 2, 4, 7, 8, 11, 15, 17, 20, 24, 25, 28 }.ToImmutableSortedSet();
     }

@@ -60,7 +60,8 @@ namespace Coursework.Data.IONetwork
                     MessageQueueHandlers = new List<MessageQueueHandler>(),
                     NodeType = (NodeType)(int)nodeInfo["NodeType"],
                     IsActive = false,
-                    ReceivedMessages = new List<Message>()
+                    ReceivedMessages = new List<Message>(),
+                    CanceledMessages = new List<Message>()
                 };
 
                 network.AddNode(node);

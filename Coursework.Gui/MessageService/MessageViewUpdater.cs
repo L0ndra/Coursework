@@ -11,6 +11,7 @@ namespace Coursework.Gui.MessageService
 {
     public class MessageViewUpdater : IMessageViewUpdater
     {
+        public MessageFiltrationMode MessageFiltrationMode { get; set; } = MessageFiltrationMode.ActiveMessages;
         private readonly IMessageRepository _messageRepository;
         private readonly TreeView _treeView;
 
@@ -22,14 +23,14 @@ namespace Coursework.Gui.MessageService
 
         public void Show()
         {
-            var messages = _messageRepository.GetAllMessages();
+            var messages = _messageRepository.GetAllMessages(messageFiltrationMode: MessageFiltrationMode);
 
             RemoveAllChildren();
 
             var groupedMessages = messages
-                .Where(m => m != null)
                 .GroupBy(m => m.ParentId)
-                .OrderBy(m => m.Select(m1 => m1.IsReceived).Aggregate((b, b1) => b && b1))
+                .OrderBy(m => m.Select(m1 => m1.IsReceived).Aggregate((b, b1) => b && b1) ||
+                    m.Select(m1 => m1.IsCanceled).Aggregate((b, b1) => b && b1))
                 .ThenBy(m => m.Key)
                 .Select(g => new
                 {
@@ -79,9 +80,19 @@ namespace Coursework.Gui.MessageService
 
         private Brush GetForeground(IEnumerable<Message> messages)
         {
-            return messages.All(m => m.IsReceived)
-                ? AllConstants.ReceivedMessagesForeground
-                : AllConstants.UnreceivedMessagesForeground;
+            var messagesArray = messages as Message[] ?? messages.ToArray();
+
+            if (messagesArray.All(m => m.IsReceived))
+            {
+                return AllConstants.ReceivedMessagesForeground;
+            }
+
+            if (messagesArray.All(m => m.IsCanceled))
+            {
+                return AllConstants.CanceledMessagesForeground;
+            }
+
+            return AllConstants.UnreceivedMessagesForeground;
         }
 
         private TreeViewItem ConvertToTreeViewItem(Message message)

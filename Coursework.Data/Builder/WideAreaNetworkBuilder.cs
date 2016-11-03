@@ -47,6 +47,7 @@ namespace Coursework.Data.Builder
                 NodeType = NodeType.CentralMachine,
                 IsActive = false,
                 ReceivedMessages = new List<Message>(),
+                CanceledMessages = new List<Message>()
             };
 
             return centralMachine;

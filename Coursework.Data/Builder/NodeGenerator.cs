@@ -35,6 +35,7 @@ namespace Coursework.Data.Builder
                 LinkedNodesId = new SortedSet<uint>(),
                 IsActive = false,
                 ReceivedMessages = new List<Message>(),
+                CanceledMessages = new List<Message>()
             };
         }
     }

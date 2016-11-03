@@ -103,7 +103,9 @@ namespace Coursework.Data.MessageServices
 
                 foreach (var message in messagesToRemove.Union(outdatedMessages))
                 {
+                    message.SendAttempts = AllConstants.MaxAttempts;
                     messageQueueHandler.RemoveMessage(message);
+                    node.CanceledMessages.Add(message);
                 }
             }
         }

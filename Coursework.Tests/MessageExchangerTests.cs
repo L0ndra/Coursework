@@ -53,7 +53,8 @@ namespace Coursework.Tests
                     {
                         new MessageQueueHandler(Guid.Empty)
                     },
-                    IsActive = true
+                    IsActive = true,
+                    CanceledMessages = new List<Message>()
                 },
                 new Node
                 {
@@ -224,6 +225,26 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(mesageQueueHandler.Messages.Length, Is.Zero);
+        }
+
+        [Test]
+        public void HandleMessagesInNodeQueuesShouldRemoveOutdatedMessages()
+        {
+            // Arrange
+            _message.SendAttempts = int.MaxValue;
+
+            var firstNode = _nodes.First();
+
+            var mesageQueueHandler = firstNode.MessageQueueHandlers.First();
+
+            mesageQueueHandler.AddMessageInStart(_message);
+
+            // Act
+            _messageExchanger.HandleMessagesOnce();
+
+            // Assert
+            Assert.That(firstNode.CanceledMessages.Contains(_message));
+            Assert.That(_message.SendAttempts, Is.EqualTo(AllConstants.MaxAttempts));
         }
     }
 }

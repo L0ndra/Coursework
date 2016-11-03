@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Coursework.Data.Entities;
+using Coursework.Data.Exceptions;
 using Coursework.Data.MessageServices;
 using Coursework.Data.NetworkData;
 using Moq;
@@ -36,6 +37,13 @@ namespace Coursework.Tests
                     },
                     ReceivedMessages = new List<Message>
                     {
+                        new Message(),
+                        new Message(),
+                        new Message()
+                    },
+                    CanceledMessages = new List<Message>
+                    {
+                        new Message(),
                         new Message()
                     }
                 }
@@ -59,6 +67,12 @@ namespace Coursework.Tests
             _networkMock.Setup(n => n.Channels)
                 .Returns(_channels);
 
+            _networkMock.Setup(n => n.GetNodeById(FirstNode.Id))
+                .Returns(FirstNode);
+
+            FirstNode.MessageQueueHandlers.First().AppendMessage(new Message());
+            FirstNode.MessageQueueHandlers.First().AppendMessage(new Message());
+            FirstNode.MessageQueueHandlers.First().AppendMessage(new Message());
             FirstNode.MessageQueueHandlers.First().AppendMessage(new Message());
         }
 
@@ -70,10 +84,13 @@ namespace Coursework.Tests
                 .SelectMany(m => m.Messages)
                 .Count();
 
-            var messageCountInChannels = _channels.Select(c => c.FirstMessage).Count()
-                + _channels.Select(c => c.SecondMessage).Count();
+            var messageCountInChannels = _channels.Select(c => c.FirstMessage).Count(m => m != null)
+                + _channels.Select(c => c.SecondMessage).Count(m => m != null);
 
-            var receivedMessages = _nodes.SelectMany(n => n.ReceivedMessages)
+            var receivedMessagesCount = _nodes.SelectMany(n => n.ReceivedMessages)
+                .Count();
+
+            var canceledMessagesCount = _nodes.SelectMany(n => n.CanceledMessages)
                 .Count();
 
             // Act
@@ -81,7 +98,7 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(result.Length, Is.EqualTo(messageCountInChannels + messageCountInNodes
-                + receivedMessages));
+                + receivedMessagesCount + canceledMessagesCount));
         }
 
         [Test]
@@ -89,14 +106,18 @@ namespace Coursework.Tests
         {
             // Arrange
             var messageCountInNode = FirstNode.MessageQueueHandlers
-                .SelectMany(m => m.Messages)
-                .Count();
+               .SelectMany(m => m.Messages)
+               .Count();
+
+            var receivedMessagesCount = FirstNode.ReceivedMessages.Count;
+
+            var canceledMessagesCount = FirstNode.CanceledMessages.Count;
 
             // Act
             var result = _messageRepository.GetAllMessages(FirstNode.Id);
 
             // Assert
-            Assert.That(result.Length, Is.EqualTo(messageCountInNode));
+            Assert.That(result.Length, Is.EqualTo(messageCountInNode + receivedMessagesCount + canceledMessagesCount));
         }
 
         [Test]
@@ -107,7 +128,51 @@ namespace Coursework.Tests
             TestDelegate testDelegate = () => _messageRepository.GetAllMessages(uint.MaxValue);
 
             // Assert
-            Assert.That(testDelegate, Throws.InvalidOperationException);
+            Assert.That(testDelegate, Throws.TypeOf(typeof(NodeException)));
+        }
+
+        [Test]
+        public void GetAllMessagesShouldReturnOnlySpecifiedMessages()
+        {
+            // Arrange
+            var receivedMessagesCount = _nodes.SelectMany(n => n.ReceivedMessages)
+                .Count();
+
+            // Act
+            var result = _messageRepository.GetAllMessages(messageFiltrationMode: 
+                MessageFiltrationMode.ReceivedMessagesOnly);
+
+            // Assert
+            Assert.That(result.Length, Is.EqualTo(receivedMessagesCount));
+        }
+
+        [Test]
+        public void GetAllMessagesShouldReturnOnlySpecifiedMessagesFromSpecifiedNode()
+        {
+            // Arrange
+            // Act
+            var result = _messageRepository.GetAllMessages(FirstNode.Id, MessageFiltrationMode.ReceivedMessagesOnly);
+
+            // Assert
+            Assert.That(result.Length, Is.EqualTo(FirstNode.ReceivedMessages.Count));
+        }
+
+        [Test]
+        public void GetAllMessagesShouldReturnSpecifiedMessagesWithCombinationOfFiltrationModes()
+        {
+            // Arrange
+            var messageCountInNodes = _nodes.SelectMany(n => n.MessageQueueHandlers)
+                .SelectMany(m => m.Messages)
+                .Count();
+
+            var messageCountInChannels = _channels.Select(c => c.FirstMessage).Count(m => m != null)
+                + _channels.Select(c => c.SecondMessage).Count(m => m != null);
+
+            // Act
+            var result = _messageRepository.GetAllMessages(messageFiltrationMode: MessageFiltrationMode.ActiveMessages);
+
+            // Assert
+            Assert.That(result.Length, Is.EqualTo(messageCountInChannels + messageCountInNodes));
         }
     }
 }

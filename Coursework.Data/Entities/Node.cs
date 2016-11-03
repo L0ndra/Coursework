@@ -14,6 +14,7 @@ namespace Coursework.Data.Entities
         public bool IsTableUpdated { get; set; }
         public NetworkMatrix NetworkMatrix { get; set; }
         public IList<Message> ReceivedMessages { get; set; }
+        public IList<Message> CanceledMessages { get; set; }
         public bool GotReceivedMessages
         {
             get

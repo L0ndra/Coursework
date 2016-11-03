@@ -4,7 +4,7 @@ namespace Coursework.Data.MessageServices
 {
     public interface IMessageRepository
     {
-        Message[] GetAllMessages();
-        Message[] GetAllMessages(uint nodeId);
+        Message[] GetAllMessages(uint? nodeId = null,
+            MessageFiltrationMode messageFiltrationMode = MessageFiltrationMode.AllMessages);
     }
 }
