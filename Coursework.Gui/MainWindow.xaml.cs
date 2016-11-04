@@ -13,9 +13,11 @@ using Coursework.Data.NetworkData;
 using Coursework.Data.Util;
 using Coursework.Gui.Dialogs;
 using Coursework.Gui.Drawers;
+using Coursework.Gui.Dto;
 using Coursework.Gui.MessageService;
 using MahApps.Metro.Controls;
 using Microsoft.Win32;
+using NodeLocationDto = Coursework.Data.IONetwork.NodeLocationDto;
 
 namespace Coursework.Gui
 {
@@ -39,9 +41,11 @@ namespace Coursework.Gui
         private IMessageGenerator _messageGenerator;
         private IMessageRepository _messageRepository;
         private IMessageViewUpdater _messageViewUpdater;
+        private INetworkLocationRetriever _networkLocationRetriever;
         private Canvas GeneratedCanvas => NetworkArea.Children.OfType<Canvas>().First();
 
-        public MainWindow(INetworkHandler network, INetworkInfoRetriever networkInfoRetriever)
+        public MainWindow(INetworkHandler network, INetworkInfoRetriever networkInfoRetriever,
+            INetworkLocationRetriever networkLocationRetriever)
         {
             InitializeComponent();
 
@@ -49,6 +53,7 @@ namespace Coursework.Gui
 
             _network = network;
             _networkInfoRetriever = networkInfoRetriever;
+            _networkLocationRetriever = networkLocationRetriever;
 
             InitializeDrawers();
             _channelAddWindow = new ChannelAddWindow(network, channel => _channelDrawer.DrawComponents(GeneratedCanvas));
@@ -153,6 +158,73 @@ namespace Coursework.Gui
                     MessageBoxResult.OK,
                     MessageBoxOptions.None);
             }
+        }
+
+        private void SaveNetworkLocation_OnClick(object sender, RoutedEventArgs e)
+        {
+            var filename = GetPathFromDialog();
+
+            if (filename != null)
+            {
+                var locations = GetNodesLocations();
+
+                _networkLocationRetriever.Write(filename, locations);
+
+                MessageBox.Show("File saved!", "OK", MessageBoxButton.OK, MessageBoxImage.Information,
+                        MessageBoxResult.OK,
+                        MessageBoxOptions.None);
+            }
+        }
+
+        private void ReadNetworkLocation_OnClick(object sender, RoutedEventArgs e)
+        {
+            var filename = GetPathFromDialog();
+
+            try
+            {
+                var locations = _networkLocationRetriever.Read(filename);
+
+                _nodeDrawer = new SmartNodeDrawer(_network, locations);
+                _networkDrawer = new NetworkDrawer(_nodeDrawer, _channelDrawer);
+
+                NetworkArea.Children.Remove(GeneratedCanvas);
+
+                _networkDrawer.DrawComponents(NetworkArea);
+
+                MessageBox.Show("File loaded!", "OK", MessageBoxButton.OK, MessageBoxImage.Information,
+                    MessageBoxResult.OK,
+                    MessageBoxOptions.None);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error,
+                    MessageBoxResult.OK,
+                    MessageBoxOptions.None);
+            }
+        }
+
+        private NodeLocationDto[] GetNodesLocations()
+        {
+            var locations = new List<NodeLocationDto>();
+
+            foreach (var grid in GeneratedCanvas.Children.OfType<Grid>())
+            {
+                var x = Canvas.GetLeft(grid);
+                var y = Canvas.GetTop(grid);
+
+                var nodeDto = (NodeDto)grid.Tag;
+
+                var location = new NodeLocationDto
+                {
+                    Id = nodeDto.Id,
+                    X = x,
+                    Y = y
+                };
+
+                locations.Add(location);
+            }
+
+            return locations.ToArray();
         }
 
         private string GetPathFromDialog()

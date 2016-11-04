@@ -77,9 +77,11 @@
     <Compile Include="MessageRepositoryTests.cs" />
     <Compile Include="MessageRouterTests.cs" />
     <Compile Include="MessageViewUpdaterTests.cs" />
+    <Compile Include="NetworkLocationRetrieverTests.cs" />
     <Compile Include="PackageMessageCreatorTests.cs" />
     <Compile Include="SimpleMessageRouterTests.cs" />
     <Compile Include="MessageCreatorTests.cs" />
+    <Compile Include="SmartNodeDrawerTests.cs" />
     <Compile Include="WideAreaNetworkBuilderTests.cs" />
     <Compile Include="WideAreaNetworkNodeDrawerTests.cs" />
     <Compile Include="NetworkBuilderTests.cs" />
@@ -93,6 +95,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <Content Include="TestFiles\testnetworkfilelocation.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="TestFiles\testnetworkfile.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

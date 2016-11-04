@@ -81,10 +81,16 @@ namespace Coursework.Gui
                 .InTransientScope();
 
             _container
+                .Bind<INetworkLocationRetriever>()
+                .To<NetworkLocationRetriever>()
+                .InTransientScope();
+
+            _container
                 .Bind<MainWindow>()
                 .ToSelf()
                 .WithConstructorArgument("network", _container.Get<INetworkHandler>(generatedWideAreaNetwork))
-                .WithConstructorArgument("networkInfoRetriever", _container.Get<INetworkInfoRetriever>());
+                .WithConstructorArgument("networkInfoRetriever", _container.Get<INetworkInfoRetriever>())
+                .WithConstructorArgument("networkLocationRetriever", _container.Get<INetworkLocationRetriever>());
         }
     }
 }

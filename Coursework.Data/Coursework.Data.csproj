@@ -60,6 +60,9 @@
     <Compile Include="Entities\MessageFiltrationMode.cs" />
     <Compile Include="Entities\MessageInitializer.cs" />
     <Compile Include="Entities\MessageType.cs" />
+    <Compile Include="IONetwork\INetworkLocationRetriever.cs" />
+    <Compile Include="IONetwork\NetworkLocationRetriever.cs" />
+    <Compile Include="IONetwork\NodeLocationDto.cs" />
     <Compile Include="NetworkData\NetworkMatrix.cs" />
     <Compile Include="Entities\NodeType.cs" />
     <Compile Include="IONetwork\ChannelIoDto.cs" />
