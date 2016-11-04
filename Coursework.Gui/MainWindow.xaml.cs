@@ -225,5 +225,12 @@ namespace Coursework.Gui
                 _messageViewUpdater.Show();
             }
         }
+
+        private void ShowNetworkMatrises_Click(object sender, RoutedEventArgs e)
+        {
+            var networkMatrisesWindow = new NodeNetworkMatrix(_network);
+
+            networkMatrisesWindow.Show();
+        }
     }
 }

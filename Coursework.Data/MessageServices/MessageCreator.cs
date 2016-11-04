@@ -96,7 +96,8 @@ namespace Coursework.Data.MessageServices
                 Route = route,
                 SenderId = messageInitializer.SenderId,
                 Data = messageInitializer.Data,
-                Size = messageInitializer.Size,
+                DataSize = messageInitializer.Size,
+                ServiceSize = 0,
                 ParentId = Guid.NewGuid(),
                 SendAttempts = 0
             };
@@ -113,7 +114,8 @@ namespace Coursework.Data.MessageServices
                 ReceiverId = receiverId,
                 SenderId = senderId,
                 Data = networkMatrises,
-                Size = AllConstants.InitializeMessageSize,
+                DataSize = 0,
+                ServiceSize = AllConstants.InitializeMessageSize,
                 LastTransferNodeId = senderId,
                 Route = new[] { channel },
                 ParentId = Guid.NewGuid(),

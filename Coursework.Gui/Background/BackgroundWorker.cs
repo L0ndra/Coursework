@@ -9,16 +9,16 @@ using Coursework.Gui.MessageService;
 
 namespace Coursework.Gui.Background
 {
-    public class BackgroundWorker : IBackgroundWorker
+    public class BackgroundWorker : IBackgroundWorker, ITimeCounter
     {
         public bool IsActive => _timer != null && _timer.IsEnabled;
+        public int Ticks { get; private set; }
         private readonly IMessageExchanger _messageExchanger;
         private readonly IMessageGenerator _messageGenerator;
         private readonly IComponentDrawer _networkDrawer;
         private readonly IMessageCreator _messageCreator;
         private readonly int _updatePeriod;
         private readonly IMessageViewUpdater _messageViewUpdated;
-        private int _accumulator;
         private readonly Mutex _locker;
         private DispatcherTimer _timer;
 
@@ -41,6 +41,8 @@ namespace Coursework.Gui.Background
             {
                 Interval = TimeSpan.FromMilliseconds(AllConstants.TimerInterval),
             };
+
+            Ticks = 0;
 
             _timer.Tick += TimerOnElapsed;
             _timer.IsEnabled = true;
@@ -70,9 +72,9 @@ namespace Coursework.Gui.Background
         {
             _locker.WaitOne();
 
-            _accumulator++;
+            Ticks++;
 
-            if (_accumulator % _updatePeriod == 0)
+            if (Ticks % _updatePeriod == 0)
             {
                 _messageCreator.UpdateTables();
             }

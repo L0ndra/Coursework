@@ -94,16 +94,13 @@ namespace Coursework.Data.MessageServices
         {
             foreach (var messageQueueHandler in node.MessageQueueHandlers)
             {
-                var messagesToRemove = messageQueueHandler.Messages
-                    .Where(message => message.SendAttempts >= AllConstants.MaxAttempts);
-
                 var outdatedMessages = messageQueueHandler.Messages
                     .Where(message => message.MessageType == MessageType.MatrixUpdateMessage)
                     .Where(message => _network.GetNodeById(message.ReceiverId).IsTableUpdated);
 
-                foreach (var message in messagesToRemove.Union(outdatedMessages))
+                foreach (var message in outdatedMessages)
                 {
-                    message.SendAttempts = AllConstants.MaxAttempts;
+                    message.IsCanceled = true;
                     messageQueueHandler.RemoveMessage(message);
                     node.CanceledMessages.Add(message);
                 }
@@ -129,10 +126,6 @@ namespace Coursework.Data.MessageServices
             if (!isSuccess)
             {
                 message.SendAttempts++;
-            }
-            else
-            {
-                message.SendAttempts = 0;
             }
 
             var messageQueueHandler = node.MessageQueueHandlers

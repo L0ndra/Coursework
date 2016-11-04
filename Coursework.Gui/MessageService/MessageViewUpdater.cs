@@ -133,7 +133,13 @@ namespace Coursework.Gui.MessageService
             element.Items.Add(CreateNestedTreeViewItem($"Send Attempts - {message.SendAttempts}",
                 foreground));
 
-            element.Items.Add(CreateNestedTreeViewItem($"Message Size - {message.Size}",
+            element.Items.Add(CreateNestedTreeViewItem($"Message Size - {message.Size}", 
+                foreground));
+
+            element.Items.Add(CreateNestedTreeViewItem($"Message Data Size - {message.DataSize}",
+                foreground));
+
+            element.Items.Add(CreateNestedTreeViewItem($"Message Service Size - {message.ServiceSize}",
                 foreground));
         }
 

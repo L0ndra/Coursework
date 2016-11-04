@@ -1,5 +1,4 @@
-﻿using Coursework.Data.AutoRunners;
-using Coursework.Data.Constants;
+﻿using Coursework.Data.Constants;
 using Coursework.Data.MessageServices;
 using Coursework.Gui.Background;
 using Coursework.Gui.Drawers;
@@ -16,7 +15,7 @@ namespace Coursework.Tests
         private Mock<IMessageGenerator> _messageGeneratorMock;
         private Mock<IComponentDrawer> _networkDrawerMock;
         private Mock<IMessageCreator> _messageCreatorMock;
-        private IBackgroundWorker _backgroundWorker;
+        private BackgroundWorker _backgroundWorker;
         private Mock<IMessageViewUpdater> _messageViewUpdaterMock;
 
         [SetUp]
@@ -82,6 +81,21 @@ namespace Coursework.Tests
 
             // Assert
             Assert.IsTrue(_backgroundWorker.IsActive);
+        }
+
+        [Test]
+        public void TicksShouldResetAfterTimerInitialize()
+        {
+            // Arrange
+            _backgroundWorker = new BackgroundWorker(_messageExchangerMock.Object, _messageGeneratorMock.Object,
+                _networkDrawerMock.Object, _messageCreatorMock.Object, _messageViewUpdaterMock.Object,
+                AllConstants.UpdateTablePeriod);
+
+            // Act
+            var result = _backgroundWorker.Ticks;
+
+            // Assert
+            Assert.That(result, Is.Zero);
         }
     }
 }

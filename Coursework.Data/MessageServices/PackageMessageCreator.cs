@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.NetworkData;
@@ -27,8 +28,8 @@ namespace Coursework.Data.MessageServices
 
         private Message[] DivideIntoPackages(Message currentMessage)
         {
-            var messageCount = currentMessage.Size / AllConstants.PackageSize
-                + (currentMessage.Size % AllConstants.PackageSize == 0 ? 0 : 1);
+            var messageCount = currentMessage.DataSize / AllConstants.PackageSize
+                + (currentMessage.DataSize % AllConstants.PackageSize == 0 ? 0 : 1);
 
             var messages = new List<Message>();
 
@@ -43,12 +44,12 @@ namespace Coursework.Data.MessageServices
                 }
 
                 var message = CreateMessage(currentMessage, route, i);
+                message.ServiceSize = AllConstants.ServicePartSize;
 
                 if (i == messageCount - 1
-                    && currentMessage.Size % AllConstants.PackageSize != 0)
+                    && currentMessage.DataSize % AllConstants.PackageSize != 0)
                 {
-                    message.Size = currentMessage.Size % AllConstants.PackageSize
-                                   + AllConstants.ServicePartSize;
+                    message.DataSize = currentMessage.DataSize % AllConstants.PackageSize;
                 }
 
                 messages.Add(message);
@@ -75,7 +76,8 @@ namespace Coursework.Data.MessageServices
                 ReceiverId = currentMessage.ReceiverId,
                 SendAttempts = currentMessage.SendAttempts,
                 SenderId = currentMessage.SenderId,
-                Size = AllConstants.PackageSize + AllConstants.ServicePartSize,
+                DataSize = AllConstants.PackageSize,
+                ServiceSize = AllConstants.ServicePartSize,
                 Route = route,
                 NumberInPackage = number
             };

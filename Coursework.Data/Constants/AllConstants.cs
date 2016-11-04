@@ -18,7 +18,6 @@ namespace Coursework.Data.Constants
         public const int InitializeMessageSize = 5;
         public const int LineZIndex = int.MaxValue - 2;
         public const int PriceZIndex = int.MaxValue - 1;
-        public const int MaxAttempts = 100;
         public const int MaxAttemptsToGenerateMessage = 50;
         public const int MaxMessageSize = 100;
         public const int PackageSize = 10;

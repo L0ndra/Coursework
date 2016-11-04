@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Coursework.Data.Entities;
+using Coursework.Data.NetworkData;
 
 namespace Coursework.Data.MessageServices
 {

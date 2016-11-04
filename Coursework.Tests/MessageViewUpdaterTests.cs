@@ -34,7 +34,8 @@ namespace Coursework.Tests
                     SenderId = 1,
                     LastTransferNodeId = 2,
                     Data = null,
-                    Size = 10,
+                    DataSize = 10,
+                    ServiceSize = 1,
                     ParentId = Guid.Empty,
                     SendAttempts = 2
                 }

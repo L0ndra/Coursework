@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoRunners\IBackgroundWorker.cs" />
+    <Compile Include="AutoRunners\ITimeCounter.cs" />
     <Compile Include="Builder\INetworkBuilder.cs" />
     <Compile Include="Builder\INodeGenerator.cs" />
     <Compile Include="Builder\WideAreaNetworkBuilder.cs" />
@@ -59,7 +60,7 @@
     <Compile Include="Entities\MessageFiltrationMode.cs" />
     <Compile Include="Entities\MessageInitializer.cs" />
     <Compile Include="Entities\MessageType.cs" />
-    <Compile Include="Entities\NetworkMatrix.cs" />
+    <Compile Include="NetworkData\NetworkMatrix.cs" />
     <Compile Include="Entities\NodeType.cs" />
     <Compile Include="IONetwork\ChannelIoDto.cs" />
     <Compile Include="Entities\ChannelType.cs" />

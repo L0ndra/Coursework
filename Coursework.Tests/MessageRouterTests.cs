@@ -213,10 +213,8 @@ namespace Coursework.Tests
                 .First(m => m.ChannelId == channel.Id);
 
             var realPrice = channel.Price
-                            * (channel.ErrorChance + 1)
-                            * (channel.ErrorChance + 1)
-                            * (messageQueue.Messages.Length + 1)
-                            * (messageQueue.Messages.Length + 1);
+                            * (channel.ErrorChance + 0.1)
+                            * (messageQueue.Messages.Length + 1.0);
 
             // Act
             var result = _messageRouter.CountPrice(channel.FirstNodeId, channel.SecondNodeId);
