@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Coursework.Data.Builder;
 using Coursework.Data.Entities;
@@ -15,6 +16,7 @@ namespace Coursework.Tests
         private Mock<INetworkBuilder> _simpleNetworkBuilderMock;
         private WideAreaNetworkBuilder _wideAreaNetworkBuilder;
         private int _numberOfMetropolitanNetworks;
+        private int _nodesCount;
         private uint _lastId;
 
         [SetUp]
@@ -23,13 +25,13 @@ namespace Coursework.Tests
             _simpleNetworkBuilderMock = new Mock<INetworkBuilder>();
 
             _numberOfMetropolitanNetworks = 5;
-            const int nodesCount = 1;
+            _nodesCount = 5;
 
             _wideAreaNetworkBuilder = new WideAreaNetworkBuilder(_simpleNetworkBuilderMock.Object,
                 _numberOfMetropolitanNetworks);
 
             _simpleNetworkBuilderMock.Setup(n => n.Build())
-                .Returns(() => GenerateNetworkMockForTests(nodesCount).Object);
+                .Returns(() => GenerateNetworkMockForTests(_nodesCount).Object);
         }
 
         [Test]
@@ -47,7 +49,7 @@ namespace Coursework.Tests
 
             Assert.That(resultWithoutDublicates.Count(), Is.EqualTo(result.Nodes.Length));
             Assert.That(result.Channels.Count(c => c.ChannelType == ChannelType.Satellite), 
-                Is.EqualTo(_numberOfMetropolitanNetworks));
+                Is.EqualTo(_numberOfMetropolitanNetworks + _nodesCount));
         }
 
         [Test]
@@ -96,7 +98,16 @@ namespace Coursework.Tests
                 .Returns(nodes.ToArray());
 
             networkMock.Setup(n => n.Channels)
-                .Returns(new Channel[0]);
+                .Returns(new []
+                {
+                    new Channel
+                    {
+                        Id = Guid.NewGuid(),
+                        FirstNodeId = nodes.First().Id,
+                        SecondNodeId = nodes.First().Id + 1,
+                        Price = 10
+                    }
+                });
 
             return networkMock;
         }

@@ -37,14 +37,32 @@ namespace Coursework.Tests
                     },
                     ReceivedMessages = new List<Message>
                     {
-                        new Message(),
-                        new Message(),
-                        new Message()
+                        new Message
+                        {
+                            LastTransferNodeId = 1,
+                            ReceiverId = 1,
+                        },
+                        new Message
+                        {
+                            LastTransferNodeId = 1,
+                            ReceiverId = 1,
+                        },
+                        new Message
+                        {
+                            LastTransferNodeId = 1,
+                            ReceiverId = 1,
+                        },
                     },
                     CanceledMessages = new List<Message>
                     {
-                        new Message(),
-                        new Message()
+                        new Message
+                        {
+                            IsCanceled = true
+                        },
+                        new Message
+                        {
+                            IsCanceled = true
+                        }
                     }
                 }
             };
@@ -136,7 +154,7 @@ namespace Coursework.Tests
         {
             // Arrange
             var receivedMessagesCount = _nodes.SelectMany(n => n.ReceivedMessages)
-                .Count();
+                .Count(m => m.IsReceived);
 
             // Act
             var result = _messageRepository.GetAllMessages(messageFiltrationMode: 
@@ -173,6 +191,21 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(result.Length, Is.EqualTo(messageCountInChannels + messageCountInNodes));
+        }
+
+        [Test]
+        public void GetAllMessagesShouldReturnCanceledMessagesOnly()
+        {
+            // Arrange
+            var canceledMessages = _nodes.SelectMany(n => n.CanceledMessages)
+                .Count(m => m.IsCanceled);
+
+            // Act
+            var result = _messageRepository.GetAllMessages(messageFiltrationMode:
+                MessageFiltrationMode.CanceledMessagesOnly);
+
+            // Assert
+            Assert.That(result.Length, Is.EqualTo(canceledMessages));
         }
     }
 }

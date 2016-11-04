@@ -207,6 +207,7 @@ namespace Coursework.Tests
             Assert.That(firstMessage.Data, Is.EqualTo(_messageInitializer.Data));
             Assert.That(firstMessage.MessageType, Is.EqualTo(_messageInitializer.MessageType));
             Assert.That(firstMessage.DataSize, Is.EqualTo(_messageInitializer.Size));
+            Assert.That(firstMessage.Size, Is.EqualTo(_messageInitializer.Size));
             Assert.That(firstMessage.ServiceSize, Is.Zero);
         }
 
