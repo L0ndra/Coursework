@@ -79,13 +79,14 @@ namespace Coursework.Gui.Dialogs
         {
             var newChannel = new Channel
             {
+                Id = Guid.NewGuid(),
                 Price = int.Parse(Price.Text),
                 ErrorChance = double.Parse(ErrorChance.Text),
                 ConnectionType = GetNewConnectionType(),
                 ChannelType = GetNewChannelType(),
                 FirstNodeId = uint.Parse(FirstNodeId.Text),
                 SecondNodeId = uint.Parse(SecondNodeId.Text),
-                IsFree = true
+                IsFree = true,
             };
 
             _network.AddChannel(newChannel);

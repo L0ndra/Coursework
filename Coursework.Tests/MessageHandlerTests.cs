@@ -190,6 +190,39 @@ namespace Coursework.Tests
         }
 
         [Test]
+        public void HandleMessagesShouldRemoveInitializeMessagesFromQueue()
+        {
+            // Arrange
+            _message.MessageType = MessageType.MatrixUpdateMessage;
+            _message.Data = new Dictionary<uint, NetworkMatrix>
+            {
+                [0] = NetworkMatrix.Initialize(_networkMock.Object),
+                [1] = NetworkMatrix.Initialize(_networkMock.Object),
+                [2] = NetworkMatrix.Initialize(_networkMock.Object),
+                [3] = NetworkMatrix.Initialize(_networkMock.Object),
+                [4] = NetworkMatrix.Initialize(_networkMock.Object),
+            };
+            var linkedNodeCount = Receiver.LinkedNodesId.Count;
+
+            var firstNode = _nodes.First();
+
+            // Act
+            _messageHandler.HandleMessage(_message);
+            _messageHandler.HandleMessage(_message);
+
+            var messageCount = firstNode.MessageQueueHandlers
+                .SelectMany(m => m.Messages)
+                .Count(m => m.MessageType == MessageType.MatrixUpdateMessage);
+
+            // Assert
+            Assert.That(messageCount, Is.EqualTo(linkedNodeCount));
+
+            Assert.IsTrue(Receiver.IsActive);
+            Assert.That(Receiver.NetworkMatrix,
+                Is.EqualTo(((Dictionary<uint, NetworkMatrix>)_message.Data)[0]));
+        }
+
+        [Test]
         public void HandleMessageShouldRemoveItFromQueue()
         {
             // Arrange

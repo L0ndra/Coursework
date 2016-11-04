@@ -32,7 +32,7 @@ namespace Coursework.Gui
         private IComponentDrawer _channelDrawer;
         private IBackgroundWorker _backgroundWorker;
         private readonly INetworkInfoRetriever _networkInfoRetriever;
-        private readonly ChannelAddWindow _channelAddWindow;
+        private ChannelAddWindow _channelAddWindow;
         private IMessageRouter _messageRouter;
         private IMessageCreator _messageCreator;
         private IMessageHandler _messageHandler;
@@ -41,7 +41,7 @@ namespace Coursework.Gui
         private IMessageGenerator _messageGenerator;
         private IMessageRepository _messageRepository;
         private IMessageViewUpdater _messageViewUpdater;
-        private INetworkLocationRetriever _networkLocationRetriever;
+        private readonly INetworkLocationRetriever _networkLocationRetriever;
         private Canvas GeneratedCanvas => NetworkArea.Children.OfType<Canvas>().First();
 
         public MainWindow(INetworkHandler network, INetworkInfoRetriever networkInfoRetriever,
@@ -143,6 +143,8 @@ namespace Coursework.Gui
                 NetworkArea.Children.Remove(GeneratedCanvas);
 
                 _networkDrawer.DrawComponents(NetworkArea);
+
+                _channelAddWindow = new ChannelAddWindow(_network, channel => _channelDrawer.DrawComponents(GeneratedCanvas));
 
                 MessageBox.Show("File loaded!", "OK", MessageBoxButton.OK, MessageBoxImage.Information,
                     MessageBoxResult.OK,
