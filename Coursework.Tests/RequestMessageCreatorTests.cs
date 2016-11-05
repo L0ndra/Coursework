@@ -11,19 +11,22 @@ using NUnit.Framework;
 namespace Coursework.Tests
 {
     [TestFixture]
-    public class SimpleMessageRouterTests
+    public class RequestMessageCreatorTests
     {
         private Mock<INetworkHandler> _networkMock;
-        private IMessageRouter _messageRouter;
-        private Channel[] _channels;
+        private Mock<IMessageRouter> _messageRouterMock;
+        private IMessageCreator _messageCreator;
+        private MessageInitializer _messageInitializer;
         private Node[] _nodes;
+        private Channel[] _channels;
 
         [SetUp]
         public void Setup()
         {
             _networkMock = new Mock<INetworkHandler>();
+            _messageRouterMock = new Mock<IMessageRouter>();
 
-            _messageRouter = new SimpleMessageRouter(_networkMock.Object);
+            _messageCreator = new RequestMessageCreator(_networkMock.Object, _messageRouterMock.Object);
 
             _channels = new[]
             {
@@ -114,13 +117,6 @@ namespace Coursework.Tests
                         new MessageQueueHandler(_channels[3].Id)
                     },
                     IsActive = true
-                },
-                new Node
-                {
-                    Id = 4,
-                    LinkedNodesId = new SortedSet<uint>(),
-                    MessageQueueHandlers = new List<MessageQueueHandler>(),
-                    IsActive = true
                 }
             };
 
@@ -141,115 +137,54 @@ namespace Coursework.Tests
                                                          c.FirstNodeId == secondNodeId && c.SecondNodeId == firstNodeId);
                 }
             );
+
+            _messageRouterMock.Setup(m => m.GetRoute(It.IsAny<uint>(), It.IsAny<uint>()))
+                .Returns((uint senderId, uint receiverId) =>
+                {
+                    var sender = _nodes.First(n => n.Id == senderId);
+
+                    return new[]
+                    {
+                        _channels.First(c => c.Id == sender.MessageQueueHandlers.First().ChannelId)
+                    };
+                });
+
+            _messageInitializer = new MessageInitializer
+            {
+                MessageType = MessageType.General,
+                ReceiverId = 2,
+                SenderId = 0,
+                Data = null,
+                Size = AllConstants.MaxMessageSize
+            };
         }
 
         [Test]
-        public void GetRouteShouldReturnOptimalRouteToNode()
-        {
-            // Arrange
-            var firstNode = _nodes.First();
-
-            firstNode.NetworkMatrix = _messageRouter.CountPriceMatrix(firstNode.Id);
-
-            // Act
-            var result = _messageRouter.GetRoute(0, 3);
-
-            // Assert
-            Assert.That(result.Length, Is.EqualTo(2));
-            Assert.That(result[0], Is.EqualTo(_channels[1]));
-            Assert.That(result[1], Is.EqualTo(_channels[3]));
-        }
-
-        [Test]
-        public void GetRouteShouldReturnNullIfRouteNotExists()
-        {
-            // Arrange
-            var firstNode = _nodes.First();
-
-            firstNode.NetworkMatrix = _messageRouter.CountPriceMatrix(firstNode.Id);
-
-            // Act
-            var result = _messageRouter.GetRoute(0, 4);
-
-            // Assert
-            Assert.IsNull(result);
-        }
-
-        [Test]
-        public void GetRouteShouldReturnEmptyArrayIfStartNodeAndDestinationAreEqual()
+        public void GenerateShouldGenerateNewMessages()
         {
             // Arrange
             // Act
-            var result = _messageRouter.GetRoute(0, 0);
+            var messages = _messageCreator.CreateMessages(_messageInitializer);
+            var firstMessage = messages.First();
+
+            var innerMessages = (Message[]) firstMessage.Data;
+            var innerMessage = innerMessages.First();
 
             // Assert
-            Assert.That(result.Length, Is.Zero);
-        }
+            Assert.That(firstMessage.DataSize, Is.Zero);
+            Assert.That(firstMessage.ServiceSize, Is.EqualTo(AllConstants.RequestMessageSize));
+            Assert.That(firstMessage.ReceiverId, Is.EqualTo(_messageInitializer.ReceiverId));
+            Assert.That(firstMessage.SenderId, Is.EqualTo(_messageInitializer.SenderId));
+            Assert.That(firstMessage.MessageType, Is.EqualTo(MessageType.SendingRequest));
 
-        [Test]
-        public void CountPriceMatrixShouldReturnCorrectNetworkMatrix()
-        {
-            // Arrange
-            var networkMatrix = NetworkMatrix.Initialize(_networkMock.Object);
+            Assert.That(innerMessage.Data, Is.EqualTo(_messageInitializer.Data));
+            Assert.That(innerMessage.MessageType, Is.EqualTo(_messageInitializer.MessageType));
+            Assert.That(innerMessage.SenderId, Is.EqualTo(_messageInitializer.SenderId));
+            Assert.That(innerMessage.ReceiverId, Is.EqualTo(_messageInitializer.ReceiverId));
+            Assert.That(innerMessage.DataSize, Is.EqualTo(_messageInitializer.Size));
+            Assert.That(innerMessage.ServiceSize, Is.Zero);
 
-            // Act
-            var matrix = _messageRouter.CountPriceMatrix(0, networkMatrix);
-
-            // Assert
-            Assert.IsTrue(matrix.NodeIdWithCurrentPrice
-                .Where(kv => kv.Key != 4)
-                .All(kv => !double.IsInfinity(kv.Value)));
-        }
-
-        [Test]
-        public void CountPriceShouldReturnCorrectPrice()
-        {
-            // Arrange
-            var channel = _channels.First();
-
-            // Act
-            var result = _messageRouter.CountPrice(channel.FirstNodeId, channel.SecondNodeId);
-
-            // Assert
-            Assert.That(Math.Abs(result - channel.Price), Is.LessThanOrEqualTo(AllConstants.Eps));
-        }
-
-        [Test]
-        public void CountPriceShouldReturnPositiveInfiniteIfChannelNotExists()
-        {
-            // Arrange
-            var channel = _channels.First();
-
-            // Act
-            var result = _messageRouter.CountPrice(channel.FirstNodeId, 3);
-
-            // Assert
-            Assert.IsTrue(double.IsInfinity(result));
-        }
-
-        [Test]
-        public void CountPriceShouldReturnPositiveInfiniteIfChannelIsBusy()
-        {
-            // Arrange
-            var channel = _channels.First();
-            channel.IsBusy = true;
-
-            // Act
-            var result = _messageRouter.CountPrice(channel.FirstNodeId, channel.SecondNodeId);
-
-            // Assert
-            Assert.IsTrue(double.IsInfinity(result));
-        }
-
-        [Test]
-        public void CountPriceShouldReturnZeroIfSenderAndReceiverIsTheSameNode()
-        {
-            // Arrange
-            // Act
-            var result = _messageRouter.CountPrice(0, 0);
-
-            // Assert
-            Assert.That(result, Is.Zero);
+            Assert.That(firstMessage.ParentId, Is.EqualTo(innerMessage.ParentId));
         }
     }
 }

@@ -98,7 +98,8 @@ namespace Coursework.Data.MessageServices
 
             var channel = Network.GetChannel(startId, destinationId);
 
-            if (!startNode.IsActive || !destinationNode.IsActive || channel == null)
+            if (!startNode.IsActive || !destinationNode.IsActive || channel == null
+                || channel.IsBusy)
             {
                 return double.PositiveInfinity;
             }

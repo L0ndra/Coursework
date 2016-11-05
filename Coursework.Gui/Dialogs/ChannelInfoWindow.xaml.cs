@@ -34,6 +34,7 @@ namespace Coursework.Gui.Dialogs
             ErrorChance.Text = channelDto.ErrorChance.ToString("N");
             FirstNodeId.Text = channelDto.FirstNodeId.ToString();
             SecondNodeId.Text = channelDto.SecondNodeId.ToString();
+            MessageOwnerId.Text = channelDto.MessageOwnerId.ToString();
             ConnectionType.SelectedItem = channelDto.ConnectionType == Data.Entities.ConnectionType.Duplex
                 ? DuplexItem
                 : HalfduplexItem;

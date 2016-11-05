@@ -27,28 +27,9 @@ namespace Coursework.Data.MessageServices
             {
                 centralMachine.IsActive = true;
 
-                var networkMatrises = new Dictionary<uint, NetworkMatrix>();
+                var networkMatrises = CreateNetworkMatrises();
 
-                foreach (var node in Network.Nodes)
-                {
-                    var networkMatrix = MessageRouter.CountPriceMatrix(node.Id);
-
-                    node.IsTableUpdated = false;
-                    networkMatrises[node.Id] = networkMatrix;
-                }
-
-                foreach (var linkedNodeId in centralMachine.LinkedNodesId)
-                {
-                    var initializeMessage = CreateInitializeMessage(centralMachine.Id, linkedNodeId,
-                        networkMatrises);
-
-                    var channel = initializeMessage.Route.First();
-
-                    var messageQueue = centralMachine.MessageQueueHandlers
-                        .First(m => m.ChannelId == channel.Id);
-
-                    messageQueue.AddMessageInStart(initializeMessage);
-                }
+                CreateInitializeMessages(centralMachine, networkMatrises);
 
                 centralMachine.NetworkMatrix = networkMatrises[centralMachine.Id];
                 centralMachine.IsTableUpdated = true;
@@ -84,6 +65,37 @@ namespace Coursework.Data.MessageServices
             {
                 Network.RemoveFromQueue(message, nodeId);
             }
+        }
+
+        private void CreateInitializeMessages(Node centralMachine, Dictionary<uint, NetworkMatrix> networkMatrises)
+        {
+            foreach (var linkedNodeId in centralMachine.LinkedNodesId)
+            {
+                var initializeMessage = CreateInitializeMessage(centralMachine.Id, linkedNodeId,
+                    networkMatrises);
+
+                var channel = initializeMessage.Route.First();
+
+                var messageQueue = centralMachine.MessageQueueHandlers
+                    .First(m => m.ChannelId == channel.Id);
+
+                messageQueue.AddMessageInStart(initializeMessage);
+            }
+        }
+
+        private Dictionary<uint, NetworkMatrix> CreateNetworkMatrises()
+        {
+            var networkMatrises = new Dictionary<uint, NetworkMatrix>();
+
+            foreach (var node in Network.Nodes)
+            {
+                var networkMatrix = MessageRouter.CountPriceMatrix(node.Id);
+
+                node.IsTableUpdated = false;
+                networkMatrises[node.Id] = networkMatrix;
+            }
+
+            return networkMatrises;
         }
 
         private Message CreateMessage(MessageInitializer messageInitializer, Channel[] route)

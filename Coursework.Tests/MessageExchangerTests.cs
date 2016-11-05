@@ -5,7 +5,6 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
-using Coursework.Data.Constants;
 using Coursework.Data.MessageServices;
 
 namespace Coursework.Tests
@@ -74,6 +73,7 @@ namespace Coursework.Tests
                 SenderId = 0,
                 LastTransferNodeId = 0,
                 ReceiverId = 1,
+                Route = new[] { _channels.First() }
             };
 
             _networkMock.Setup(n => n.Nodes)
@@ -89,7 +89,7 @@ namespace Coursework.Tests
                 .Returns(_channels.First());
         }
 
-        
+
 
         [Test]
         public void HandleMessagesOnceShouldReplaceMessageToChannel()
@@ -107,6 +107,31 @@ namespace Coursework.Tests
 
             // Assert
             Assert.IsNotNull(firstChannel.FirstMessage);
+        }
+
+        [Test]
+        public void HandleMessagesOnceShouldDoNothingIfChannelIsBusy()
+        {
+            // Arrange
+            var firstNode = _nodes.First();
+
+            firstNode.MessageQueueHandlers
+                .First().AppendMessage(_message);
+
+            var firstChannel = _channels.First();
+
+            firstChannel.IsBusy = true;
+            firstChannel.MessageOwnerId = Guid.NewGuid();
+
+            // Act
+            _messageExchanger.HandleMessagesOnce();
+
+            // Assert
+            Assert.IsNull(firstChannel.FirstMessage);
+            Assert.IsNull(firstChannel.SecondMessage);
+            Assert.IsTrue(firstNode.MessageQueueHandlers
+                .SelectMany(m => m.Messages)
+                .Contains(_message));
         }
 
         [Test]
@@ -207,6 +232,57 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(mesageQueueHandler.Messages.Length, Is.Zero);
+        }
+
+
+        [Test]
+        public void HandleMessagesShouldMakeChannelBusyIfMessageTypeIsSendingRequest()
+        {
+            // Arrange
+            var firstNode = _nodes.First();
+
+            _message.MessageType = MessageType.SendingRequest;
+            _message.Data = new[] { _message };
+
+            firstNode.MessageQueueHandlers
+                .First().AppendMessage(_message);
+
+            var firstChannel = _channels.First();
+            firstChannel.ErrorChance = 0.0;
+
+            _messageExchanger.HandleMessagesOnce();
+
+            // Act
+            _messageExchanger.HandleMessagesOnce();
+
+            // Assert
+            Assert.IsTrue(firstChannel.IsBusy);
+            Assert.That(firstChannel.MessageOwnerId, Is.EqualTo(_message.ParentId));
+        }
+
+        [Test]
+        public void HandleMessagesShouldFreeChannelIfMessageTypeIsGeneral()
+        {
+            // Arrange
+            var firstNode = _nodes.First();
+
+            _message.MessageType = MessageType.General;
+
+            firstNode.MessageQueueHandlers
+                .First().AppendMessage(_message);
+
+            var firstChannel = _channels.First();
+            firstChannel.IsBusy = true;
+            firstChannel.MessageOwnerId = _message.ParentId;
+            firstChannel.ErrorChance = 0.0;
+
+            _messageExchanger.HandleMessagesOnce();
+
+            // Act
+            _messageExchanger.HandleMessagesOnce();
+
+            // Assert
+            Assert.IsFalse(firstChannel.IsBusy);
         }
     }
 }

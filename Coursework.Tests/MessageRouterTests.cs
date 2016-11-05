@@ -237,6 +237,20 @@ namespace Coursework.Tests
         }
 
         [Test]
+        public void CountPriceShouldReturnPositiveInfiniteIfChannelIsBusy()
+        {
+            // Arrange
+            var channel = _channels.First();
+            channel.IsBusy = true;
+
+            // Act
+            var result = _messageRouter.CountPrice(channel.FirstNodeId, channel.SecondNodeId);
+
+            // Assert
+            Assert.IsTrue(double.IsInfinity(result));
+        }
+
+        [Test]
         public void CountPriceShouldReturnZeroIfSenderAndReceiverIsTheSameNode()
         {
             // Arrange

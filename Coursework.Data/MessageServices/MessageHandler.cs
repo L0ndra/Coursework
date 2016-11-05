@@ -33,6 +33,16 @@ namespace Coursework.Data.MessageServices
                         HandleUpdateTableMessage(message);
                         break;
                     }
+                case MessageType.SendingRequest:
+                    {
+                        HandleSendingRequest(message);
+                        break;
+                    }
+                case MessageType.SendingResponse:
+                    {
+                        HandleSendingResponse(message);
+                        break;
+                    }
                 default:
                     {
                         throw new ArgumentOutOfRangeException();
@@ -42,6 +52,40 @@ namespace Coursework.Data.MessageServices
             message.Route = message.Route
                     .Skip(1)
                     .ToArray();
+        }
+
+        private void HandleSendingResponse(Message response)
+        {
+            var messages = (Message[])response.Data;
+
+            var currentNode = _network.GetNodeById(response.ReceiverId);
+
+            var lastChannel = response.Route.First();
+
+            var messageQueue = currentNode.MessageQueueHandlers
+                .First(m => m.ChannelId == lastChannel.Id);
+
+            foreach (var message in messages)
+            {
+                messageQueue.AppendMessage(message);
+            }
+
+            messageQueue.RemoveMessage(response);
+        }
+
+        private void HandleSendingRequest(Message request)
+        {
+            var response = CreateResponseMessage(request);
+
+            var currentNode = _network.GetNodeById(request.ReceiverId);
+
+            var lastChannel = response.Route.First();
+
+            var messageQueue = currentNode.MessageQueueHandlers
+                .First(m => m.ChannelId == lastChannel.Id);
+
+            messageQueue.AppendMessage(response);
+            messageQueue.RemoveMessage(request);
         }
 
         private void HandleUpdateTableMessage(Message message)
@@ -91,6 +135,29 @@ namespace Coursework.Data.MessageServices
                     messageQueue.AddMessageInStart(initializeMessage);
                 }
             }
+        }
+
+        private Message CreateResponseMessage(Message request)
+        {
+            var dataMessages = (Message[])request.Data;
+
+            var reversedRoute = dataMessages.First()
+                .Route
+                .Reverse();
+
+            return new Message
+            {
+                MessageType = MessageType.SendingResponse,
+                ReceiverId = request.SenderId,
+                SenderId = request.ReceiverId,
+                Route = reversedRoute.ToArray(),
+                Data = request.Data,
+                LastTransferNodeId = request.ReceiverId,
+                ParentId = dataMessages.First().ParentId,
+                SendAttempts = 0,
+                DataSize = 0,
+                ServiceSize = AllConstants.ResponseMessageSize
+            };
         }
 
         private Message CreateInitializeMessage(uint senderId, uint receiverId,

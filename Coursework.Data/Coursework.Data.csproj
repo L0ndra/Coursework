@@ -63,6 +63,7 @@
     <Compile Include="IONetwork\INetworkLocationRetriever.cs" />
     <Compile Include="IONetwork\NetworkLocationRetriever.cs" />
     <Compile Include="IONetwork\NodeLocationDto.cs" />
+    <Compile Include="MessageServices\RequestMessageCreator.cs" />
     <Compile Include="NetworkData\NetworkMatrix.cs" />
     <Compile Include="Entities\NodeType.cs" />
     <Compile Include="IONetwork\ChannelIoDto.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="Util\PathUtils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using Coursework.Data;
 using Coursework.Data.Entities;
 using Coursework.Data.Exceptions;
 using Coursework.Data.NetworkData;
@@ -86,7 +85,7 @@ namespace Coursework.Gui.Dialogs
                 ChannelType = GetNewChannelType(),
                 FirstNodeId = uint.Parse(FirstNodeId.Text),
                 SecondNodeId = uint.Parse(SecondNodeId.Text),
-                IsFree = true,
+                IsBusy = false,
             };
 
             _network.AddChannel(newChannel);

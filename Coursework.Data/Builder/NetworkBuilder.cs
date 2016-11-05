@@ -132,7 +132,7 @@ namespace Coursework.Data.Builder
                     ConnectionType = ConnectionType.Duplex,
                     ErrorChance = Math.Floor(AllConstants.RandomGenerator.NextDouble() * 100.0) / 100.0,
                     Price = price,
-                    IsFree = true
+                    IsBusy = false
                 };
 
                 return channel;

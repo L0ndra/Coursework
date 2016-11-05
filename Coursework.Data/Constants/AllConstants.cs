@@ -21,6 +21,8 @@ namespace Coursework.Data.Constants
         public const int MaxAttemptsToGenerateMessage = 50;
         public const int MaxMessageSize = 100;
         public const int PackageSize = 10;
+        public const int RequestMessageSize = 5;
+        public const int ResponseMessageSize = 5;
         public const int ServicePartSize = 1;
         public const int SendingRequestMessageSize = 10;
         public const int SendingResponseMessageSize = 10;
@@ -39,6 +41,7 @@ namespace Coursework.Data.Constants
         public static readonly Brush TwoMessagesInChannelBrush = Brushes.Blue;
         public static readonly Brush FirstMessageInChannelBrush = Brushes.Green;
         public static readonly Brush SecondMessageInChannelBrush = Brushes.DarkOrange;
+        public static readonly Brush BusyChannelBrush = Brushes.DarkRed;
         public static readonly Brush ReceivedMessagesForeground = Brushes.Green;
         public static readonly Brush UnreceivedMessagesForeground = Brushes.Black;
         public static readonly Brush CanceledMessagesForeground = Brushes.Red;

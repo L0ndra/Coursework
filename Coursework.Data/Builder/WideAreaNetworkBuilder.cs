@@ -82,7 +82,7 @@ namespace Coursework.Data.Builder
                     ChannelType = ChannelType.Satellite,
                     ErrorChance = AllConstants.RandomGenerator.NextDouble(),
                     Price = PriceGenerator.GetRandomPrice(),
-                    IsFree = true
+                    IsBusy = false
                 };
 
                 var metropolitanNode = _network.GetNodeById(nodeId);

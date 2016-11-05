@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
@@ -75,10 +76,15 @@ namespace Coursework.Data.MessageServices
                 {
                     var isSuccess = TryMoveMessageToChannel(currentChannel, currentMessage);
 
-                    if (isSuccess)
+                    messageQueueHandler.RemoveMessage(currentMessage);
+
+                    if (!isSuccess)
+                    {
+                        messageQueueHandler.AppendMessage(currentMessage);
+                    }
+                    else
                     {
                         _handledMessagesInNode.Add(currentMessage);
-                        messageQueueHandler.RemoveMessage(currentMessage);
                     }
                 }
                 else
@@ -113,6 +119,11 @@ namespace Coursework.Data.MessageServices
 
             var isSuccess = AllConstants.RandomGenerator.NextDouble() >= channel.ErrorChance;
 
+            if (channel.IsBusy && channel.MessageOwnerId != message.ParentId)
+            {
+                isSuccess = false;
+            }
+
             if (message.LastTransferNodeId == channel.FirstNodeId && !isSuccess
                 || message.LastTransferNodeId != channel.FirstNodeId && isSuccess)
             {
@@ -127,6 +138,10 @@ namespace Coursework.Data.MessageServices
             {
                 message.SendAttempts++;
             }
+            else
+            {
+                ChangeChannelOccupation(message);
+            }
 
             var messageQueueHandler = node.MessageQueueHandlers
                 .First(m => m.ChannelId == channel.Id);
@@ -136,16 +151,20 @@ namespace Coursework.Data.MessageServices
 
         private bool TryMoveMessageToChannel(Channel channel, Message message)
         {
-            if (channel.ConnectionType == ConnectionType.HalfDuplex
-                && channel.FirstMessage == null)
+            if (channel.IsBusy && channel.MessageOwnerId != message.ParentId)
+            {
+                return false;
+            }
+
+            if (channel.ConnectionType == ConnectionType.HalfDuplex && channel.FirstMessage == null)
             {
                 channel.FirstMessage = message;
                 return true;
             }
 
-            if (channel.ConnectionType != ConnectionType.Duplex ||
-                channel.FirstMessage?.LastTransferNodeId == message.LastTransferNodeId ||
-                channel.SecondMessage?.LastTransferNodeId == message.LastTransferNodeId)
+            if (channel.ConnectionType != ConnectionType.Duplex
+                || channel.FirstMessage?.LastTransferNodeId == message.LastTransferNodeId
+                || channel.SecondMessage?.LastTransferNodeId == message.LastTransferNodeId)
             {
                 return false;
             }
@@ -164,6 +183,37 @@ namespace Coursework.Data.MessageServices
             }
 
             return true;
+        }
+
+        private void ChangeChannelOccupation(Message message)
+        {
+            var channel = message.Route.First();
+
+            switch (message.MessageType)
+            {
+                case MessageType.General:
+                    {
+                        channel.IsBusy = false;
+
+                        break;
+                    }
+                case MessageType.SendingRequest:
+                    {
+                        channel.IsBusy = true;
+                        channel.MessageOwnerId = message.ParentId;
+
+                        break;
+                    }
+                case MessageType.MatrixUpdateMessage:
+                case MessageType.SendingResponse:
+                    {
+                        break;
+                    }
+                default:
+                    {
+                        throw new ArgumentOutOfRangeException();
+                    }
+            }
         }
     }
 }

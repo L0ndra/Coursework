@@ -16,6 +16,13 @@ namespace Coursework.Data.MessageServices
         {
             message.LastTransferNodeId = node.Id;
 
+            var passedChannel = message.Route.First();
+
+            var oldMessageQueue = node.MessageQueueHandlers
+                    .First(m => m.ChannelId == passedChannel.Id);
+
+            oldMessageQueue.RemoveMessage(message);
+
             if (message.Route.Length != 1)
             {
                 message.Route = message.Route

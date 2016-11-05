@@ -247,7 +247,8 @@ namespace Coursework.Gui
             if (_backgroundWorker == null)
             {
                 _messageRouter = new MessageRouter(_network);
-                _messageCreator = new PackageMessageCreator(_network, _messageRouter);
+                //_messageCreator = new PackageMessageCreator(_network, _messageRouter);
+                _messageCreator = new RequestMessageCreator(_network, _messageRouter);
                 _messageHandler = new MessageHandler(_network);
                 _messageReceiver = new MessageReceiver(_messageHandler);
                 _messageExchanger = new MessageExchanger(_network, _messageReceiver);

@@ -12,5 +12,6 @@ namespace Coursework.Gui.Dto
         public uint SecondNodeId { get; set; }
         public ConnectionType ConnectionType { get; set; }
         public ChannelType ChannelType { get; set; }
+        public Guid MessageOwnerId { get; set; }
     }
 }

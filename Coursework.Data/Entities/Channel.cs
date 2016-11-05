@@ -13,6 +13,7 @@ namespace Coursework.Data.Entities
         public ChannelType ChannelType { get; set; }
         public Message FirstMessage { get; set; }
         public Message SecondMessage { get; set; }
-        public bool IsFree { get; set; }
+        public bool IsBusy { get; set; }
+        public Guid MessageOwnerId { get; set; }
     }
 }

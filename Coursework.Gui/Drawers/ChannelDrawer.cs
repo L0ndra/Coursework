@@ -90,10 +90,11 @@ namespace Coursework.Gui.Drawers
             Panel.SetZIndex(line, AllConstants.LineZIndex);
 
             line.MouseUp += Line_MouseUp;
+            line.MouseEnter += Line_MouseEnter;
+            line.MouseLeave += Line_MouseLeave;
 
             return line;
         }
-
         private TextBlock CreateTextBlock(Channel channel, Line connectedLine)
         {
             var textBlock = new TextBlock
@@ -124,6 +125,10 @@ namespace Coursework.Gui.Drawers
             if (channel.SecondMessage != null)
             {
                 return AllConstants.SecondMessageInChannelBrush;
+            }
+            if (channel.IsBusy)
+            {
+                return AllConstants.BusyChannelBrush;
             }
 
             return channel.ConnectionType == ConnectionType.Duplex
@@ -159,6 +164,20 @@ namespace Coursework.Gui.Drawers
             infoWindow.BindChannelInfo(line.Tag as ChannelDto, UpdateChannels);
 
             infoWindow.Show();
+        }
+
+        private void Line_MouseLeave(object sender, MouseEventArgs mouseEventArgs)
+        {
+            var line = (Line)sender;
+
+            line.StrokeThickness = AllConstants.LineThickness;
+        }
+
+        private void Line_MouseEnter(object sender, MouseEventArgs mouseEventArgs)
+        {
+            var line = (Line)sender;
+
+            line.StrokeThickness = AllConstants.LineThickness * 2;
         }
 
         private void UpdateChannels(ChannelDto channelDto)

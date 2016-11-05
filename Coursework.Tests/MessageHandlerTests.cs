@@ -83,7 +83,8 @@ namespace Coursework.Tests
                     },
                     IsActive = false,
                     NodeType = NodeType.CentralMachine,
-                    ReceivedMessages = new List<Message>()
+                    ReceivedMessages = new List<Message>(),
+                    CanceledMessages = new List<Message>()
                 },
                 new Node
                 {
@@ -95,7 +96,8 @@ namespace Coursework.Tests
                         new MessageQueueHandler(_channels[2].Id)
                     },
                     IsActive = false,
-                    ReceivedMessages = new List<Message>()
+                    ReceivedMessages = new List<Message>(),
+                    CanceledMessages = new List<Message>()
                 },
                 new Node
                 {
@@ -107,7 +109,8 @@ namespace Coursework.Tests
                         new MessageQueueHandler(_channels[3].Id)
                     },
                     IsActive = false,
-                    ReceivedMessages = new List<Message>()
+                    ReceivedMessages = new List<Message>(),
+                    CanceledMessages = new List<Message>()
                 },
                 new Node
                 {
@@ -119,7 +122,8 @@ namespace Coursework.Tests
                         new MessageQueueHandler(_channels[3].Id)
                     },
                     IsActive = false,
-                    ReceivedMessages = new List<Message>()
+                    ReceivedMessages = new List<Message>(),
+                    CanceledMessages = new List<Message>()
                 },
                 new Node
                 {
@@ -127,7 +131,8 @@ namespace Coursework.Tests
                     LinkedNodesId = new SortedSet<uint>(),
                     MessageQueueHandlers = new List<MessageQueueHandler>(),
                     IsActive = false,
-                    ReceivedMessages = new List<Message>()
+                    ReceivedMessages = new List<Message>(),
+                    CanceledMessages = new List<Message>()
                 }
             };
 
@@ -135,7 +140,10 @@ namespace Coursework.Tests
             {
                 MessageType = MessageType.General,
                 ReceiverId = 0,
-                Route = new Channel[1]
+                Route = new []
+                {
+                    _channels[0]
+                }
             };
 
             _networkMock.Setup(n => n.Nodes)
@@ -185,7 +193,7 @@ namespace Coursework.Tests
             Assert.That(messageCount, Is.EqualTo(linkedNodeCount));
 
             Assert.IsTrue(Receiver.IsActive);
-            Assert.That(Receiver.NetworkMatrix, 
+            Assert.That(Receiver.NetworkMatrix,
                 Is.EqualTo(((Dictionary<uint, NetworkMatrix>)_message.Data)[0]));
         }
 
@@ -246,6 +254,47 @@ namespace Coursework.Tests
 
             // Assert
             Assert.IsTrue(receiver.ReceivedMessages.Contains(_message));
+        }
+
+        [Test]
+        public void HandleMessageShouldHandleRequestMessage()
+        {
+            // Arrange
+            _message.MessageType = MessageType.SendingRequest;
+            _message.Data = new[] { _message };
+
+            var messageQueue = Receiver.MessageQueueHandlers
+                .First(m => m.ChannelId == _message.Route.Last().Id);
+
+            // Act
+            _messageHandler.HandleMessage(_message);
+
+            var response = messageQueue.Messages
+                .First(m => m.MessageType == MessageType.SendingResponse);
+
+            // Assert
+            Assert.That(response.SenderId, Is.EqualTo(_message.ReceiverId));
+            Assert.That(response.ReceiverId, Is.EqualTo(_message.SenderId));
+        }
+
+        [Test]
+        public void HandleMessageShouldHandleResponseMessage()
+        {
+            // Arrange
+            _message.MessageType = MessageType.SendingResponse;
+            var innerMessage = new Message();
+            _message.Data = new[] { innerMessage };
+
+            var channel = _message.Route.First();
+
+            // Act
+            _messageHandler.HandleMessage(_message);
+
+            var messageQueue = Receiver.MessageQueueHandlers
+                .First(m => m.ChannelId == channel.Id);
+
+            // Assert
+            Assert.IsTrue(messageQueue.Messages.Contains(innerMessage));
         }
     }
 }

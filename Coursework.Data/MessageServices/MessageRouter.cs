@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using Coursework.Data.Constants;
 using Coursework.Data.NetworkData;
 
 namespace Coursework.Data.MessageServices
@@ -11,20 +13,16 @@ namespace Coursework.Data.MessageServices
 
         public override double CountPrice(uint startId, uint destinationId)
         {
-            if (startId == destinationId)
+            var price = base.CountPrice(startId, destinationId);
+
+            if (double.IsInfinity(price) || Math.Abs(price) < AllConstants.Eps)
             {
-                return 0.0;
+                return price;
             }
 
             var startNode = Network.GetNodeById(startId);
-            var destinationNode = Network.GetNodeById(destinationId);
 
             var channel = Network.GetChannel(startId, destinationId);
-
-            if (!startNode.IsActive || !destinationNode.IsActive || channel == null)
-            {
-                return double.PositiveInfinity;
-            }
 
             var startMessageQueue = startNode.MessageQueueHandlers
                 .First(m => m.ChannelId == channel.Id);
