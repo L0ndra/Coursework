@@ -92,7 +92,7 @@ namespace Coursework.Tests
 
 
         [Test]
-        public void HandleMessagesOnceShouldReplaceMessageToChannel()
+        public void HandleMessagesOnceShouldReplaceMessageToChannelInFirstMessageSlot()
         {
             // Arrange
             var firstNode = _nodes.First();
@@ -107,6 +107,28 @@ namespace Coursework.Tests
 
             // Assert
             Assert.IsNotNull(firstChannel.FirstMessage);
+            Assert.IsNull(firstChannel.SecondMessage);
+        }
+
+        [Test]
+        public void HandleMessagesOnceShouldReplaceMessageToChannelInSecondMessageSlot()
+        {
+            // Arrange
+            var secondNode = _nodes.Skip(1).First();
+
+            _message.LastTransferNodeId = 1;
+
+            secondNode.MessageQueueHandlers
+                .First().AppendMessage(_message);
+
+            var firstChannel = _channels.First();
+
+            // Act
+            _messageExchanger.HandleMessagesOnce();
+
+            // Assert
+            Assert.IsNotNull(firstChannel.SecondMessage);
+            Assert.IsNull(firstChannel.FirstMessage);
         }
 
         [Test]
@@ -145,6 +167,63 @@ namespace Coursework.Tests
                 .First().AppendMessage(_message);
 
             var firstChannel = _channels.First();
+            firstChannel.ErrorChance = 0.0;
+
+            _messageExchanger.HandleMessagesOnce();
+
+            Func<Node, bool> checkPredicate = node => node.MessageQueueHandlers
+                .First(m => m.ChannelId == firstChannel.Id)
+                .Messages
+                .Contains(_message);
+
+            // Act
+            _messageExchanger.HandleMessagesOnce();
+
+            // Assert
+            Assert.IsTrue(checkPredicate(secondNode));
+        }
+
+        [Test]
+        public void HandleMessagesOnceShouldReplaceMessageBackToSenderIfChannelisBusy()
+        {
+            // Arrange
+            var firstNode = _nodes.First();
+
+            firstNode.MessageQueueHandlers
+                .First().AppendMessage(_message);
+
+            var firstChannel = _channels.First();
+            firstChannel.IsBusy = true;
+            firstChannel.MessageOwnerId = Guid.NewGuid();
+            firstChannel.ErrorChance = 0.0;
+
+            _messageExchanger.HandleMessagesOnce();
+
+            Func<Node, bool> checkPredicate = node => node.MessageQueueHandlers
+                .First(m => m.ChannelId == firstChannel.Id)
+                .Messages
+                .Contains(_message);
+
+            // Act
+            _messageExchanger.HandleMessagesOnce();
+
+            // Assert
+            Assert.IsTrue(checkPredicate(firstNode));
+        }
+
+        [Test]
+        public void HandleMessagesOnceShouldReplaceMessageToReceiverIfChannelisBusyButMessageIsOwnerOfChannel()
+        {
+            // Arrange
+            var firstNode = _nodes.First();
+            var secondNode = _nodes.Skip(1).First();
+
+            firstNode.MessageQueueHandlers
+                .First().AppendMessage(_message);
+
+            var firstChannel = _channels.First();
+            firstChannel.IsBusy = true;
+            firstChannel.MessageOwnerId = _message.ParentId;
             firstChannel.ErrorChance = 0.0;
 
             _messageExchanger.HandleMessagesOnce();

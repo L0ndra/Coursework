@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Coursework.Gui.Dialogs"
         mc:Ignorable="d"
         Title="ChannelInfoWindow" Height="300" Width="500" WindowStyle="None" 
             WindowStartupLocation="CenterOwner">
@@ -96,7 +95,8 @@
         </Grid>
 
         <Grid Grid.Row="7">
-            <Button HorizontalAlignment="Center" VerticalAlignment="Center" Content="OK" Width="100" Click="Ok_OnClick"></Button>
+            <Button HorizontalAlignment="Center" VerticalAlignment="Center" Content="OK" 
+                    Width="100" Click="Ok_OnClick"></Button>
         </Grid>
     </Grid>
 </Window>

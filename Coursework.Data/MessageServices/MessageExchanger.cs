@@ -169,11 +169,13 @@ namespace Coursework.Data.MessageServices
                 return false;
             }
 
-            if (channel.FirstMessage == null)
+            if (channel.FirstMessage == null 
+                && channel.FirstNodeId == message.LastTransferNodeId)
             {
                 channel.FirstMessage = message;
             }
-            else if (channel.SecondMessage == null)
+            else if (channel.SecondMessage == null 
+                && channel.SecondNodeId == message.LastTransferNodeId)
             {
                 channel.SecondMessage = message;
             }

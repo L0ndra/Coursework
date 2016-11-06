@@ -15,7 +15,6 @@ using Coursework.Gui.Dialogs;
 using Coursework.Gui.Drawers;
 using Coursework.Gui.Dto;
 using Coursework.Gui.MessageService;
-using MahApps.Metro.Controls;
 using Microsoft.Win32;
 using NodeLocationDto = Coursework.Data.IONetwork.NodeLocationDto;
 
@@ -24,7 +23,7 @@ namespace Coursework.Gui
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : MetroWindow
+    public partial class MainWindow
     {
         private INetworkHandler _network;
         private IComponentDrawer _networkDrawer;
@@ -139,12 +138,7 @@ namespace Coursework.Gui
             {
                 _network = _networkInfoRetriever.Read(filename) as Network;
 
-                InitializeDrawers();
-                NetworkArea.Children.Remove(GeneratedCanvas);
-
-                _networkDrawer.DrawComponents(NetworkArea);
-
-                _channelAddWindow = new ChannelAddWindow(_network, channel => _channelDrawer.DrawComponents(GeneratedCanvas));
+                ReasignNetwork();
 
                 MessageBox.Show("File loaded!", "OK", MessageBoxButton.OK, MessageBoxImage.Information,
                     MessageBoxResult.OK,
@@ -160,6 +154,16 @@ namespace Coursework.Gui
                     MessageBoxResult.OK,
                     MessageBoxOptions.None);
             }
+        }
+
+        private void ReasignNetwork()
+        {
+            InitializeDrawers();
+            NetworkArea.Children.Remove(GeneratedCanvas);
+
+            _networkDrawer.DrawComponents(NetworkArea);
+
+            _channelAddWindow = new ChannelAddWindow(_network, channel => _channelDrawer.DrawComponents(GeneratedCanvas));
         }
 
         private void SaveNetworkLocation_OnClick(object sender, RoutedEventArgs e)
@@ -306,6 +310,19 @@ namespace Coursework.Gui
             var networkMatrisesWindow = new NodeNetworkMatrix(_network);
 
             networkMatrisesWindow.Show();
+        }
+
+        private void CreateNewNetwork_OnClick(object sender, RoutedEventArgs e)
+        {
+            NetworkCreatorDialog.NetworkUpdateHandler networkUpdateHandler = network =>
+            {
+                _network = network;
+                ReasignNetwork();
+            };
+
+            var newNetworkwindow = new NetworkCreatorDialog(networkUpdateHandler);
+
+            newNetworkwindow.Show();
         }
     }
 }
