@@ -111,6 +111,7 @@ namespace Coursework.Data.MessageServices
 
                 foreach (var message in outdatedMessages)
                 {
+                    message.IsCanceled = true;
                     messageQueueHandler.RemoveMessage(message);
                     node.CanceledMessages.Add(message);
                 }

@@ -10,7 +10,7 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_Network">
-                <MenuItem Header="_Create new" Click="CreateNewNetwork_OnClick"></MenuItem>
+                <MenuItem Header="_Create new network" Click="CreateNewNetwork_OnClick"></MenuItem>
                 <Separator />
                 <MenuItem Header="_Save to file..." Click="SaveNetwork_OnClick"></MenuItem>
                 <MenuItem Header="_Read from file..." Click="ReadNetwork_OnClick"></MenuItem>

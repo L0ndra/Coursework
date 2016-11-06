@@ -11,7 +11,7 @@ namespace Coursework.Gui.Dialogs
     /// <summary>
     /// Interaction logic for NodeNetworkMatrix.xaml
     /// </summary>
-    public partial class NodeNetworkMatrix : Window
+    public partial class NodeNetworkMatrix
     {
         private const double Size = 50.0;
 

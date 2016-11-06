@@ -1,10 +1,10 @@
-﻿<Window x:Class="Coursework.Gui.Dialogs.NetworkCreatorDialog"
+﻿<Window x:Class="Coursework.Gui.Dialogs.SimulationOptionsDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="NetworkCreatorDialog" Height="250" Width="400" WindowStyle="None">
+        Title="SimulationOptionsDialog" Height="250" Width="400" WindowStyle="None">
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
@@ -12,7 +12,7 @@
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        
+
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"></ColumnDefinition>
@@ -20,8 +20,8 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
-                       Text="Nodes in metropolitan network: " TextWrapping="Wrap"></TextBlock>
-            <TextBox Grid.Column="1" VerticalAlignment="Center" Name="MetropolitanNodesNumber" Margin="10 0"></TextBox>
+                       Text="Message generate chance: " TextWrapping="Wrap"></TextBlock>
+            <TextBox Grid.Column="1" VerticalAlignment="Center" Name="MessageGenerateChance" Margin="10 0"></TextBox>
         </Grid>
 
         <Grid Grid.Row="1">
@@ -31,8 +31,8 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
-                       Text="Metropolitan networks count: " TextWrapping="Wrap"></TextBlock>
-            <TextBox Grid.Column="1" VerticalAlignment="Center" Name="MetropolitanNetworksCount" Margin="10 0"></TextBox>
+                       Text="Table update period: " TextWrapping="Wrap"></TextBlock>
+            <TextBox Grid.Column="1" VerticalAlignment="Center" Name="TableUpdatePeriod" Margin="10 0"></TextBox>
         </Grid>
 
         <Grid Grid.Row="2">
@@ -42,8 +42,8 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
-                       Text="Network power: " TextWrapping="Wrap"></TextBlock>
-            <TextBox Grid.Column="1" VerticalAlignment="Center" Name="NetworkPower" Margin="10 0"></TextBox>
+                       Text="Speed: " TextWrapping="Wrap"></TextBlock>
+            <TextBox Grid.Column="1" VerticalAlignment="Center" Name="Speed" Margin="10 0"></TextBox>
         </Grid>
 
         <Grid Grid.Row="3">
@@ -51,8 +51,8 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Create" Width="100"
-                        Click="Create_OnClick"></Button>
+            <Button Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Start" Width="100"
+                        Click="Start_OnClick"></Button>
             <Button Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Cancel" Width="100"
                         Click="Cancel_OnClick"></Button>
         </Grid>

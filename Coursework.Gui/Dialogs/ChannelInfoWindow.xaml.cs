@@ -9,7 +9,7 @@ namespace Coursework.Gui.Dialogs
     /// <summary>
     /// Interaction logic for ChannelInfoWindow.xaml
     /// </summary>
-    public partial class ChannelInfoWindow : Window
+    public partial class ChannelInfoWindow
     {
         public delegate void ChannelChangeEventHandler(ChannelDto newChannelParams);
         private ChannelChangeEventHandler _onChangeChannelInfoHandler;

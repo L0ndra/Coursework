@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using Coursework.Data.Builder;
+using Coursework.Data.Constants;
 using Coursework.Data.Exceptions;
 using Coursework.Data.NetworkData;
 
@@ -22,9 +23,13 @@ namespace Coursework.Gui.Dialogs
             InitializeComponent();
 
             NetworkUpdateEvent += networkUpdateHandler;
+
+            MetropolitanNodesNumber.Text = AllConstants.NodeCountInMetropolitanNetwork.ToString();
+            MetropolitanNetworksCount.Text = AllConstants.MetropolitanNetworksCount.ToString();
+            NetworkPower.Text = AllConstants.NetworkPower.ToString("N");
         }
 
-        private void Ok_OnClick(object sender, RoutedEventArgs e)
+        private void Create_OnClick(object sender, RoutedEventArgs e)
         {
             try
             {

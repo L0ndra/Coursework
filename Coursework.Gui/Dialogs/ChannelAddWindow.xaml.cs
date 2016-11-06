@@ -9,7 +9,7 @@ namespace Coursework.Gui.Dialogs
     /// <summary>
     /// Interaction logic for ChannelAddWindow.xaml
     /// </summary>
-    public partial class ChannelAddWindow : Window
+    public partial class ChannelAddWindow
     {
         public delegate void ChannelAddEventHandler(Channel channel);
         private event ChannelAddEventHandler ChannelAdd;

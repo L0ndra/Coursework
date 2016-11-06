@@ -5,7 +5,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Coursework.Data.AutoRunners;
-using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.IONetwork;
 using Coursework.Data.MessageServices;
@@ -250,28 +249,34 @@ namespace Coursework.Gui
         {
             if (_backgroundWorker == null)
             {
-                _messageRouter = new MessageRouter(_network);
-                //_messageCreator = new PackageMessageCreator(_network, _messageRouter);
-                _messageCreator = new RequestMessageCreator(_network, _messageRouter);
-                _messageHandler = new MessageHandler(_network);
-                _messageReceiver = new MessageReceiver(_messageHandler);
-                _messageExchanger = new MessageExchanger(_network, _messageReceiver);
+                var simulationOptionsDialog = new SimulationOptionsDialog(InitializeAllServices);
 
-                _messageCreator.UpdateTables();
-
-                _messageGenerator = new MessageGenerator(_network, _messageCreator,
-                    AllConstants.MessageGenerateChance);
-
-                _messageRepository = new MessageRepository(_network);
-                _messageViewUpdater = new MessageViewUpdater(_messageRepository, Messages);
-
-                _backgroundWorker = new Background.BackgroundWorker(_messageExchanger, _messageGenerator,
-                   _networkDrawer, _messageCreator, _messageViewUpdater, AllConstants.UpdateTablePeriod);
-
-                FiltrationModeSelect_OnSelectionChanged(FiltrationModeSelect, null);
-
-                _backgroundWorker.Run();
+                simulationOptionsDialog.Show();
             }
+        }
+
+        private void InitializeAllServices(double messageGenerateChance, double speed, int tableUpdatePeriod)
+        {
+            _messageRouter = new MessageRouter(_network);
+            //_messageCreator = new PackageMessageCreator(_network, _messageRouter);
+            _messageCreator = new RequestMessageCreator(_network, _messageRouter);
+            _messageHandler = new MessageHandler(_network);
+            _messageReceiver = new MessageReceiver(_messageHandler);
+            _messageExchanger = new MessageExchanger(_network, _messageReceiver);
+
+            _messageGenerator = new MessageGenerator(_network, _messageCreator, messageGenerateChance);
+
+            _messageRepository = new MessageRepository(_network);
+            _messageViewUpdater = new MessageViewUpdater(_messageRepository, Messages);
+
+            _backgroundWorker = new Background.BackgroundWorker(_messageExchanger, _messageGenerator,
+                _networkDrawer, _messageCreator, _messageViewUpdater, tableUpdatePeriod);
+
+            _messageCreator.UpdateTables();
+
+            FiltrationModeSelect_OnSelectionChanged(FiltrationModeSelect, null);
+
+            _backgroundWorker?.Run();
         }
 
         private void Pause_OnClick(object sender, RoutedEventArgs e)
