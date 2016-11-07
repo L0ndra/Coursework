@@ -70,6 +70,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Dialogs\MessageAddWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\NetworkCreatorDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -96,6 +100,9 @@
     </Compile>
     <Compile Include="Dialogs\ChannelInfoWindow.xaml.cs">
       <DependentUpon>ChannelInfoWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\MessageAddWindow.xaml.cs">
+      <DependentUpon>MessageAddWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\NetworkCreatorDialog.xaml.cs">
       <DependentUpon>NetworkCreatorDialog.xaml</DependentUpon>

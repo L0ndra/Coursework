@@ -23,6 +23,7 @@
             <MenuItem Header="_Add">
                 <MenuItem Header="_Node" Click="AddNode_OnClick"/>
                 <MenuItem Header="_Link" Click="AddChannel_OnClick"/>
+                <MenuItem Header="_Message" Click="AddMessage_Onclick"></MenuItem>
             </MenuItem>
         </Menu>
 

@@ -269,12 +269,11 @@ namespace Coursework.Tests
             // Act
             _messageHandler.HandleMessage(_message);
 
-            var response = messageQueue.Messages
-                .First(m => m.MessageType == MessageType.SendingResponse);
-
             // Assert
-            Assert.That(response.SenderId, Is.EqualTo(_message.ReceiverId));
-            Assert.That(response.ReceiverId, Is.EqualTo(_message.SenderId));
+            _networkMock.Verify(n => n.AddInQueue(It.Is<Message>(m => m.MessageType == MessageType.SendingResponse), 
+                _message.ReceiverId), Times.Once());
+
+            _networkMock.Verify(n => n.RemoveFromQueue(_message, _message.ReceiverId), Times.Once);
         }
 
         [Test]
@@ -290,11 +289,11 @@ namespace Coursework.Tests
             // Act
             _messageHandler.HandleMessage(_message);
 
-            var messageQueue = Receiver.MessageQueueHandlers
-                .First(m => m.ChannelId == channel.Id);
-
             // Assert
-            Assert.IsTrue(messageQueue.Messages.Contains(innerMessage));
+            _networkMock.Verify(n => n.AddInQueue(It.Is<Message>(m => m.MessageType == MessageType.General),
+                _message.ReceiverId), Times.Once());
+
+            _networkMock.Verify(n => n.RemoveFromQueue(_message, _message.ReceiverId), Times.Once);
         }
     }
 }

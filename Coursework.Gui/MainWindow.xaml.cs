@@ -352,5 +352,29 @@ namespace Coursework.Gui
                 IntervalValue.Text = IntervalSlider.Value.ToString("N0");
             }
         }
+
+        private void AddMessage_Onclick(object sender, RoutedEventArgs e)
+        {
+            var messageAddWindow = new MessageAddWindow(MessageCreate);
+
+            messageAddWindow.Show();
+        }
+
+        private void MessageCreate(MessageInitializer messageInitializer)
+        {
+            var messages = _messageCreator.CreateMessages(messageInitializer);
+
+            if (messages != null)
+            {
+                var senderId = messageInitializer.SenderId;
+                _messageCreator.AddInQueue(messages, senderId);
+            }
+            else
+            {
+                MessageBox.Show("Message Cannot Be Created", "Error", MessageBoxButton.OK, MessageBoxImage.Error,
+                    MessageBoxResult.OK,
+                    MessageBoxOptions.None);
+            }
+        }
     }
 }

@@ -58,34 +58,20 @@ namespace Coursework.Data.MessageServices
         {
             var messages = (Message[])response.Data;
 
-            var currentNode = _network.GetNodeById(response.ReceiverId);
-
-            var lastChannel = response.Route.First();
-
-            var messageQueue = currentNode.MessageQueueHandlers
-                .First(m => m.ChannelId == lastChannel.Id);
-
             foreach (var message in messages)
             {
-                messageQueue.AppendMessage(message);
+                _network.AddInQueue(message, response.ReceiverId);
             }
 
-            messageQueue.RemoveMessage(response);
+            _network.RemoveFromQueue(response, response.ReceiverId);
         }
 
         private void HandleSendingRequest(Message request)
         {
             var response = CreateResponseMessage(request);
 
-            var currentNode = _network.GetNodeById(request.ReceiverId);
-
-            var lastChannel = response.Route.First();
-
-            var messageQueue = currentNode.MessageQueueHandlers
-                .First(m => m.ChannelId == lastChannel.Id);
-
-            messageQueue.AppendMessage(response);
-            messageQueue.RemoveMessage(request);
+            _network.AddInQueue(response, request.ReceiverId);
+            _network.RemoveFromQueue(request, request.ReceiverId);
         }
 
         private void HandleUpdateTableMessage(Message message)

@@ -28,26 +28,28 @@ namespace Coursework.Data.MessageServices
 
         public virtual void Generate()
         {
-            if (Network.Nodes.Count(n => n.IsActive) >= 2
-                && _messageGenerateChance > AllConstants.RandomGenerator.NextDouble())
+            if (Network.Nodes.Count(n => n.IsActive) < 2 ||
+                !(_messageGenerateChance > AllConstants.RandomGenerator.NextDouble()))
             {
-                Tuple<Node, Node> senderAndReceiver;
-
-                do
-                {
-                    senderAndReceiver = ChooseRandomSenderAndReceiver();
-
-                    if (senderAndReceiver.Item1.IsActive && senderAndReceiver.Item2.IsActive
-                        && senderAndReceiver.Item1.Id != senderAndReceiver.Item2.Id)
-                    {
-                        CreateRandomMessages(senderAndReceiver.Item1, senderAndReceiver.Item2);
-                    }
-                    else
-                    {
-                        senderAndReceiver = null;
-                    }
-                } while (senderAndReceiver == null);
+                return;
             }
+
+            Tuple<Node, Node> senderAndReceiver = null;
+
+            while (senderAndReceiver == null)
+            {
+                senderAndReceiver = ChooseRandomSenderAndReceiver();
+
+                if (senderAndReceiver.Item1.IsActive && senderAndReceiver.Item2.IsActive
+                    && senderAndReceiver.Item1.Id != senderAndReceiver.Item2.Id)
+                {
+                    CreateRandomMessages(senderAndReceiver.Item1, senderAndReceiver.Item2);
+                }
+                else
+                {
+                    senderAndReceiver = null;
+                }
+            } 
         }
 
         private void CreateRandomMessages(Node sender, Node receiver)
