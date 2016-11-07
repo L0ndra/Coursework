@@ -37,10 +37,10 @@ namespace Coursework.Tests
         {
             // Arrange
             // Act
-            _backgroundWorker.Run();
+            TestDelegate testDelegate = () => _backgroundWorker.Run();
 
             // Assert
-            Assert.IsTrue(_backgroundWorker.IsActive);
+            Assert.That(testDelegate, Throws.Nothing);
         }
 
         [Test]
@@ -50,10 +50,10 @@ namespace Coursework.Tests
             _backgroundWorker.Run();
 
             // Act
-            _backgroundWorker.Pause();
+            TestDelegate testDelegate = () => _backgroundWorker.Pause();
 
             // Assert
-            Assert.IsFalse(_backgroundWorker.IsActive);
+            Assert.That(testDelegate, Throws.Nothing);
         }
 
         [Test]
@@ -63,10 +63,10 @@ namespace Coursework.Tests
             _backgroundWorker.Run();
 
             // Act
-            _backgroundWorker.Stop();
+            TestDelegate testDelegate = () => _backgroundWorker.Stop();
 
             // Assert
-            Assert.IsFalse(_backgroundWorker.IsActive);
+            Assert.That(testDelegate, Throws.Nothing);
         }
 
         [Test]
@@ -77,10 +77,10 @@ namespace Coursework.Tests
             _backgroundWorker.Pause();
 
             // Act
-            _backgroundWorker.Resume();
+            TestDelegate testDelegate = () => _backgroundWorker.Resume();
 
             // Assert
-            Assert.IsTrue(_backgroundWorker.IsActive);
+            Assert.That(testDelegate, Throws.Nothing);
         }
 
         [Test]

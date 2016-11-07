@@ -50,7 +50,7 @@ namespace Coursework.Gui.Dialogs
 
         private INetworkHandler CreateNetwork()
         {
-            var metropolitanNodesCount = uint.Parse(MetropolitanNodesNumber.Text);
+            var metropolitanNodesCount = int.Parse(MetropolitanNodesNumber.Text);
             var metropolitanNetworksCount = int.Parse(MetropolitanNetworksCount.Text);
             var networkPower = double.Parse(NetworkPower.Text);
 

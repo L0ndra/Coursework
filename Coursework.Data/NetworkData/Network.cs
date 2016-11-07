@@ -82,6 +82,26 @@ namespace Coursework.Data.NetworkData
             messageQueue.RemoveMessage(message);
         }
 
+        public void ClearMessages()
+        {
+            ClearNodes();
+
+            ClearChannels();
+        }
+
+        public void Reset()
+        {
+            foreach (var node in _nodes)
+            {
+                node.IsActive = false;
+            }
+
+            foreach (var channel in _channels)
+            {
+                channel.IsBusy = false;
+            }
+        }
+
         public void AddChannel(Channel channel)
         {
             ThrowExceptionIfChannelCannotBeCreated(channel);
@@ -124,6 +144,17 @@ namespace Coursework.Data.NetworkData
             }
         }
 
+        public Node GetNodeById(uint id)
+        {
+            return _nodes.FirstOrDefault(n => n.Id == id);
+        }
+
+        public Channel GetChannel(uint firstNodeId, uint secondNodeId)
+        {
+            return Channels.FirstOrDefault(c => c.FirstNodeId == firstNodeId && c.SecondNodeId == secondNodeId
+                                                || c.FirstNodeId == secondNodeId && c.SecondNodeId == firstNodeId);
+        }
+
         private void RemoveMessageQueue(uint nodeId, Guid channelId)
         {
             var node = GetNodeById(nodeId);
@@ -135,15 +166,30 @@ namespace Coursework.Data.NetworkData
                 .Remove(messageQueueHandler);
         }
 
-        public Channel GetChannel(uint firstNodeId, uint secondNodeId)
+        private void ClearChannels()
         {
-            return Channels.FirstOrDefault(c => c.FirstNodeId == firstNodeId && c.SecondNodeId == secondNodeId
-                                     || c.FirstNodeId == secondNodeId && c.SecondNodeId == firstNodeId);
+            foreach (var channel in _channels)
+            {
+                channel.FirstMessage = null;
+                channel.SecondMessage = null;
+            }
         }
 
-        public Node GetNodeById(uint id)
+        private void ClearNodes()
         {
-            return _nodes.FirstOrDefault(n => n.Id == id);
+            foreach (var node in _nodes)
+            {
+                node.ReceivedMessages.Clear();
+                node.CanceledMessages.Clear();
+
+                foreach (var messageQueueHandler in node.MessageQueueHandlers)
+                {
+                    var messages = messageQueueHandler.Messages
+                        .ToList();
+
+                    messages.ForEach(m => messageQueueHandler.RemoveMessage(m));
+                }
+            }
         }
 
         private void AddMessageQueueToNodes(Channel channel)

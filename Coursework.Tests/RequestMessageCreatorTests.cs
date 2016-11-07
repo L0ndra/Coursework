@@ -172,7 +172,7 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(firstMessage.DataSize, Is.Zero);
-            Assert.That(firstMessage.ServiceSize, Is.EqualTo(AllConstants.RequestMessageSize));
+            Assert.That(firstMessage.ServiceSize, Is.EqualTo(AllConstants.SendingRequestMessageSize));
             Assert.That(firstMessage.ReceiverId, Is.EqualTo(_messageInitializer.ReceiverId));
             Assert.That(firstMessage.SenderId, Is.EqualTo(_messageInitializer.SenderId));
             Assert.That(firstMessage.MessageType, Is.EqualTo(MessageType.SendingRequest));

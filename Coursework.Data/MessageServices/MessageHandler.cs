@@ -157,7 +157,7 @@ namespace Coursework.Data.MessageServices
                 ParentId = dataMessages.First().ParentId,
                 SendAttempts = 0,
                 DataSize = 0,
-                ServiceSize = AllConstants.ResponseMessageSize
+                ServiceSize = AllConstants.SendingResponseMessageSize
             };
         }
 

@@ -44,13 +44,13 @@ namespace Coursework.Tests
         }
 
         [Test]
-        [TestCase((uint)5, 2.0, 0.9)]
-        [TestCase((uint)20, 2.0, 1.5)]
-        [TestCase((uint)20, 19.0, 0.7)]
-        [TestCase((uint)10, 1.0, 0.7)]
-        [TestCase((uint)8, 5.0, 1.5)]
-        [TestCase((uint)8, 2.5, 1.5)]
-        public void BuildShouldCreateCorrectNetworkSpecifiedNumberOfTimesWithSpecifiedParameters(uint nodeCount, double networkPower, double eps)
+        [TestCase(5, 2.0, 0.9)]
+        [TestCase(20, 2.0, 1.5)]
+        [TestCase(20, 19.0, 0.7)]
+        [TestCase(10, 1.0, 0.7)]
+        [TestCase(8, 5.0, 1.5)]
+        [TestCase(8, 2.5, 1.5)]
+        public void BuildShouldCreateCorrectNetworkSpecifiedNumberOfTimesWithSpecifiedParameters(int nodeCount, double networkPower, double eps)
         {
             for (var i = 0; i < TimesToCreateNetwork; i++)
             {
@@ -91,7 +91,7 @@ namespace Coursework.Tests
         public void ConstrcutorShouldThrowExceptionIfNodeCountIsZero()
         {
             // Arrange
-            var nodeCount = 0U;
+            var nodeCount = 0;
 
             // Act
             TestDelegate testDelegate = () => _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, 1.0);
@@ -101,8 +101,21 @@ namespace Coursework.Tests
         }
 
         [Test]
-        [TestCase((uint)5, 2.0)]
-        public void BuildShouldTwoNetworksWithDifferentIds(uint nodeCount, double networkPower)
+        public void ConstrcutorShouldThrowExceptionIfNodeCountIsNegative()
+        {
+            // Arrange
+            var nodeCount = -2;
+
+            // Act
+            TestDelegate testDelegate = () => _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, 1.0);
+
+            // Assert
+            Assert.That(testDelegate, Throws.ArgumentException);
+        }
+
+        [Test]
+        [TestCase(5, 2.0)]
+        public void BuildShouldTwoNetworksWithDifferentIds(int nodeCount, double networkPower)
         {
             // Arrange
             _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, networkPower);
@@ -119,8 +132,7 @@ namespace Coursework.Tests
         }
 
         [Test]
-        [TestCase((uint) 5, 2.0)]
-        public void BuildShouldReturnNetworkWithOneCentralMachine(uint nodeCount, double networkPower)
+        public void BuildShouldReturnNetworkWithOneCentralMachine()
         {
             // Arrange
             // Act

@@ -11,25 +11,25 @@ namespace Coursework.Tests
     [TestFixture]
     public class NetworkLocationRetrieverTests
     {
-        private INetworkLocationRetriever _networkLocationRetriever;
-        private NodeLocationDto[] _nodeLocations;
+        private INetworkLocationMapRetriever _networkLocationMapRetriever;
+        private NodeLocationMapDto[] _nodeLocationsMap;
         private static string WriteFilename => PathUtils.GetFileFullPath("TestFiles" + Path.DirectorySeparatorChar + "testlocation.json");
         private static string ReadFilename => PathUtils.GetFileFullPath("TestFiles" + Path.DirectorySeparatorChar + "testnetworkfilelocation.json");
 
         [SetUp]
         public void Setup()
         {
-            _networkLocationRetriever = new NetworkLocationRetriever();
+            _networkLocationMapRetriever = new NetworkLocationMapRetriever();
 
-            _nodeLocations = new[]
+            _nodeLocationsMap = new[]
             {
-                new NodeLocationDto
+                new NodeLocationMapDto
                 {
                     Id = 0,
                     X = 5.0,
                     Y = 6.0
                 },
-                new NodeLocationDto
+                new NodeLocationMapDto
                 {
                     Id = 1,
                     X = 26.9,
@@ -43,14 +43,14 @@ namespace Coursework.Tests
         {
             // Arrange
             // Act
-            var result = _networkLocationRetriever.Read(ReadFilename);
+            var result = _networkLocationMapRetriever.Read(ReadFilename);
 
             // Assert
-            Assert.That(result.Length, Is.EqualTo(_nodeLocations.Length));
+            Assert.That(result.Length, Is.EqualTo(_nodeLocationsMap.Length));
 
             foreach (var resultNodeLocationDto in result)
             {
-                var nodeLocationDto = _nodeLocations.First(n => n.Id == resultNodeLocationDto.Id);
+                var nodeLocationDto = _nodeLocationsMap.First(n => n.Id == resultNodeLocationDto.Id);
 
                 Assert.That(Math.Abs(resultNodeLocationDto.X - nodeLocationDto.X), 
                     Is.LessThanOrEqualTo(AllConstants.Eps));
@@ -65,7 +65,7 @@ namespace Coursework.Tests
         {
             // Arrange
             // Act
-            _networkLocationRetriever.Write(WriteFilename, _nodeLocations);
+            _networkLocationMapRetriever.Write(WriteFilename, _nodeLocationsMap);
 
             // Assert
             using (var testFile = new StreamReader(ReadFilename))

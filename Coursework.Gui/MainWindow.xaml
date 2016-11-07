@@ -15,8 +15,8 @@
                 <MenuItem Header="_Save to file..." Click="SaveNetwork_OnClick"></MenuItem>
                 <MenuItem Header="_Read from file..." Click="ReadNetwork_OnClick"></MenuItem>
                 <Separator />
-                <MenuItem Header="_Save location to file..." Click="SaveNetworkLocation_OnClick"></MenuItem>
-                <MenuItem Header="_Read location from file..." Click="ReadNetworkLocation_OnClick"></MenuItem>
+                <MenuItem Header="_Save location map to file..." Click="SaveNetworkLocation_OnClick"></MenuItem>
+                <MenuItem Header="_Read location map from file..." Click="ReadNetworkLocation_OnClick"></MenuItem>
                 <Separator />
                 <MenuItem Header="_Show network matrix" Click="ShowNetworkMatrises_Click"></MenuItem>
             </MenuItem>
@@ -34,19 +34,60 @@
 
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="60"></RowDefinition>
+                    <RowDefinition Height="60"></RowDefinition>
                     <RowDefinition Height="40"></RowDefinition>
-                    <RowDefinition Height="40"></RowDefinition>
-                    <RowDefinition Height="40"></RowDefinition>
-                    <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <Button Grid.Row="0" Content="Start" Click="Start_OnClick"></Button>
-                <Button Grid.Row="1" Content="Pause" Name="PauseResumeButton" Click="Pause_OnClick"></Button>
+                <Grid Grid.Row="0" Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
 
-                <ComboBox Grid.Row="2" Name="FiltrationModeSelect" SelectionChanged="FiltrationModeSelect_OnSelectionChanged" />
+                    <Button Grid.Column="0" Content="Start" Click="Start_OnClick"></Button>
+                    <Button Grid.Column="1" Content="Resume" Click="Resume_OnClick"></Button>
+                    <Button Grid.Column="2" Content="Pause" Click="Pause_OnClick"></Button>
+                    <Button Grid.Column="3" Content="Stop" Click="Stop_OnClick"></Button>
 
-                <TreeView Grid.Row="3" Name="Messages" />
+                </Grid>
+
+                <Grid Grid.Row="1" Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <TextBlock Text="Timer Interval" HorizontalAlignment="Center"></TextBlock>
+                    </Grid>
+
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <Slider Grid.Column="0" Minimum="100.0" Maximum="5000.0"
+                                Margin="5 0"
+                                IsSnapToTickEnabled="True"
+                                TickFrequency="100"
+                                VerticalAlignment="Center" Value="1000.0"
+                                ValueChanged="RangeBase_OnValueChanged"
+                                Name="IntervalSlider"></Slider>
+
+                        <TextBlock Grid.Column="1" Margin="5 0" Text="1000" TextAlignment="Center"
+                             VerticalAlignment="Center" Name="IntervalValue"></TextBlock>
+                    </Grid>
+                </Grid>
+
+                <ComboBox Grid.Row="2"  Margin="5" Name="FiltrationModeSelect" 
+                          SelectionChanged="FiltrationModeSelect_OnSelectionChanged" />
+
+                <TreeView Grid.Row="3" Margin="5" Name="Messages" />
             </Grid>
 
             <Border Grid.Column="1" Margin="10" BorderBrush="Black" BorderThickness="2">

@@ -10,16 +10,16 @@ namespace Coursework.Data.Builder
     {
         private INetworkHandler _network;
         private readonly INodeGenerator _nodeGenerator;
-        private readonly uint _nodeCount;
+        private readonly int _nodeCount;
         private readonly double _networkPower;
 
-        public NetworkBuilder(INodeGenerator nodeGenerator, uint nodeCount, double networkPower)
+        public NetworkBuilder(INodeGenerator nodeGenerator, int nodeCount, double networkPower)
         {
             if (networkPower <= 0.0)
             {
                 throw new ArgumentException("networkPower");
             }
-            if (nodeCount == 0)
+            if (nodeCount <= 0)
             {
                 throw new ArgumentException("nodeCount");
             }
@@ -141,7 +141,7 @@ namespace Coursework.Data.Builder
 
         private void CreateNodes()
         {
-            foreach (var node in _nodeGenerator.GenerateNodes((int)_nodeCount))
+            foreach (var node in _nodeGenerator.GenerateNodes(_nodeCount))
             {
                 _network.AddNode(node);
             }

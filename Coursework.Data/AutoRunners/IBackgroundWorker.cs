@@ -2,7 +2,7 @@
 {
     public interface IBackgroundWorker
     {
-        bool IsActive { get; }
+        double Interval { get; set; }
         void Run();
         void Resume();
         void Pause();

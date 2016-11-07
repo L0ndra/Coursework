@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows;
 using AutoMapper;
-using Coursework.Data;
 using Coursework.Data.Builder;
 using Coursework.Data.Constants;
 using Coursework.Data.IONetwork;
@@ -14,7 +13,7 @@ namespace Coursework.Gui
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App
     {
         private IKernel _container;
 
@@ -81,8 +80,8 @@ namespace Coursework.Gui
                 .InTransientScope();
 
             _container
-                .Bind<INetworkLocationRetriever>()
-                .To<NetworkLocationRetriever>()
+                .Bind<INetworkLocationMapRetriever>()
+                .To<NetworkLocationMapRetriever>()
                 .InTransientScope();
 
             _container
@@ -90,7 +89,7 @@ namespace Coursework.Gui
                 .ToSelf()
                 .WithConstructorArgument("network", _container.Get<INetworkHandler>(generatedWideAreaNetwork))
                 .WithConstructorArgument("networkInfoRetriever", _container.Get<INetworkInfoRetriever>())
-                .WithConstructorArgument("networkLocationRetriever", _container.Get<INetworkLocationRetriever>());
+                .WithConstructorArgument("networkLocationMapRetriever", _container.Get<INetworkLocationMapRetriever>());
         }
     }
 }

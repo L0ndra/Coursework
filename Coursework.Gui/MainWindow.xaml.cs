@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Coursework.Data.AutoRunners;
 using Coursework.Data.Entities;
 using Coursework.Data.IONetwork;
 using Coursework.Data.MessageServices;
@@ -15,7 +14,6 @@ using Coursework.Gui.Drawers;
 using Coursework.Gui.Dto;
 using Coursework.Gui.MessageService;
 using Microsoft.Win32;
-using NodeLocationDto = Coursework.Data.IONetwork.NodeLocationDto;
 
 namespace Coursework.Gui
 {
@@ -28,7 +26,7 @@ namespace Coursework.Gui
         private IComponentDrawer _networkDrawer;
         private IComponentDrawer _nodeDrawer;
         private IComponentDrawer _channelDrawer;
-        private IBackgroundWorker _backgroundWorker;
+        private Background.BackgroundWorker _backgroundWorker;
         private readonly INetworkInfoRetriever _networkInfoRetriever;
         private ChannelAddWindow _channelAddWindow;
         private IMessageRouter _messageRouter;
@@ -39,11 +37,11 @@ namespace Coursework.Gui
         private IMessageGenerator _messageGenerator;
         private IMessageRepository _messageRepository;
         private IMessageViewUpdater _messageViewUpdater;
-        private readonly INetworkLocationRetriever _networkLocationRetriever;
+        private readonly INetworkLocationMapRetriever _networkLocationMapRetriever;
         private Canvas GeneratedCanvas => NetworkArea.Children.OfType<Canvas>().First();
 
         public MainWindow(INetworkHandler network, INetworkInfoRetriever networkInfoRetriever,
-            INetworkLocationRetriever networkLocationRetriever)
+            INetworkLocationMapRetriever networkLocationMapRetriever)
         {
             InitializeComponent();
 
@@ -51,7 +49,7 @@ namespace Coursework.Gui
 
             _network = network;
             _networkInfoRetriever = networkInfoRetriever;
-            _networkLocationRetriever = networkLocationRetriever;
+            _networkLocationMapRetriever = networkLocationMapRetriever;
 
             InitializeDrawers();
             _channelAddWindow = new ChannelAddWindow(network, channel => _channelDrawer.DrawComponents(GeneratedCanvas));
@@ -173,7 +171,7 @@ namespace Coursework.Gui
             {
                 var locations = GetNodesLocations();
 
-                _networkLocationRetriever.Write(filename, locations);
+                _networkLocationMapRetriever.Write(filename, locations);
 
                 MessageBox.Show("File saved!", "OK", MessageBoxButton.OK, MessageBoxImage.Information,
                         MessageBoxResult.OK,
@@ -187,7 +185,7 @@ namespace Coursework.Gui
 
             try
             {
-                var locations = _networkLocationRetriever.Read(filename);
+                var locations = _networkLocationMapRetriever.Read(filename);
 
                 _nodeDrawer = new SmartNodeDrawer(_network, locations);
                 _networkDrawer = new NetworkDrawer(_nodeDrawer, _channelDrawer);
@@ -208,9 +206,9 @@ namespace Coursework.Gui
             }
         }
 
-        private NodeLocationDto[] GetNodesLocations()
+        private NodeLocationMapDto[] GetNodesLocations()
         {
-            var locations = new List<NodeLocationDto>();
+            var locations = new List<NodeLocationMapDto>();
 
             foreach (var grid in GeneratedCanvas.Children.OfType<Grid>())
             {
@@ -219,7 +217,7 @@ namespace Coursework.Gui
 
                 var nodeDto = (NodeDto)grid.Tag;
 
-                var location = new NodeLocationDto
+                var location = new NodeLocationMapDto
                 {
                     Id = nodeDto.Id,
                     X = x,
@@ -247,19 +245,28 @@ namespace Coursework.Gui
 
         private void Start_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_backgroundWorker == null)
-            {
-                var simulationOptionsDialog = new SimulationOptionsDialog(InitializeAllServices);
+            _network.ClearMessages();
+            _network.Reset();
 
-                simulationOptionsDialog.Show();
-            }
+            var simulationOptionsDialog = new SimulationOptionsDialog(InitializeAllServices);
+
+            simulationOptionsDialog.Show();
         }
 
-        private void InitializeAllServices(double messageGenerateChance, double speed, int tableUpdatePeriod)
+        private void InitializeAllServices(double messageGenerateChance, int tableUpdatePeriod,
+            bool isPackageMode)
         {
             _messageRouter = new MessageRouter(_network);
-            //_messageCreator = new PackageMessageCreator(_network, _messageRouter);
-            _messageCreator = new RequestMessageCreator(_network, _messageRouter);
+
+            if (isPackageMode)
+            {
+                _messageCreator = new PackageMessageCreator(_network, _messageRouter);
+            }
+            else
+            {
+                _messageCreator = new RequestMessageCreator(_network, _messageRouter);
+            }
+
             _messageHandler = new MessageHandler(_network);
             _messageReceiver = new MessageReceiver(_messageHandler);
             _messageExchanger = new MessageExchanger(_network, _messageReceiver);
@@ -276,23 +283,14 @@ namespace Coursework.Gui
 
             FiltrationModeSelect_OnSelectionChanged(FiltrationModeSelect, null);
 
-            _backgroundWorker?.Run();
+            _backgroundWorker.Run();
+
+            _backgroundWorker.Interval = IntervalSlider.Value;
         }
 
         private void Pause_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_backgroundWorker != null && _backgroundWorker.IsActive)
-            {
-                _backgroundWorker.Pause();
-
-                PauseResumeButton.Content = "Resume";
-            }
-            else
-            {
-                _backgroundWorker?.Resume();
-
-                PauseResumeButton.Content = "Pause";
-            }
+            _backgroundWorker.Pause();
         }
 
         private void FiltrationModeSelect_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -328,6 +326,31 @@ namespace Coursework.Gui
             var newNetworkwindow = new NetworkCreatorDialog(networkUpdateHandler);
 
             newNetworkwindow.Show();
+        }
+
+        private void Resume_OnClick(object sender, RoutedEventArgs e)
+        {
+            _backgroundWorker?.Resume();
+        }
+
+        private void Stop_OnClick(object sender, RoutedEventArgs e)
+        {
+            _backgroundWorker?.Stop();
+
+            _backgroundWorker = null;
+        }
+
+        private void RangeBase_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (_backgroundWorker != null)
+            {
+                _backgroundWorker.Interval = IntervalSlider.Value;
+            }
+
+            if (IntervalValue != null)
+            {
+                IntervalValue.Text = IntervalSlider.Value.ToString("N0");
+            }
         }
     }
 }

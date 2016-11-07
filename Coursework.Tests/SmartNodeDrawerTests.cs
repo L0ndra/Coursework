@@ -21,7 +21,7 @@ namespace Coursework.Tests
         private Mock<INetworkHandler> _networkMock;
         private IComponentDrawer _nodeDrawer;
         private Panel _panel;
-        private NodeLocationDto[] _locations;
+        private NodeLocationMapDto[] _locationsMap;
 
         [SetUp]
         public void Setup()
@@ -44,9 +44,9 @@ namespace Coursework.Tests
                 })
                 .ToArray();
 
-            _locations = new[]
+            _locationsMap = new[]
             {
-                new NodeLocationDto
+                new NodeLocationMapDto
                 {
                     Id = 0,
                     X = 20,
@@ -54,7 +54,7 @@ namespace Coursework.Tests
                 }
             };
 
-            _nodeDrawer = new SmartNodeDrawer(_networkMock.Object, _locations);
+            _nodeDrawer = new SmartNodeDrawer(_networkMock.Object, _locationsMap);
 
 
             _networkMock.Setup(n => n.Nodes)

@@ -10,7 +10,7 @@ namespace Coursework.Gui.Dialogs
     /// </summary>
     public partial class SimulationOptionsDialog
     {
-        public delegate void SimulationStarter(double messageGenerateChance, double speed, int tableUpdatePeriod);
+        public delegate void SimulationStarter(double messageGenerateChance, int tableUpdatePeriod, bool isPackageMode);
         private event SimulationStarter SimulationStart;
 
         public SimulationOptionsDialog(SimulationStarter simulationStarter)
@@ -21,7 +21,6 @@ namespace Coursework.Gui.Dialogs
 
             MessageGenerateChance.Text = AllConstants.MessageGenerateChance.ToString("N");
             TableUpdatePeriod.Text = AllConstants.UpdateTablePeriod.ToString();
-            Speed.Text = AllConstants.TimerInterval.ToString("N");
         }
 
         private void Start_OnClick(object sender, RoutedEventArgs e)
@@ -29,10 +28,10 @@ namespace Coursework.Gui.Dialogs
             try
             {
                 var messageGenerateChance = double.Parse(MessageGenerateChance.Text);
-                var speed = double.Parse(Speed.Text);
                 var tableUpdatePeriod = int.Parse(TableUpdatePeriod.Text);
+                var isPackageMode = IsPackageMode.IsChecked != null && IsPackageMode.IsChecked.Value;
 
-                OnSimulationStart(messageGenerateChance, speed, tableUpdatePeriod);
+                OnSimulationStart(messageGenerateChance, tableUpdatePeriod, isPackageMode);
 
                 Close();
             }
@@ -51,9 +50,10 @@ namespace Coursework.Gui.Dialogs
             Close();
         }
 
-        protected virtual void OnSimulationStart(double messageGenerateChance, double speed, int tableUpdatePeriod)
+        protected virtual void OnSimulationStart(double messageGenerateChance, int tableUpdatePeriod, 
+            bool isPackageMode)
         {
-            SimulationStart?.Invoke(messageGenerateChance, speed, tableUpdatePeriod);
+            SimulationStart?.Invoke(messageGenerateChance, tableUpdatePeriod, isPackageMode);
         }
     }
 }

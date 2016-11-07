@@ -41,16 +41,19 @@ namespace Coursework.Tests
                         {
                             LastTransferNodeId = 1,
                             ReceiverId = 1,
+                            Route = new Channel[0]
                         },
                         new Message
                         {
                             LastTransferNodeId = 1,
                             ReceiverId = 1,
+                            Route = new Channel[0]
                         },
                         new Message
                         {
                             LastTransferNodeId = 1,
                             ReceiverId = 1,
+                            Route = new Channel[0]
                         },
                     },
                     CanceledMessages = new List<Message>

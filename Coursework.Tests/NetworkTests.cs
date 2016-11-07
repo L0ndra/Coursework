@@ -27,13 +27,17 @@ namespace Coursework.Tests
             {
                 Id = 0,
                 LinkedNodesId = new SortedSet<uint>(),
-                MessageQueueHandlers = new List<MessageQueueHandler>()
+                MessageQueueHandlers = new List<MessageQueueHandler>(),
+                ReceivedMessages = new List<Message>(),
+                CanceledMessages = new List<Message>()
             };
             _node2 = new Node
             {
                 Id = 1,
                 LinkedNodesId = new SortedSet<uint>(),
-                MessageQueueHandlers = new List<MessageQueueHandler>()
+                MessageQueueHandlers = new List<MessageQueueHandler>(),
+                ReceivedMessages = new List<Message>(),
+                CanceledMessages = new List<Message>()
             };
 
             _channel = new Channel
@@ -470,6 +474,56 @@ namespace Coursework.Tests
 
             // Assert
             Assert.IsFalse(messageQueue.Messages.Contains(message));
+        }
+
+        [Test]
+        public void ClearMessagesShouldClearAllMessagesFromNodesAndChannels()
+        {
+            // Arrange
+            _network.AddNode(_node1);
+            _network.AddNode(_node2);
+            _network.AddChannel(_channel);
+
+            var message = new Message
+            {
+                SenderId = _node1.Id,
+                ReceiverId = _node2.Id,
+                Route = new[]
+                {
+                    _channel
+                },
+            };
+
+            _node1.ReceivedMessages.Add(message);
+            _node2.CanceledMessages.Add(message);
+            _channel.FirstMessage = message;
+
+            // Act
+            _network.ClearMessages();
+
+            // Assert
+            Assert.IsEmpty(_node1.ReceivedMessages);
+            Assert.IsEmpty(_node2.CanceledMessages);
+            Assert.IsNull(_channel.FirstMessage);
+        }
+
+        [Test]
+        public void ResetShouldDoAllChannelsFreeAndAllNodesUnactive()
+        {
+            // Arrange
+            _network.AddNode(_node1);
+            _network.AddNode(_node2);
+            _network.AddChannel(_channel);
+
+            _node1.IsActive = true;
+            _channel.IsBusy = true;
+
+            // Act
+            _network.Reset();
+
+            // Assert
+            Assert.IsTrue(_network.Nodes.All(n => !n.IsActive));
+            Assert.IsTrue(_network.Channels.All(n => !n.IsBusy));
         }
     }
 }

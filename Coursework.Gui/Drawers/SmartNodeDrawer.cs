@@ -9,18 +9,18 @@ namespace Coursework.Gui.Drawers
 {
     public class SmartNodeDrawer : NodeDrawer
     {
-        private readonly NodeLocationDto[] _nodeLocations;
+        private readonly NodeLocationMapDto[] _nodeLocationsMap;
 
-        public SmartNodeDrawer(INetworkHandler network, NodeLocationDto[] nodeLocations) : base(network)
+        public SmartNodeDrawer(INetworkHandler network, NodeLocationMapDto[] nodeLocationsMap) : base(network)
         {
-            _nodeLocations = nodeLocations;
+            _nodeLocationsMap = nodeLocationsMap;
         }
 
         protected override Grid CreateGrid(FrameworkElement parent, NodeDto nodeDto, params UIElement[] childs)
         {
             var grid = base.CreateGrid(parent, nodeDto, childs);
 
-            var location = _nodeLocations.FirstOrDefault(n => n.Id == nodeDto.Id);
+            var location = _nodeLocationsMap.FirstOrDefault(n => n.Id == nodeDto.Id);
 
             if (location != null)
             {

@@ -7,5 +7,7 @@ namespace Coursework.Data.NetworkData
         Channel[] GetChannels(uint nodeId);
         void AddInQueue(Message message, uint nodeId);
         void RemoveFromQueue(Message message, uint nodeId);
+        void ClearMessages();
+        void Reset();
     }
 }

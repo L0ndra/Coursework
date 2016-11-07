@@ -3,23 +3,23 @@ using Newtonsoft.Json;
 
 namespace Coursework.Data.IONetwork
 {
-    public class NetworkLocationRetriever : INetworkLocationRetriever
+    public class NetworkLocationMapRetriever : INetworkLocationMapRetriever
     {
-        public NodeLocationDto[] Read(string filename)
+        public NodeLocationMapDto[] Read(string filename)
         {
             using (var file = new StreamReader(filename))
             {
                 var jsonLocations = file.ReadToEnd();
 
-                var result = JsonConvert.DeserializeObject<NodeLocationDto[]>(jsonLocations);
+                var result = JsonConvert.DeserializeObject<NodeLocationMapDto[]>(jsonLocations);
 
                 return result;
             }
         }
 
-        public void Write(string filename, NodeLocationDto[] nodeLocations)
+        public void Write(string filename, NodeLocationMapDto[] nodeLocationsMap)
         {
-            var jsonLocations = JsonConvert.SerializeObject(nodeLocations, Formatting.Indented);
+            var jsonLocations = JsonConvert.SerializeObject(nodeLocationsMap, Formatting.Indented);
 
             using (var file = new StreamWriter(filename))
             {

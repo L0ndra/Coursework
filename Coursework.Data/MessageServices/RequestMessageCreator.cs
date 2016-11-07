@@ -47,7 +47,7 @@ namespace Coursework.Data.MessageServices
                 SendAttempts = 0,
                 SenderId = firstMessage.SenderId,
                 DataSize = 0,
-                ServiceSize = AllConstants.RequestMessageSize,
+                ServiceSize = AllConstants.SendingRequestMessageSize,
                 Route = firstMessage.Route,
                 NumberInPackage = 0
             };

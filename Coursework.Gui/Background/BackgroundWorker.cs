@@ -11,7 +11,26 @@ namespace Coursework.Gui.Background
 {
     public class BackgroundWorker : IBackgroundWorker, ITimeCounter
     {
-        public bool IsActive => _timer != null && _timer.IsEnabled;
+        public double Interval
+        {
+            get
+            {
+                return _timer?.Interval.TotalMilliseconds ?? AllConstants.TimerInterval;
+            }
+            set
+            {
+                if (value <= 0.0)
+                {
+                    throw new ArgumentException("value");
+                }
+
+                if (_timer != null)
+                {
+                    _timer.Interval = TimeSpan.FromMilliseconds(value);
+                }
+            }
+        }
+
         public int Ticks { get; private set; }
         private readonly IMessageExchanger _messageExchanger;
         private readonly IMessageGenerator _messageGenerator;
@@ -23,7 +42,7 @@ namespace Coursework.Gui.Background
         private DispatcherTimer _timer;
 
         public BackgroundWorker(IMessageExchanger messageExchanger, IMessageGenerator messageGenerator,
-            IComponentDrawer networkDrawer, IMessageCreator messageCreator, 
+            IComponentDrawer networkDrawer, IMessageCreator messageCreator,
             IMessageViewUpdater messageViewUpdated, int updatePeriod)
         {
             _messageExchanger = messageExchanger;
@@ -39,7 +58,7 @@ namespace Coursework.Gui.Background
         {
             _timer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromMilliseconds(AllConstants.TimerInterval),
+                Interval = TimeSpan.FromMilliseconds(Interval)
             };
 
             Ticks = 0;
