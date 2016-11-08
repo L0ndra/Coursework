@@ -82,7 +82,10 @@ namespace Coursework.Data.MessageServices
             };
 
             var messages = _generalMessageCreator.CreateMessages(messageInitializer);
-            _generalMessageCreator.AddInQueue(messages, firstMessage.SenderId);
+            if (messages != null)
+            {
+                _generalMessageCreator.AddInQueue(messages, firstMessage.SenderId);
+            }
 
             _network.RemoveFromQueue(response, response.ReceiverId);
         }

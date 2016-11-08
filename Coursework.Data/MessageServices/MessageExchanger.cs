@@ -76,7 +76,6 @@ namespace Coursework.Data.MessageServices
             slotReceivedDataSize = 0;
 
             ReplaceMessageToQueue(channel, message);
-            MakeChannelFree(message);
 
             if (channel.FirstMessage != null && channel.FirstMessage.ParentId == message.ParentId)
             {
@@ -143,6 +142,10 @@ namespace Coursework.Data.MessageServices
             {
                 message.SendAttempts++;
             }
+            else
+            {
+                MakeChannelFree(message);
+            }
 
             var messageQueueHandler = node.MessageQueueHandlers
                 .First(m => m.ChannelId == channel.Id);
@@ -169,6 +172,15 @@ namespace Coursework.Data.MessageServices
 
                 if (currentMessage.LastTransferNodeId == node.Id)
                 {
+                    if (currentChannel.IsBusy && currentChannel.MessageOwnerId != currentMessage.ParentId
+                        && currentMessage.MessageType == MessageType.SendingRequest)
+                    {
+                        var sender = _network.GetNodeById(currentMessage.LastTransferNodeId);
+                        _messageReceiver.HandleReceivedMessage(sender, currentMessage);
+
+                        continue;
+                    }
+
                     var isSuccess = TryMoveMessageToChannel(currentChannel, currentMessage);
 
                     messageQueueHandler.RemoveMessage(currentMessage);
