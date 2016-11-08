@@ -86,6 +86,7 @@ namespace Coursework.Gui.Dialogs
                 FirstNodeId = uint.Parse(FirstNodeId.Text),
                 SecondNodeId = uint.Parse(SecondNodeId.Text),
                 IsBusy = false,
+                Capacity = int.Parse(Capacity.Text)
             };
 
             _network.AddChannel(newChannel);

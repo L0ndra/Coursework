@@ -12,8 +12,9 @@ namespace Coursework.Data.Builder
         private readonly INodeGenerator _nodeGenerator;
         private readonly int _nodeCount;
         private readonly double _networkPower;
+        private readonly int _channelCapacity;
 
-        public NetworkBuilder(INodeGenerator nodeGenerator, int nodeCount, double networkPower)
+        public NetworkBuilder(INodeGenerator nodeGenerator, int nodeCount, double networkPower, int channelCapacity)
         {
             if (networkPower <= 0.0)
             {
@@ -23,10 +24,15 @@ namespace Coursework.Data.Builder
             {
                 throw new ArgumentException("nodeCount");
             }
+            if (channelCapacity <= 0)
+            {
+                throw new ArgumentException("channelCapacity");
+            }
 
             _nodeGenerator = nodeGenerator;
             _nodeCount = nodeCount;
             _networkPower = networkPower;
+            _channelCapacity = channelCapacity;
         }
 
         public INetworkHandler Build()
@@ -132,7 +138,8 @@ namespace Coursework.Data.Builder
                     ConnectionType = ConnectionType.Duplex,
                     ErrorChance = Math.Floor(AllConstants.RandomGenerator.NextDouble() * 100.0) / 100.0,
                     Price = price,
-                    IsBusy = false
+                    IsBusy = false,
+                    Capacity = _channelCapacity
                 };
 
                 return channel;

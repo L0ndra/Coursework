@@ -16,6 +16,7 @@ namespace Coursework.Tests
         private Mock<INetworkBuilder> _simpleNetworkBuilderMock;
         private WideAreaNetworkBuilder _wideAreaNetworkBuilder;
         private int _numberOfMetropolitanNetworks;
+        private int _satelliteChannelCapacity;
         private int _nodesCount;
         private uint _lastId;
 
@@ -26,9 +27,10 @@ namespace Coursework.Tests
 
             _numberOfMetropolitanNetworks = 5;
             _nodesCount = 5;
+            _satelliteChannelCapacity = 10;
 
             _wideAreaNetworkBuilder = new WideAreaNetworkBuilder(_simpleNetworkBuilderMock.Object,
-                _numberOfMetropolitanNetworks);
+                _numberOfMetropolitanNetworks, _satelliteChannelCapacity);
 
             _simpleNetworkBuilderMock.Setup(n => n.Build())
                 .Returns(() => GenerateNetworkMockForTests(_nodesCount).Object);
@@ -49,7 +51,7 @@ namespace Coursework.Tests
 
             Assert.That(resultWithoutDublicates.Count(), Is.EqualTo(result.Nodes.Length));
             Assert.That(result.Channels.Count(c => c.ChannelType == ChannelType.Satellite), 
-                Is.EqualTo(_numberOfMetropolitanNetworks + _nodesCount));
+                Is.EqualTo(_numberOfMetropolitanNetworks));
         }
 
         [Test]
@@ -73,6 +75,47 @@ namespace Coursework.Tests
             // Assert
             Assert.That(result.Nodes.Count(n => n.NodeType == NodeType.MainMetropolitanMachine), 
                 Is.EqualTo(_numberOfMetropolitanNetworks));
+        }
+
+        [Test]
+        public void ConstrcutorShouldThrowExceptionIfCapacityIsZeroZero()
+        {
+            // Arrange
+            const int capacity = 0;
+
+            // Act
+            TestDelegate testDelegate = () => _wideAreaNetworkBuilder = new WideAreaNetworkBuilder
+            (_simpleNetworkBuilderMock.Object, _numberOfMetropolitanNetworks, capacity);
+
+            // Assert
+            Assert.That(testDelegate, Throws.ArgumentException);
+        }
+
+        [Test]
+        public void ConstrcutorShouldThrowExceptionIfCapacityLessThanZero()
+        {
+            // Arrange
+            const int capacity = -2;
+
+            // Act
+            TestDelegate testDelegate = () => _wideAreaNetworkBuilder = new WideAreaNetworkBuilder
+            (_simpleNetworkBuilderMock.Object, _numberOfMetropolitanNetworks, capacity);
+
+            // Assert
+            Assert.That(testDelegate, Throws.ArgumentException);
+        }
+
+        [Test]
+        public void BuildShouldCreateChannelsWithSpecifiedParams()
+        {
+            // Arrange
+            // Act
+            var result = _wideAreaNetworkBuilder.Build();
+
+            // Assert
+            Assert.That(result.Channels
+                .Where(m => m.ChannelType == ChannelType.Satellite)
+                .All(c => c.Capacity == _satelliteChannelCapacity));
         }
 
         private Mock<INetworkHandler> GenerateNetworkMockForTests(int count)
@@ -105,7 +148,8 @@ namespace Coursework.Tests
                         Id = Guid.NewGuid(),
                         FirstNodeId = nodes.First().Id,
                         SecondNodeId = nodes.First().Id + 1,
-                        Price = 10
+                        Price = 10,
+                        ChannelType = ChannelType.Ground
                     }
                 });
 

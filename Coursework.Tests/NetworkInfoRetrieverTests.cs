@@ -61,7 +61,8 @@ namespace Coursework.Tests
                     ErrorChance = 0.5,
                     SecondNodeId = 0,
                     FirstNodeId = 1,
-                    Price = 20
+                    Price = 20,
+                    Capacity = 20,
                 }
             };
 

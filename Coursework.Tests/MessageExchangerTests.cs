@@ -37,7 +37,8 @@ namespace Coursework.Tests
                     FirstNodeId = 0,
                     SecondNodeId = 1,
                     ErrorChance = 0.5,
-                    Price = 10
+                    Price = 10,
+                    Capacity = 5
                 }
             };
 
@@ -73,7 +74,8 @@ namespace Coursework.Tests
                 SenderId = 0,
                 LastTransferNodeId = 0,
                 ReceiverId = 1,
-                Route = new[] { _channels.First() }
+                Route = new[] { _channels.First() },
+                DataSize = 20
             };
 
             _networkMock.Setup(n => n.Nodes)
@@ -157,6 +159,26 @@ namespace Coursework.Tests
         }
 
         [Test]
+        public void HandleMessagesOnceShouldIncreaseFirstSlotReceivedDataSizeToCapacity()
+        {
+            // Arrange
+            var firstNode = _nodes.First();
+
+            firstNode.MessageQueueHandlers
+                .First().AppendMessage(_message);
+
+            var firstChannel = _channels.First();
+
+            _messageExchanger.HandleMessagesOnce();
+
+            // Act
+            _messageExchanger.HandleMessagesOnce();
+
+            // Assert
+            Assert.That(firstChannel.FirstSlotReceivedData, Is.EqualTo(firstChannel.Capacity));
+        }
+
+        [Test]
         public void HandleMessagesOnceShouldReplaceMessageFromChannelToNextNode()
         {
             // Arrange
@@ -167,6 +189,7 @@ namespace Coursework.Tests
                 .First().AppendMessage(_message);
 
             var firstChannel = _channels.First();
+            firstChannel.FirstSlotReceivedData = _message.Size;
             firstChannel.ErrorChance = 0.0;
 
             _messageExchanger.HandleMessagesOnce();
@@ -181,10 +204,12 @@ namespace Coursework.Tests
 
             // Assert
             Assert.IsTrue(checkPredicate(secondNode));
+            Assert.That(firstChannel.FirstSlotReceivedData, Is.Zero);
+            Assert.IsNull(firstChannel.FirstMessage);
         }
 
         [Test]
-        public void HandleMessagesOnceShouldReplaceMessageBackToSenderIfChannelisBusy()
+        public void HandleMessagesOnceShouldReplaceMessageBackToSenderIfChannelIsBusy()
         {
             // Arrange
             var firstNode = _nodes.First();
@@ -193,11 +218,13 @@ namespace Coursework.Tests
                 .First().AppendMessage(_message);
 
             var firstChannel = _channels.First();
-            firstChannel.IsBusy = true;
             firstChannel.MessageOwnerId = Guid.NewGuid();
+            firstChannel.FirstSlotReceivedData = _message.Size;
             firstChannel.ErrorChance = 0.0;
 
             _messageExchanger.HandleMessagesOnce();
+
+            firstChannel.IsBusy = true;
 
             Func<Node, bool> checkPredicate = node => node.MessageQueueHandlers
                 .First(m => m.ChannelId == firstChannel.Id)
@@ -209,10 +236,12 @@ namespace Coursework.Tests
 
             // Assert
             Assert.IsTrue(checkPredicate(firstNode));
+            Assert.That(firstChannel.FirstSlotReceivedData, Is.Zero);
+            Assert.IsNull(firstChannel.FirstMessage);
         }
 
         [Test]
-        public void HandleMessagesOnceShouldReplaceMessageToReceiverIfChannelisBusyButMessageIsOwnerOfChannel()
+        public void HandleMessagesOnceShouldReplaceMessageToReceiverIfChannelIsBusyButMessageIsOwnerOfChannel()
         {
             // Arrange
             var firstNode = _nodes.First();
@@ -224,6 +253,7 @@ namespace Coursework.Tests
             var firstChannel = _channels.First();
             firstChannel.IsBusy = true;
             firstChannel.MessageOwnerId = _message.ParentId;
+            firstChannel.FirstSlotReceivedData = _message.Size;
             firstChannel.ErrorChance = 0.0;
 
             _messageExchanger.HandleMessagesOnce();
@@ -238,6 +268,8 @@ namespace Coursework.Tests
 
             // Assert
             Assert.IsTrue(checkPredicate(secondNode));
+            Assert.That(firstChannel.FirstSlotReceivedData, Is.Zero);
+            Assert.IsNull(firstChannel.FirstMessage);
         }
 
         [Test]
@@ -250,6 +282,7 @@ namespace Coursework.Tests
                 .First().AppendMessage(_message);
 
             var firstChannel = _channels.First();
+            firstChannel.FirstSlotReceivedData = _message.Size;
             firstChannel.ErrorChance = 1.0;
 
             _messageExchanger.HandleMessagesOnce();
@@ -264,6 +297,8 @@ namespace Coursework.Tests
 
             // Assert
             Assert.IsTrue(checkPredicate(firstNode));
+            Assert.That(firstChannel.FirstSlotReceivedData, Is.Zero);
+            Assert.IsNull(firstChannel.FirstMessage);
         }
 
         [Test]
@@ -284,6 +319,7 @@ namespace Coursework.Tests
             firstChannel.ErrorChance = 0.0;
 
             _messageExchanger.HandleMessagesOnce();
+            firstChannel.FirstSlotReceivedData = _message.Size;
             _messageExchanger.HandleMessagesOnce();
 
             // Act
@@ -352,6 +388,7 @@ namespace Coursework.Tests
 
             var firstChannel = _channels.First();
             firstChannel.IsBusy = true;
+            firstChannel.FirstSlotReceivedData = _message.Size;
             firstChannel.MessageOwnerId = _message.ParentId;
             firstChannel.ErrorChance = 0.0;
 

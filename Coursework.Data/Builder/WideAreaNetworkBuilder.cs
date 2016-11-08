@@ -13,11 +13,19 @@ namespace Coursework.Data.Builder
         private readonly INetworkBuilder _simpleNetworkBuilder;
         private readonly int _numberOfMetropolitanNetworks;
         private INetworkHandler _network;
+        private readonly int _satelliteChannelCapacity;
 
-        public WideAreaNetworkBuilder(INetworkBuilder simpleNetworkBuilder, int numberOfMetropolitanNetworks)
+        public WideAreaNetworkBuilder(INetworkBuilder simpleNetworkBuilder, int numberOfMetropolitanNetworks,
+            int satelliteChannelCapacity)
         {
+            if (satelliteChannelCapacity <= 0)
+            {
+                throw new ArgumentException("satelliteChannelCapacity");
+            }
+
             _simpleNetworkBuilder = simpleNetworkBuilder;
             _numberOfMetropolitanNetworks = numberOfMetropolitanNetworks;
+            _satelliteChannelCapacity = satelliteChannelCapacity;
         }
 
         public INetworkHandler Build()
@@ -82,7 +90,8 @@ namespace Coursework.Data.Builder
                     ChannelType = ChannelType.Satellite,
                     ErrorChance = AllConstants.RandomGenerator.NextDouble(),
                     Price = PriceGenerator.GetRandomPrice(),
-                    IsBusy = false
+                    IsBusy = false,
+                    Capacity = _satelliteChannelCapacity
                 };
 
                 var metropolitanNode = _network.GetNodeById(nodeId);

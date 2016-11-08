@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
@@ -37,22 +36,108 @@ namespace Coursework.Data.MessageServices
 
         private void HandleMessageInChannel(Channel channel)
         {
+            if (channel.IsBusy)
+            {
+                BackMessagesToSender(channel);
+            }
+
             var firstMessage = channel.FirstMessage;
             var secondMessage = channel.SecondMessage;
+
+            int slotReceivedData;
 
             if (firstMessage != null
                 && !_handledMessagesInNode.Contains(firstMessage))
             {
-                ReplaceMessageToQueue(channel, firstMessage);
-                channel.FirstMessage = null;
+                slotReceivedData = channel.FirstSlotReceivedData;
+                HandleChannelMessage(channel, firstMessage, ref slotReceivedData);
+                channel.FirstSlotReceivedData = slotReceivedData;
             }
 
             else if (secondMessage != null
                     && !_handledMessagesInNode.Contains(secondMessage))
             {
-                ReplaceMessageToQueue(channel, secondMessage);
+                slotReceivedData = channel.SecondSlotReceivedData;
+                HandleChannelMessage(channel, secondMessage, ref slotReceivedData);
+                channel.SecondSlotReceivedData = slotReceivedData;
+            }
+        }
+
+        private void HandleChannelMessage(Channel channel, Message message, ref int slotReceivedDataSize)
+        {
+            slotReceivedDataSize += channel.Capacity;
+            MakeChannelBusy(message);
+
+            if (slotReceivedDataSize < message.Size)
+            {
+                return;
+            }
+
+            slotReceivedDataSize = 0;
+
+            ReplaceMessageToQueue(channel, message);
+            MakeChannelFree(message);
+
+            if (channel.FirstMessage != null && channel.FirstMessage.ParentId == message.ParentId)
+            {
+                channel.FirstMessage = null;
+            }
+            else
+            {
                 channel.SecondMessage = null;
             }
+        }
+
+        private void BackMessagesToSender(Channel channel)
+        {
+            var firstMessage = channel.FirstMessage;
+            var secondMessage = channel.SecondMessage;
+
+            if (firstMessage != null && channel.MessageOwnerId != firstMessage.ParentId)
+            {
+                ReplaceMessageToQueue(channel, firstMessage);
+                channel.FirstMessage = null;
+                channel.FirstSlotReceivedData = 0;
+            }
+
+            if (secondMessage != null && channel.MessageOwnerId != secondMessage.ParentId)
+            {
+                ReplaceMessageToQueue(channel, secondMessage);
+                channel.SecondMessage = null;
+                channel.SecondSlotReceivedData = 0;
+            }
+        }
+
+        private void ReplaceMessageToQueue(Channel channel, Message message)
+        {
+            Node node;
+
+            var isSuccess = AllConstants.RandomGenerator.NextDouble() >= channel.ErrorChance;
+
+            if (channel.IsBusy && channel.MessageOwnerId != message.ParentId)
+            {
+                isSuccess = false;
+            }
+
+            if (message.LastTransferNodeId == channel.FirstNodeId && !isSuccess
+                || message.LastTransferNodeId != channel.FirstNodeId && isSuccess)
+            {
+                node = _network.GetNodeById(channel.FirstNodeId);
+            }
+            else
+            {
+                node = _network.GetNodeById(channel.SecondNodeId);
+            }
+
+            if (!isSuccess)
+            {
+                message.SendAttempts++;
+            }
+
+            var messageQueueHandler = node.MessageQueueHandlers
+                .First(m => m.ChannelId == channel.Id);
+
+            messageQueueHandler.AddMessageInStart(message);
         }
 
         private void HandleMessagesInNodeQueues(Node node)
@@ -113,42 +198,6 @@ namespace Coursework.Data.MessageServices
             }
         }
 
-        private void ReplaceMessageToQueue(Channel channel, Message message)
-        {
-            Node node;
-
-            var isSuccess = AllConstants.RandomGenerator.NextDouble() >= channel.ErrorChance;
-
-            if (channel.IsBusy && channel.MessageOwnerId != message.ParentId)
-            {
-                isSuccess = false;
-            }
-
-            if (message.LastTransferNodeId == channel.FirstNodeId && !isSuccess
-                || message.LastTransferNodeId != channel.FirstNodeId && isSuccess)
-            {
-                node = _network.GetNodeById(channel.FirstNodeId);
-            }
-            else
-            {
-                node = _network.GetNodeById(channel.SecondNodeId);
-            }
-
-            if (!isSuccess)
-            {
-                message.SendAttempts++;
-            }
-            else
-            {
-                ChangeChannelOccupation(message);
-            }
-
-            var messageQueueHandler = node.MessageQueueHandlers
-                .First(m => m.ChannelId == channel.Id);
-
-            messageQueueHandler.AddMessageInStart(message);
-        }
-
         private bool TryMoveMessageToChannel(Channel channel, Message message)
         {
             if (channel.IsBusy && channel.MessageOwnerId != message.ParentId)
@@ -169,12 +218,12 @@ namespace Coursework.Data.MessageServices
                 return false;
             }
 
-            if (channel.FirstMessage == null 
+            if (channel.FirstMessage == null
                 && channel.FirstNodeId == message.LastTransferNodeId)
             {
                 channel.FirstMessage = message;
             }
-            else if (channel.SecondMessage == null 
+            else if (channel.SecondMessage == null
                 && channel.SecondNodeId == message.LastTransferNodeId)
             {
                 channel.SecondMessage = message;
@@ -187,34 +236,24 @@ namespace Coursework.Data.MessageServices
             return true;
         }
 
-        private void ChangeChannelOccupation(Message message)
+        private void MakeChannelBusy(Message message)
         {
             var channel = message.Route.First();
 
-            switch (message.MessageType)
+            if (message.MessageType == MessageType.SendingRequest)
             {
-                case MessageType.General:
-                    {
-                        channel.IsBusy = false;
+                channel.IsBusy = true;
+                channel.MessageOwnerId = message.ParentId;
+            }
+        }
 
-                        break;
-                    }
-                case MessageType.SendingRequest:
-                    {
-                        channel.IsBusy = true;
-                        channel.MessageOwnerId = message.ParentId;
+        private void MakeChannelFree(Message message)
+        {
+            var channel = message.Route.First();
 
-                        break;
-                    }
-                case MessageType.MatrixUpdateMessage:
-                case MessageType.SendingResponse:
-                    {
-                        break;
-                    }
-                default:
-                    {
-                        throw new ArgumentOutOfRangeException();
-                    }
+            if (message.MessageType == MessageType.General)
+            {
+                channel.IsBusy = false;
             }
         }
     }

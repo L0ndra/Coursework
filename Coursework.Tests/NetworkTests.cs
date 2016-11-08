@@ -243,8 +243,11 @@ namespace Coursework.Tests
             CreateTwoNodesForTests();
             CreateChannelForTests();
 
+            var newCapacity = 90;
+
             _channel.Price = AllConstants.AllPrices.ElementAt(2);
             _channel.ChannelType = ChannelType.Satellite;
+            _channel.Capacity = newCapacity;
 
             // Act
             _network.UpdateChannel(_channel);
@@ -254,6 +257,7 @@ namespace Coursework.Tests
             Assert.That(updatedChannel.Price, Is.EqualTo(AllConstants.AllPrices.ElementAt(2)));
             Assert.That(updatedChannel.ChannelType, Is.EqualTo(ChannelType.Satellite));
             Assert.That(updatedChannel.ConnectionType, Is.EqualTo(_channel.ConnectionType));
+            Assert.That(updatedChannel.Capacity, Is.EqualTo(newCapacity));
         }
 
         [Test]

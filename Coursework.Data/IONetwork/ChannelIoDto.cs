@@ -12,5 +12,6 @@ namespace Coursework.Data.IONetwork
         public uint SecondNodeId { get; set; }
         public ConnectionType ConnectionType { get; set; }
         public ChannelType ChannelType { get; set; }
+        public int Capacity { get; set; }
     }
 }

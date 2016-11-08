@@ -11,6 +11,8 @@ namespace Coursework.Data.Constants
         public const int MetropolitanNetworkNodesInRow = 3;
         public const double NetworkPower = 5.0;
         public const double TimerInterval = 500.0;
+        public const int GroundChannelCapacity = 15;
+        public const int SatelliteChannelCapacity = 5;
         public const double SquareSize = 30.0;
         public const double LineThickness = 2.0;
         public const double Eps = 0.002;

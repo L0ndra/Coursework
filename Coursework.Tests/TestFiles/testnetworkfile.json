@@ -17,7 +17,8 @@
       "FirstNodeId": 1,
       "SecondNodeId": 0,
       "ConnectionType": 1,
-      "ChannelType": 1
+      "ChannelType": 1,
+      "Capacity": 20
     }
   ]
 }

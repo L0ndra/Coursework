@@ -58,7 +58,8 @@ namespace Coursework.Gui
                 .Named(simpleNetworkBuilder)
                 .WithConstructorArgument("nodeCount", AllConstants.NodeCountInMetropolitanNetwork)
                 .WithConstructorArgument("networkPower", AllConstants.NetworkPower)
-                .WithConstructorArgument("nodeGenerator", _container.Get<INodeGenerator>());
+                .WithConstructorArgument("nodeGenerator", _container.Get<INodeGenerator>())
+                .WithConstructorArgument("channelCapacity", AllConstants.GroundChannelCapacity);
 
             _container
                 .Bind<INetworkBuilder>()
@@ -66,7 +67,8 @@ namespace Coursework.Gui
                 .InTransientScope()
                 .Named(wideAreaNetworkBuilder)
                 .WithConstructorArgument("simpleNetworkBuilder", _container.Get<INetworkBuilder>(simpleNetworkBuilder))
-                .WithConstructorArgument("numberOfMetropolitanNetworks", AllConstants.MetropolitanNetworksCount);
+                .WithConstructorArgument("numberOfMetropolitanNetworks", AllConstants.MetropolitanNetworksCount)
+                .WithConstructorArgument("satelliteChannelCapacity", AllConstants.SatelliteChannelCapacity);
 
             _container
                 .Bind<INetworkHandler>()

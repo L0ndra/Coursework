@@ -21,6 +21,9 @@ namespace Coursework.Tests
         public void Setup()
         {
             _nodeGeneratorMock = new Mock<INodeGenerator>();
+
+            _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, 5, 2.0, 10);
+
             var closureCounter = 0;
 
             _nodeGeneratorMock.Setup(n => n.GenerateNodes(It.IsAny<int>()))
@@ -55,7 +58,7 @@ namespace Coursework.Tests
             for (var i = 0; i < TimesToCreateNetwork; i++)
             {
                 // Arrange
-                _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, networkPower);
+                _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, networkPower, 10);
 
                 // Act
                 var network = _networkBuilder.Build();
@@ -81,7 +84,8 @@ namespace Coursework.Tests
             var nodePower = -1.0;
 
             // Act
-            TestDelegate testDelegate = () => _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, 5, nodePower);
+            TestDelegate testDelegate = () => _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, 5, 
+                nodePower, 10);
 
             // Assert
             Assert.That(testDelegate, Throws.ArgumentException);
@@ -94,7 +98,36 @@ namespace Coursework.Tests
             var nodeCount = 0;
 
             // Act
-            TestDelegate testDelegate = () => _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, 1.0);
+            TestDelegate testDelegate = () => _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, 
+                1.0, 10);
+
+            // Assert
+            Assert.That(testDelegate, Throws.ArgumentException);
+        }
+
+        [Test]
+        public void ConstrcutorShouldThrowExceptionIfCapacityIsZero()
+        {
+            // Arrange
+            var capacity = 0;
+
+            // Act
+            TestDelegate testDelegate = () => _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, 5,
+                1.0, capacity);
+
+            // Assert
+            Assert.That(testDelegate, Throws.ArgumentException);
+        }
+
+        [Test]
+        public void ConstrcutorShouldThrowExceptionIfCapacityLessThanZero()
+        {
+            // Arrange
+            var capacity = -2;
+
+            // Act
+            TestDelegate testDelegate = () => _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, 5,
+                1.0, capacity);
 
             // Assert
             Assert.That(testDelegate, Throws.ArgumentException);
@@ -107,7 +140,8 @@ namespace Coursework.Tests
             var nodeCount = -2;
 
             // Act
-            TestDelegate testDelegate = () => _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, 1.0);
+            TestDelegate testDelegate = () => _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, 
+                1.0, 10);
 
             // Assert
             Assert.That(testDelegate, Throws.ArgumentException);
@@ -118,7 +152,7 @@ namespace Coursework.Tests
         public void BuildShouldTwoNetworksWithDifferentIds(int nodeCount, double networkPower)
         {
             // Arrange
-            _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, networkPower);
+            _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, networkPower, 10);
             var firstNetwork = _networkBuilder.Build();
 
             // Act
@@ -140,6 +174,21 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(result.Nodes.Count(n => n.NodeType == NodeType.CentralMachine), Is.EqualTo(1));
+        }
+
+        [Test]
+        public void BuildShouldCreateChannelsWithSpecifiedParams()
+        {
+            // Arrange
+            const int channelCapacity = 10;
+
+            _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, 10, 2.0, channelCapacity);
+
+            // Act
+            var result = _networkBuilder.Build();
+
+            // Assert
+            Assert.That(result.Channels.All(c => c.Capacity == channelCapacity));
         }
 
         private static void LogResult(int testNumber, double networkPower, double currentPower)

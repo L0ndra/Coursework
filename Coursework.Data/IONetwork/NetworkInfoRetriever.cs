@@ -81,7 +81,8 @@ namespace Coursework.Data.IONetwork
                     SecondNodeId = (uint)channelInfo["SecondNodeId"],
                     ConnectionType = (ConnectionType)(int)channelInfo["ConnectionType"],
                     ChannelType = (ChannelType)(int)channelInfo["ChannelType"],
-                    IsBusy = false
+                    IsBusy = false,
+                    Capacity = (int)channelInfo["Capacity"]
                 };
 
                 network.AddChannel(channel);

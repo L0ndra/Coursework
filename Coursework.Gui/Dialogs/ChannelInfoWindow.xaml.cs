@@ -35,6 +35,7 @@ namespace Coursework.Gui.Dialogs
             FirstNodeId.Text = channelDto.FirstNodeId.ToString();
             SecondNodeId.Text = channelDto.SecondNodeId.ToString();
             MessageOwnerId.Text = channelDto.MessageOwnerId.ToString();
+            Capacity.Text = channelDto.Capacity.ToString();
             ConnectionType.SelectedItem = channelDto.ConnectionType == Data.Entities.ConnectionType.Duplex
                 ? DuplexItem
                 : HalfduplexItem;
@@ -53,7 +54,8 @@ namespace Coursework.Gui.Dialogs
                 ConnectionType = GetNewConnectionType(),
                 ChannelType = GetNewChannelType(),
                 FirstNodeId = uint.Parse(FirstNodeId.Text),
-                SecondNodeId = uint.Parse(SecondNodeId.Text)
+                SecondNodeId = uint.Parse(SecondNodeId.Text),
+                Capacity = int.Parse(Capacity.Text)
             };
 
             _onChangeChannelInfoHandler(newChannelDto);

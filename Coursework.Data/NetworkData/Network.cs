@@ -128,6 +128,7 @@ namespace Coursework.Data.NetworkData
                 oldChannel.Price = newChannel.Price;
                 oldChannel.FirstNodeId = newChannel.FirstNodeId;
                 oldChannel.SecondNodeId = newChannel.SecondNodeId;
+                oldChannel.Capacity = newChannel.Capacity;
             }
         }
 

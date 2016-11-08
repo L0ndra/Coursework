@@ -13,5 +13,6 @@ namespace Coursework.Gui.Dto
         public ConnectionType ConnectionType { get; set; }
         public ChannelType ChannelType { get; set; }
         public Guid MessageOwnerId { get; set; }
+        public int Capacity { get; set; }
     }
 }
