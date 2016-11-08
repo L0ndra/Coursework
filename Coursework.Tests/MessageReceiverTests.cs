@@ -12,6 +12,7 @@ namespace Coursework.Tests
     public class MessageReceiverTests
     {
         private Mock<IMessageHandler> _messageHandlerMock;
+        private Mock<IMessageCreator> _negativeResponseMessageCreatorMock;
         private IMessageReceiver _messageReceiver;
         private Message _message;
         private Node _node;
@@ -20,7 +21,10 @@ namespace Coursework.Tests
         public void Setup()
         {
             _messageHandlerMock = new Mock<IMessageHandler>();
-            _messageReceiver = new MessageReceiver(_messageHandlerMock.Object);
+            _negativeResponseMessageCreatorMock = new Mock<IMessageCreator>();
+
+            _messageReceiver = new MessageReceiver(_messageHandlerMock.Object,
+                _negativeResponseMessageCreatorMock.Object);
 
             _message = new Message
             {
@@ -32,7 +36,8 @@ namespace Coursework.Tests
                 {
                     new Channel(),
                     new Channel()
-                }
+                },
+                Data = null,
             };
 
             _node = new Node
@@ -43,8 +48,19 @@ namespace Coursework.Tests
                     new MessageQueueHandler(Guid.Empty)
                 },
                 IsActive = false,
-                NodeType = NodeType.SimpleNode
+                NodeType = NodeType.SimpleNode,
+                CanceledMessages = new List<Message>()
             };
+
+            _negativeResponseMessageCreatorMock.Setup(n => n.CreateMessages(It.IsAny<MessageInitializer>()))
+                .Returns(new[]
+                {
+                    new Message
+                    {
+                        MessageType = MessageType.NegativeSendingResponse,
+                        Route = new [] {new Channel()}
+                    }
+                });
         }
 
         [Test]
@@ -73,6 +89,72 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(messagesCount, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void HandleReceivedMessageShouldCreateNegativeResponseIfMessageIsRequest()
+        {
+            // Arrange
+            _message.MessageType = MessageType.SendingRequest;
+            _message.Data = new Message
+            {
+                Route = new[]
+                {
+                    new Channel()
+                }
+            };
+
+            var passedChannel = _message.Route.First();
+            passedChannel.IsBusy = true;
+            passedChannel.MessageOwnerId = Guid.NewGuid();
+
+            var transferId = _message.LastTransferNodeId;
+
+            // Act
+            _messageReceiver.HandleReceivedMessage(_node, _message);
+
+            var nodeMessages = _node.MessageQueueHandlers.SelectMany(m => m.Messages);
+
+            // Assert
+            _negativeResponseMessageCreatorMock.Verify(c => c.CreateMessages(It.Is<MessageInitializer>
+                (m => m.MessageType == MessageType.NegativeSendingResponse)), Times.Once);
+
+            _negativeResponseMessageCreatorMock.Verify(c => c.AddInQueue(It.Is<Message[]>
+                (m => m.All(m1 => m1.MessageType == MessageType.NegativeSendingResponse)), transferId),
+                Times.Once);
+
+            Assert.That(nodeMessages.All(m => m.MessageType == MessageType.NegativeSendingResponse));
+            Assert.That(_node.CanceledMessages.Contains(_message));
+        }
+
+        [Test]
+        public void HandleReceivedMessageShouldHandleNegativeResponseAtTheSameTimeItCreatesIt()
+        {
+            // Arrange
+            _message.MessageType = MessageType.SendingRequest;
+            _negativeResponseMessageCreatorMock.Setup(n => n.CreateMessages(It.IsAny<MessageInitializer>()))
+                .Returns(new[]
+                {
+                    new Message
+                    {
+                        MessageType = MessageType.NegativeSendingResponse,
+                        Route = new Channel[0]
+                    }
+                });
+
+            var passedChannel = _message.Route.First();
+            passedChannel.IsBusy = true;
+            passedChannel.MessageOwnerId = Guid.NewGuid();
+
+            // Act
+            _messageReceiver.HandleReceivedMessage(_node, _message);
+
+            // Assert
+            _negativeResponseMessageCreatorMock.Verify(c => c.CreateMessages(It.Is<MessageInitializer>
+                (m => m.MessageType == MessageType.NegativeSendingResponse)), Times.Once);
+
+            _messageHandlerMock.Verify(m => m.HandleMessage(It.Is<Message>
+                (m1 => m1.MessageType == MessageType.NegativeSendingResponse)), Times.Once());
         }
     }
 }

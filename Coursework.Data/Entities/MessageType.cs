@@ -5,6 +5,7 @@
         General,
         MatrixUpdateMessage,
         SendingRequest,
-        SendingResponse
+        PositiveSendingResponse,
+        NegativeSendingResponse
     }
 }

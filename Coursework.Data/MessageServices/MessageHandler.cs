@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.NetworkData;
 
@@ -10,10 +9,18 @@ namespace Coursework.Data.MessageServices
     public class MessageHandler : IMessageHandler
     {
         private readonly INetworkHandler _network;
+        private readonly IMessageCreator _generalMessageCreator;
+        private readonly IMessageCreator _updateMatrixMessageCreator;
+        private readonly IMessageCreator _positiveResponseMessageCreator;
 
-        public MessageHandler(INetworkHandler network)
+        public MessageHandler(INetworkHandler network, IMessageCreator generalMessageCreator,
+            IMessageCreator updateMatrixMessageCreator,
+            IMessageCreator positiveResponseMessageCreator)
         {
             _network = network;
+            _generalMessageCreator = generalMessageCreator;
+            _updateMatrixMessageCreator = updateMatrixMessageCreator;
+            _positiveResponseMessageCreator = positiveResponseMessageCreator;
         }
 
         public void HandleMessage(Message message)
@@ -38,9 +45,14 @@ namespace Coursework.Data.MessageServices
                         HandleSendingRequest(message);
                         break;
                     }
-                case MessageType.SendingResponse:
+                case MessageType.PositiveSendingResponse:
                     {
-                        HandleSendingResponse(message);
+                        HandlePositiveSendingResponse(message);
+                        break;
+                    }
+                case MessageType.NegativeSendingResponse:
+                    {
+                        HandleNegativeSendingResponse(message);
                         break;
                     }
                 default:
@@ -54,7 +66,28 @@ namespace Coursework.Data.MessageServices
                     .ToArray();
         }
 
-        private void HandleSendingResponse(Message response)
+        private void HandleNegativeSendingResponse(Message response)
+        {
+            var oldMessages = (Message[])response.Data;
+            var firstMessage = oldMessages.First();
+
+            var sumSize = oldMessages.Sum(oldMessage => oldMessage.DataSize);
+
+            var messageInitializer = new MessageInitializer
+            {
+                MessageType = firstMessage.MessageType,
+                ReceiverId = firstMessage.ReceiverId,
+                SenderId = firstMessage.SenderId,
+                Size = sumSize
+            };
+
+            var messages = _generalMessageCreator.CreateMessages(messageInitializer);
+            _generalMessageCreator.AddInQueue(messages, firstMessage.SenderId);
+
+            _network.RemoveFromQueue(response, response.ReceiverId);
+        }
+
+        private void HandlePositiveSendingResponse(Message response)
         {
             var messages = (Message[])response.Data;
 
@@ -68,10 +101,22 @@ namespace Coursework.Data.MessageServices
 
         private void HandleSendingRequest(Message request)
         {
-            var response = CreateResponseMessage(request);
+            var responseInitializer = new MessageInitializer
+            {
+                ReceiverId = request.SenderId,
+                SenderId = request.ReceiverId,
+                MessageType = MessageType.PositiveSendingResponse,
+                Data = request.Data
+            };
 
-            _network.AddInQueue(response, request.ReceiverId);
-            _network.RemoveFromQueue(request, request.ReceiverId);
+            var responses = _positiveResponseMessageCreator.CreateMessages(responseInitializer);
+
+            foreach (var response in responses)
+            {
+                response.ParentId = request.ParentId;
+            }
+
+            _positiveResponseMessageCreator.AddInQueue(responses, request.ReceiverId);
         }
 
         private void HandleUpdateTableMessage(Message message)
@@ -110,61 +155,23 @@ namespace Coursework.Data.MessageServices
             {
                 var linkedNode = _network.GetNodeById(linkedNodeId);
 
-                if (!linkedNode.IsTableUpdated)
+                if (linkedNode.IsTableUpdated)
                 {
-                    var initializeMessage = CreateInitializeMessage(node.Id, linkedNodeId, networkMatrises);
-
-                    var channel = initializeMessage.Route.First();
-
-                    var messageQueue = node.MessageQueueHandlers
-                        .First(m => m.ChannelId == channel.Id);
-
-                    messageQueue.AddMessageInStart(initializeMessage);
+                    continue;
                 }
+
+                var messageInitializer = new MessageInitializer
+                {
+                    Data = networkMatrises,
+                    MessageType = MessageType.MatrixUpdateMessage,
+                    ReceiverId = linkedNodeId,
+                    SenderId = node.Id,
+                };
+
+                var initializeMessage = _updateMatrixMessageCreator.CreateMessages(messageInitializer);
+
+                _updateMatrixMessageCreator.AddInQueue(initializeMessage, node.Id);
             }
-        }
-
-        private Message CreateResponseMessage(Message request)
-        {
-            var dataMessages = (Message[])request.Data;
-
-            var reversedRoute = dataMessages.First()
-                .Route
-                .Reverse();
-
-            return new Message
-            {
-                MessageType = MessageType.SendingResponse,
-                ReceiverId = request.SenderId,
-                SenderId = request.ReceiverId,
-                Route = reversedRoute.ToArray(),
-                Data = request.Data,
-                LastTransferNodeId = request.ReceiverId,
-                ParentId = dataMessages.First().ParentId,
-                SendAttempts = 0,
-                DataSize = 0,
-                ServiceSize = AllConstants.SendingResponseMessageSize
-            };
-        }
-
-        private Message CreateInitializeMessage(uint senderId, uint receiverId,
-            IDictionary<uint, NetworkMatrix> networkMatrses)
-        {
-            var channel = _network.GetChannel(senderId, receiverId);
-
-            return new Message
-            {
-                MessageType = MessageType.MatrixUpdateMessage,
-                ReceiverId = receiverId,
-                SenderId = senderId,
-                Data = networkMatrses,
-                DataSize = 0,
-                ServiceSize = AllConstants.InitializeMessageSize,
-                LastTransferNodeId = senderId,
-                Route = new[] { channel },
-                ParentId = Guid.NewGuid(),
-                SendAttempts = 0
-            };
         }
     }
 }

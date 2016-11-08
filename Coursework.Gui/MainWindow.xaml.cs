@@ -31,6 +31,9 @@ namespace Coursework.Gui
         private ChannelAddWindow _channelAddWindow;
         private IMessageRouter _messageRouter;
         private IMessageCreator _messageCreator;
+        private IMessageCreator _updateMatrixMessageCreator;
+        private IMessageCreator _positiveResponseMessageCreator;
+        private IMessageCreator _negativeResponseMessageCreator;
         private IMessageHandler _messageHandler;
         private IMessageReceiver _messageReceiver;
         private IMessageExchanger _messageExchanger;
@@ -267,8 +270,13 @@ namespace Coursework.Gui
                 _messageCreator = new RequestMessageCreator(_network, _messageRouter);
             }
 
-            _messageHandler = new MessageHandler(_network);
-            _messageReceiver = new MessageReceiver(_messageHandler);
+            _positiveResponseMessageCreator = new PositiveResponseCreator(_network, _messageRouter);
+            _negativeResponseMessageCreator = new NegativeResponseCreator(_network, _messageRouter);
+            _updateMatrixMessageCreator = new UpdateMatrixMessageCreator(_network, _messageRouter);
+
+            _messageHandler = new MessageHandler(_network, _messageCreator, 
+                _updateMatrixMessageCreator, _positiveResponseMessageCreator);
+            _messageReceiver = new MessageReceiver(_messageHandler, _negativeResponseMessageCreator);
             _messageExchanger = new MessageExchanger(_network, _messageReceiver);
 
             _messageGenerator = new MessageGenerator(_network, _messageCreator, messageGenerateChance);

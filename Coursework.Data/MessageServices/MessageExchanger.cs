@@ -38,7 +38,7 @@ namespace Coursework.Data.MessageServices
         {
             if (channel.IsBusy)
             {
-                BackMessagesToSender(channel);
+                BackMessagesToSenderFromBusyChannel(channel);
             }
 
             var firstMessage = channel.FirstMessage;
@@ -88,23 +88,33 @@ namespace Coursework.Data.MessageServices
             }
         }
 
-        private void BackMessagesToSender(Channel channel)
+        private void BackMessagesToSenderFromBusyChannel(Channel channel)
         {
             var firstMessage = channel.FirstMessage;
             var secondMessage = channel.SecondMessage;
 
             if (firstMessage != null && channel.MessageOwnerId != firstMessage.ParentId)
             {
+                var sender = _network.GetNodeById(firstMessage.LastTransferNodeId);
                 ReplaceMessageToQueue(channel, firstMessage);
                 channel.FirstMessage = null;
                 channel.FirstSlotReceivedData = 0;
+                if (firstMessage.MessageType == MessageType.SendingRequest)
+                {
+                    _messageReceiver.HandleReceivedMessage(sender, firstMessage);
+                }
             }
 
             if (secondMessage != null && channel.MessageOwnerId != secondMessage.ParentId)
             {
+                var sender = _network.GetNodeById(secondMessage.LastTransferNodeId);
                 ReplaceMessageToQueue(channel, secondMessage);
                 channel.SecondMessage = null;
                 channel.SecondSlotReceivedData = 0;
+                if (secondMessage.MessageType == MessageType.SendingRequest)
+                {
+                    _messageReceiver.HandleReceivedMessage(sender, secondMessage);
+                }
             }
         }
 
@@ -251,7 +261,8 @@ namespace Coursework.Data.MessageServices
         {
             var channel = message.Route.First();
 
-            if (message.MessageType == MessageType.General)
+            if (message.MessageType == MessageType.General
+                || message.MessageType == MessageType.NegativeSendingResponse)
             {
                 channel.IsBusy = false;
             }
