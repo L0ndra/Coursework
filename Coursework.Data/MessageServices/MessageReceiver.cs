@@ -62,6 +62,15 @@ namespace Coursework.Data.MessageServices
 
             var responses = _negativeResponseMessageCreator.CreateMessages(responseInitializer);
 
+            UpdateResponsesByRequest(responses, request);
+
+            node.CanceledMessages.Add(request);
+            request.IsCanceled = true;
+            _negativeResponseMessageCreator.RemoveFromQueue(new[] { request }, request.LastTransferNodeId);
+        }
+
+        private void UpdateResponsesByRequest(Message[] responses, Message request)
+        {
             foreach (var response in responses)
             {
                 response.ParentId = request.ParentId;
@@ -72,18 +81,14 @@ namespace Coursework.Data.MessageServices
 
                 if (response.Route.Length == 0)
                 {
-                    response.Route = new[] { request.Route.First() };
+                    response.Route = new[] {request.Route.First()};
                     _messageHandler.HandleMessage(response);
                 }
                 else
                 {
-                    _negativeResponseMessageCreator.AddInQueue(new[] { response }, request.LastTransferNodeId);
+                    _negativeResponseMessageCreator.AddInQueue(new[] {response}, request.LastTransferNodeId);
                 }
             }
-
-            node.CanceledMessages.Add(request);
-            request.IsCanceled = true;
-            _negativeResponseMessageCreator.RemoveFromQueue(new[] { request }, request.LastTransferNodeId);
         }
 
         private static MessageInitializer CreateNegativeResponseInitializer(Node node, Message request)

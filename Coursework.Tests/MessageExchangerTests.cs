@@ -159,6 +159,29 @@ namespace Coursework.Tests
         }
 
         [Test]
+        public void HandleMessagesOnceShouldCallReceiverIfMessageIsSendingRequestAndChannelIsBusy()
+        {
+            // Arrange
+            var firstNode = _nodes.First();
+
+            firstNode.MessageQueueHandlers
+                .First().AppendMessage(_message);
+
+            var firstChannel = _channels.First();
+
+            firstChannel.IsBusy = true;
+            firstChannel.MessageOwnerId = Guid.NewGuid();
+
+            _message.MessageType = MessageType.SendingRequest;
+
+            // Act
+            _messageExchanger.HandleMessagesOnce();
+
+            // Assert
+            _messageReceiverMock.Verify(m => m.HandleReceivedMessage(firstNode, _message), Times.Once);
+        }
+
+        [Test]
         public void HandleMessagesOnceShouldIncreaseFirstSlotReceivedDataSizeToCapacity()
         {
             // Arrange
@@ -179,7 +202,29 @@ namespace Coursework.Tests
         }
 
         [Test]
-        public void HandleMessagesOnceShouldReplaceMessageFromChannelToNextNode()
+        public void HandleMessagesOnceShouldIncreaseSecondSlotReceivedDataSizeToCapacity()
+        {
+            // Arrange
+            var secondNode = _nodes.Skip(1).First();
+
+            _message.LastTransferNodeId = 1;
+
+            secondNode.MessageQueueHandlers
+                .First().AppendMessage(_message);
+
+            var firstChannel = _channels.First();
+
+            _messageExchanger.HandleMessagesOnce();
+
+            // Act
+            _messageExchanger.HandleMessagesOnce();
+
+            // Assert
+            Assert.That(firstChannel.SecondSlotReceivedData, Is.EqualTo(firstChannel.Capacity));
+        }
+
+        [Test]
+        public void HandleMessagesOnceShouldReplaceMessageFromChannelToNextNodeViaFirstSlot()
         {
             // Arrange
             var firstNode = _nodes.First();
@@ -206,6 +251,38 @@ namespace Coursework.Tests
             Assert.IsTrue(checkPredicate(secondNode));
             Assert.That(firstChannel.FirstSlotReceivedData, Is.Zero);
             Assert.IsNull(firstChannel.FirstMessage);
+        }
+
+        [Test]
+        public void HandleMessagesOnceShouldReplaceMessageFromChannelToNextNodeViaSecondSlot()
+        {
+            // Arrange
+            var firstNode = _nodes.First();
+            var secondNode = _nodes.Skip(1).First();
+
+            _message.LastTransferNodeId = 1;
+
+            secondNode.MessageQueueHandlers
+                .First().AppendMessage(_message);
+
+            var firstChannel = _channels.First();
+            firstChannel.SecondSlotReceivedData = _message.Size;
+            firstChannel.ErrorChance = 0.0;
+
+            _messageExchanger.HandleMessagesOnce();
+
+            Func<Node, bool> checkPredicate = node => node.MessageQueueHandlers
+                .First(m => m.ChannelId == firstChannel.Id)
+                .Messages
+                .Contains(_message);
+
+            // Act
+            _messageExchanger.HandleMessagesOnce();
+
+            // Assert
+            Assert.IsTrue(checkPredicate(firstNode));
+            Assert.That(firstChannel.SecondSlotReceivedData, Is.Zero);
+            Assert.IsNull(firstChannel.SecondMessage);
         }
 
         [Test]

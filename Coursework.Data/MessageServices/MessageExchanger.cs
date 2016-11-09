@@ -36,11 +36,6 @@ namespace Coursework.Data.MessageServices
 
         private void HandleMessageInChannel(Channel channel)
         {
-            if (channel.IsBusy)
-            {
-                BackMessagesToSenderFromBusyChannel(channel);
-            }
-
             var firstMessage = channel.FirstMessage;
             var secondMessage = channel.SecondMessage;
 
@@ -84,36 +79,6 @@ namespace Coursework.Data.MessageServices
             else
             {
                 channel.SecondMessage = null;
-            }
-        }
-
-        private void BackMessagesToSenderFromBusyChannel(Channel channel)
-        {
-            var firstMessage = channel.FirstMessage;
-            var secondMessage = channel.SecondMessage;
-
-            if (firstMessage != null && channel.MessageOwnerId != firstMessage.ParentId)
-            {
-                var sender = _network.GetNodeById(firstMessage.LastTransferNodeId);
-                ReplaceMessageToQueue(channel, firstMessage);
-                channel.FirstMessage = null;
-                channel.FirstSlotReceivedData = 0;
-                if (firstMessage.MessageType == MessageType.SendingRequest)
-                {
-                    _messageReceiver.HandleReceivedMessage(sender, firstMessage);
-                }
-            }
-
-            if (secondMessage != null && channel.MessageOwnerId != secondMessage.ParentId)
-            {
-                var sender = _network.GetNodeById(secondMessage.LastTransferNodeId);
-                ReplaceMessageToQueue(channel, secondMessage);
-                channel.SecondMessage = null;
-                channel.SecondSlotReceivedData = 0;
-                if (secondMessage.MessageType == MessageType.SendingRequest)
-                {
-                    _messageReceiver.HandleReceivedMessage(sender, secondMessage);
-                }
             }
         }
 
