@@ -39,6 +39,7 @@ namespace Coursework.Gui
         private IMessageExchanger _messageExchanger;
         private IMessageGenerator _messageGenerator;
         private IMessageRepository _messageRepository;
+        private IMessageRegistrator _messageRegistrator;
         private IMessageViewUpdater _messageViewUpdater;
         private readonly INetworkLocationMapRetriever _networkLocationMapRetriever;
         private Canvas GeneratedCanvas => NetworkArea.Children.OfType<Canvas>().First();
@@ -284,8 +285,10 @@ namespace Coursework.Gui
             _messageRepository = new MessageRepository(_network);
             _messageViewUpdater = new MessageViewUpdater(_messageRepository, Messages);
 
+            _messageRegistrator = new MessageRegistrator(_messageRepository);
+
             _backgroundWorker = new Background.BackgroundWorker(_messageExchanger, _messageGenerator,
-                _networkDrawer, _messageCreator, _messageViewUpdater, tableUpdatePeriod);
+                _networkDrawer, _messageCreator, _messageRegistrator, _messageViewUpdater, tableUpdatePeriod);
 
             _messageCreator.UpdateTables();
 

@@ -15,6 +15,7 @@ namespace Coursework.Tests
         private Mock<IMessageGenerator> _messageGeneratorMock;
         private Mock<IComponentDrawer> _networkDrawerMock;
         private Mock<IMessageCreator> _messageCreatorMock;
+        private Mock<IMessageRegistrator> _messageRegistratorMock;
         private BackgroundWorker _backgroundWorker;
         private Mock<IMessageViewUpdater> _messageViewUpdaterMock;
 
@@ -25,11 +26,12 @@ namespace Coursework.Tests
             _messageGeneratorMock = new Mock<IMessageGenerator>();
             _networkDrawerMock = new Mock<IComponentDrawer>();
             _messageCreatorMock = new Mock<IMessageCreator>();
+            _messageRegistratorMock = new Mock<IMessageRegistrator>();
             _messageViewUpdaterMock = new Mock<IMessageViewUpdater>();
 
             _backgroundWorker = new BackgroundWorker(_messageExchangerMock.Object, _messageGeneratorMock.Object,
-                _networkDrawerMock.Object, _messageCreatorMock.Object, _messageViewUpdaterMock.Object,
-                AllConstants.UpdateTablePeriod);
+                _networkDrawerMock.Object, _messageCreatorMock.Object, _messageRegistratorMock.Object, 
+                _messageViewUpdaterMock.Object, AllConstants.UpdateTablePeriod);
         }
 
         [Test]
@@ -88,8 +90,8 @@ namespace Coursework.Tests
         {
             // Arrange
             _backgroundWorker = new BackgroundWorker(_messageExchangerMock.Object, _messageGeneratorMock.Object,
-                _networkDrawerMock.Object, _messageCreatorMock.Object, _messageViewUpdaterMock.Object,
-                AllConstants.UpdateTablePeriod);
+                _networkDrawerMock.Object, _messageCreatorMock.Object, _messageRegistratorMock.Object, 
+                _messageViewUpdaterMock.Object, AllConstants.UpdateTablePeriod);
 
             // Act
             var result = _backgroundWorker.Ticks;

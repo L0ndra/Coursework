@@ -137,27 +137,7 @@ namespace Coursework.Data.MessageServices
 
                 if (currentMessage.LastTransferNodeId == node.Id)
                 {
-                    if (currentChannel.IsBusy && currentChannel.MessageOwnerId != currentMessage.ParentId
-                        && currentMessage.MessageType == MessageType.SendingRequest)
-                    {
-                        var sender = _network.GetNodeById(currentMessage.LastTransferNodeId);
-                        _messageReceiver.HandleReceivedMessage(sender, currentMessage);
-
-                        continue;
-                    }
-
-                    var isSuccess = TryMoveMessageToChannel(currentChannel, currentMessage);
-
-                    messageQueueHandler.RemoveMessage(currentMessage);
-
-                    if (!isSuccess)
-                    {
-                        messageQueueHandler.AppendMessage(currentMessage);
-                    }
-                    else
-                    {
-                        _handledMessagesInNode.Add(currentMessage);
-                    }
+                    ReplaceMessageInChannel(currentChannel, currentMessage, messageQueueHandler);
                 }
                 else
                 {
@@ -165,6 +145,32 @@ namespace Coursework.Data.MessageServices
                     messageQueueHandler.RemoveMessage(currentMessage);
                     _handledMessagesInNode.Add(currentMessage);
                 }
+            }
+        }
+
+        private void ReplaceMessageInChannel(Channel channel, Message message,
+            IMessageQueueHandler messageQueueHandler)
+        {
+            if (channel.IsBusy && channel.MessageOwnerId != message.ParentId
+                && message.MessageType == MessageType.SendingRequest)
+            {
+                var sender = _network.GetNodeById(message.LastTransferNodeId);
+                _messageReceiver.HandleReceivedMessage(sender, message);
+
+                return;
+            }
+
+            var isSuccess = TryMoveMessageToChannel(channel, message);
+
+            messageQueueHandler.RemoveMessage(message);
+
+            if (!isSuccess)
+            {
+                messageQueueHandler.AppendMessage(message);
+            }
+            else
+            {
+                _handledMessagesInNode.Add(message);
             }
         }
 

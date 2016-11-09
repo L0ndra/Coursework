@@ -36,6 +36,7 @@ namespace Coursework.Gui.Background
         private readonly IMessageGenerator _messageGenerator;
         private readonly IComponentDrawer _networkDrawer;
         private readonly IMessageCreator _messageCreator;
+        private readonly IMessageRegistrator _messageRegistrator;
         private readonly int _updatePeriod;
         private readonly IMessageViewUpdater _messageViewUpdated;
         private readonly Mutex _locker;
@@ -43,12 +44,14 @@ namespace Coursework.Gui.Background
 
         public BackgroundWorker(IMessageExchanger messageExchanger, IMessageGenerator messageGenerator,
             IComponentDrawer networkDrawer, IMessageCreator messageCreator,
-            IMessageViewUpdater messageViewUpdated, int updatePeriod)
+            IMessageRegistrator messageRegistrator, IMessageViewUpdater messageViewUpdated, 
+            int updatePeriod)
         {
             _messageExchanger = messageExchanger;
             _messageGenerator = messageGenerator;
             _networkDrawer = networkDrawer;
             _messageCreator = messageCreator;
+            _messageRegistrator = messageRegistrator;
             _updatePeriod = updatePeriod;
             _messageViewUpdated = messageViewUpdated;
             _locker = new Mutex();
@@ -101,6 +104,8 @@ namespace Coursework.Gui.Background
             _messageGenerator?.Generate();
 
             _messageExchanger?.HandleMessagesOnce();
+
+            _messageRegistrator?.RegisterMessages();
 
             _networkDrawer?.UpdateComponents();
 

@@ -63,6 +63,8 @@
     <Compile Include="IONetwork\INetworkLocationMapRetriever.cs" />
     <Compile Include="IONetwork\NetworkLocationMapRetriever.cs" />
     <Compile Include="IONetwork\NodeLocationMapDto.cs" />
+    <Compile Include="MessageServices\IMessageRegistrator.cs" />
+    <Compile Include="MessageServices\MessageRegistrator.cs" />
     <Compile Include="MessageServices\NegativeResponseCreator.cs" />
     <Compile Include="MessageServices\PositiveResponseCreator.cs" />
     <Compile Include="MessageServices\ResponseCreator.cs" />
