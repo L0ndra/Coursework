@@ -15,7 +15,7 @@ namespace Coursework.Data.MessageServices
             _network = network;
         }
 
-        public Message[] GetAllMessages(uint? nodeId = null, 
+        public IEnumerable<Message> GetAllMessages(uint? nodeId = null, 
             MessageFiltrationMode messageFiltrationMode = MessageFiltrationMode.AllMessages)
         {
             IEnumerable<Message> result = new List<Message>();

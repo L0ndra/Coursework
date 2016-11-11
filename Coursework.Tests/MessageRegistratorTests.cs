@@ -32,9 +32,7 @@ namespace Coursework.Tests
             _finishedMessage = new Message
             {
                 ParentId = _unfinishedMessage.ParentId,
-                Route = new Channel[0],
-                LastTransferNodeId = 1,
-                ReceiverId = 1
+                IsReceived = true
             };
 
             _messageRepoMock.Setup(m => m.GetAllMessages(It.IsAny<uint?>(), It.IsAny<MessageFiltrationMode>()))
@@ -117,9 +115,7 @@ namespace Coursework.Tests
         public void RegisterMessagesShouldRegisterFinishedMessageIfAllGroupIsFinished()
         {
             // Arrange
-            _unfinishedMessage.Route = new Channel[0];
-            _unfinishedMessage.LastTransferNodeId = 0;
-            _unfinishedMessage.ReceiverId = 0;
+            _unfinishedMessage.IsReceived = true;
 
             _messageRepoMock.Setup(m => m.GetAllMessages(It.IsAny<uint?>(), It.IsAny<MessageFiltrationMode>()))
                 .Returns(new[] { _unfinishedMessage, _finishedMessage });

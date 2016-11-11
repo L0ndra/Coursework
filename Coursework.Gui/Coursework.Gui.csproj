@@ -74,6 +74,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Dialogs\MessagesStatisticWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\NetworkCreatorDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -103,6 +107,9 @@
     </Compile>
     <Compile Include="Dialogs\MessageAddWindow.xaml.cs">
       <DependentUpon>MessageAddWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\MessagesStatisticWindow.xaml.cs">
+      <DependentUpon>MessagesStatisticWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\NetworkCreatorDialog.xaml.cs">
       <DependentUpon>NetworkCreatorDialog.xaml</DependentUpon>

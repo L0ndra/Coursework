@@ -41,19 +41,19 @@ namespace Coursework.Tests
                         {
                             LastTransferNodeId = 1,
                             ReceiverId = 1,
-                            Route = new Channel[0]
+                            IsReceived = true
                         },
                         new Message
                         {
                             LastTransferNodeId = 1,
                             ReceiverId = 1,
-                            Route = new Channel[0]
+                            IsReceived = true
                         },
                         new Message
                         {
                             LastTransferNodeId = 1,
                             ReceiverId = 1,
-                            Route = new Channel[0]
+                            IsReceived = true
                         },
                     },
                     CanceledMessages = new List<Message>
@@ -118,7 +118,7 @@ namespace Coursework.Tests
             var result = _messageRepository.GetAllMessages();
 
             // Assert
-            Assert.That(result.Length, Is.EqualTo(messageCountInChannels + messageCountInNodes
+            Assert.That(result.Count(), Is.EqualTo(messageCountInChannels + messageCountInNodes
                 + receivedMessagesCount + canceledMessagesCount));
         }
 
@@ -138,7 +138,7 @@ namespace Coursework.Tests
             var result = _messageRepository.GetAllMessages(FirstNode.Id);
 
             // Assert
-            Assert.That(result.Length, Is.EqualTo(messageCountInNode + receivedMessagesCount + canceledMessagesCount));
+            Assert.That(result.Count(), Is.EqualTo(messageCountInNode + receivedMessagesCount + canceledMessagesCount));
         }
 
         [Test]
@@ -160,11 +160,11 @@ namespace Coursework.Tests
                 .Count(m => m.IsReceived);
 
             // Act
-            var result = _messageRepository.GetAllMessages(messageFiltrationMode: 
+            var result = _messageRepository.GetAllMessages(messageFiltrationMode:
                 MessageFiltrationMode.ReceivedMessagesOnly);
 
             // Assert
-            Assert.That(result.Length, Is.EqualTo(receivedMessagesCount));
+            Assert.That(result.Count(), Is.EqualTo(receivedMessagesCount));
         }
 
         [Test]
@@ -175,7 +175,7 @@ namespace Coursework.Tests
             var result = _messageRepository.GetAllMessages(FirstNode.Id, MessageFiltrationMode.ReceivedMessagesOnly);
 
             // Assert
-            Assert.That(result.Length, Is.EqualTo(FirstNode.ReceivedMessages.Count));
+            Assert.That(result.Count(), Is.EqualTo(FirstNode.ReceivedMessages.Count));
         }
 
         [Test]
@@ -193,7 +193,7 @@ namespace Coursework.Tests
             var result = _messageRepository.GetAllMessages(messageFiltrationMode: MessageFiltrationMode.ActiveMessages);
 
             // Assert
-            Assert.That(result.Length, Is.EqualTo(messageCountInChannels + messageCountInNodes));
+            Assert.That(result.Count(), Is.EqualTo(messageCountInChannels + messageCountInNodes));
         }
 
         [Test]
@@ -208,7 +208,7 @@ namespace Coursework.Tests
                 MessageFiltrationMode.CanceledMessagesOnly);
 
             // Assert
-            Assert.That(result.Length, Is.EqualTo(canceledMessages));
+            Assert.That(result.Count(), Is.EqualTo(canceledMessages));
         }
     }
 }

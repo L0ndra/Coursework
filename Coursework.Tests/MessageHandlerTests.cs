@@ -184,6 +184,17 @@ namespace Coursework.Tests
         }
 
         [Test]
+        public void HandleMessageShouldMakeMessageReceived()
+        {
+            // Arrange
+            // Act
+            _messageHandler.HandleMessage(_message);
+
+            // Assert
+            Assert.IsTrue(_message.IsReceived);
+        }
+
+        [Test]
         public void HandleMessageShouldCreateInitializeMessages()
         {
             // Arrange

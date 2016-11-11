@@ -41,6 +41,7 @@ namespace Coursework.Gui
         private IMessageRepository _messageRepository;
         private IMessageRegistrator _messageRegistrator;
         private IMessageViewUpdater _messageViewUpdater;
+        private IMessagesStatisticCounter _messagesStatisticCounter;
         private readonly INetworkLocationMapRetriever _networkLocationMapRetriever;
         private Canvas GeneratedCanvas => NetworkArea.Children.OfType<Canvas>().First();
 
@@ -287,6 +288,8 @@ namespace Coursework.Gui
 
             _messageRegistrator = new MessageRegistrator(_messageRepository);
 
+            _messagesStatisticCounter = new MessagesStatisticCounter(_messageRegistrator, _messageRepository);
+
             _backgroundWorker = new Background.BackgroundWorker(_messageExchanger, _messageGenerator,
                 _networkDrawer, _messageCreator, _messageRegistrator, _messageViewUpdater, tableUpdatePeriod);
 
@@ -346,9 +349,18 @@ namespace Coursework.Gui
 
         private void Stop_OnClick(object sender, RoutedEventArgs e)
         {
-            _backgroundWorker?.Stop();
+            if (_backgroundWorker != null)
+            {
+                _backgroundWorker.Stop();
 
-            _backgroundWorker = null;
+                _backgroundWorker = null;
+
+                var statistic = _messagesStatisticCounter.Count();
+
+                var messageStatisticWindow = new MessagesStatisticWindow(statistic);
+
+                messageStatisticWindow.Show();
+            }
         }
 
         private void RangeBase_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

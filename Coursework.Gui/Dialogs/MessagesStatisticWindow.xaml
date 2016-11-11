@@ -1,0 +1,107 @@
+﻿<Window x:Class="Coursework.Gui.Dialogs.MessagesStatisticWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="MessagesStatisticWindow" Height="400" Width="600" WindowStyle="None">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Messages Count: "></TextBlock>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="MessagesCount" Margin="10 0"></TextBlock>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
+                       Text="General Messages Received Count: "
+                       TextWrapping="Wrap"></TextBlock>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="GeneralMessagesReceivedCount" Margin="10 0"></TextBlock>
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
+                       Text="Received Messages Count: "
+                       TextWrapping="Wrap"></TextBlock>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="ReceivedMessagesCount" Margin="10 0"></TextBlock>
+        </Grid>
+
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
+                       Text="Avarage Delivery Time: "
+                       TextWrapping="Wrap"></TextBlock>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="AvarageDeliveryTime" Margin="10 0"></TextBlock>
+        </Grid>
+
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
+                       Text="General Messages Avarage Delivery Time: "
+                       TextWrapping="Wrap"></TextBlock>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="GeneralMessagesAvarageDeliveryTime" Margin="10 0"></TextBlock>
+        </Grid>
+
+        <Grid Grid.Row="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
+                       Text="Total Received Messages Size: "
+                       TextWrapping="Wrap"></TextBlock>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="TotalReceivedMessagesSize" Margin="10 0"></TextBlock>
+        </Grid>
+
+        <Grid Grid.Row="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
+                       Text="Total Received Data Size: "
+                       TextWrapping="Wrap"></TextBlock>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="TotalReceivedDataSize" Margin="10 0"></TextBlock>
+        </Grid>
+
+        <Grid Grid.Row="7">
+            <Button HorizontalAlignment="Center" VerticalAlignment="Center" Content="OK" 
+                    Width="100" Click="Ok_OnClick"></Button>
+        </Grid>
+    </Grid>
+</Window>

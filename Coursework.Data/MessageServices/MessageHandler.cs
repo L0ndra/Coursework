@@ -27,6 +27,7 @@ namespace Coursework.Data.MessageServices
         {
             var receiver = _network.GetNodeById(message.ReceiverId);
             receiver.ReceivedMessages.Add(message);
+            message.IsReceived = true;
 
             switch (message.MessageType)
             {
