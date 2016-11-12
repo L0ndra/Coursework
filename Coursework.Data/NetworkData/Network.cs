@@ -38,7 +38,7 @@ namespace Coursework.Data.NetworkData
 
                 foreach (var channel in channels)
                 {
-                    _channels.Remove(channel);
+                    RemoveChannel(channel.FirstNodeId, channel.SecondNodeId);
                 }
 
                 _nodes.Remove(node);
@@ -134,6 +134,9 @@ namespace Coursework.Data.NetworkData
 
         public void RemoveChannel(uint firstNodeId, uint secondNodeId)
         {
+            var firstNode = GetNodeById(firstNodeId);
+            var secondNode = GetNodeById(secondNodeId);
+
             var channel = GetChannel(firstNodeId, secondNodeId);
 
             if (channel != null)
@@ -142,6 +145,9 @@ namespace Coursework.Data.NetworkData
                 RemoveMessageQueue(secondNodeId, channel.Id);
 
                 _channels.Remove(channel);
+
+                firstNode.LinkedNodesId.Remove(secondNodeId);
+                secondNode.LinkedNodesId.Remove(firstNodeId);
             }
         }
 

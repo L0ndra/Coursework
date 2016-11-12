@@ -25,6 +25,10 @@
                 <MenuItem Header="_Link" Click="AddChannel_OnClick"/>
                 <MenuItem Header="_Message" Click="AddMessage_Onclick"></MenuItem>
             </MenuItem>
+            <MenuItem Header="_Remove">
+                <MenuItem Header="_Node" Click="RemoveNode_OnClick"/>
+                <MenuItem Header="_Link" Click="RemoveChannel_OnClick"/>
+            </MenuItem>
         </Menu>
 
         <Grid>

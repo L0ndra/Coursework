@@ -364,6 +364,20 @@ namespace Coursework.Tests
         }
 
         [Test]
+        public void RemoveChannelShouldRemoveRecordInLinkedNodesSet()
+        {
+            // Arrange
+            CreateTwoNodesForTests();
+
+            // Act
+            _network.RemoveChannel(_node2.Id, _node1.Id);
+
+            // Assert
+            Assert.IsFalse(_node1.LinkedNodesId.Contains(_node2.Id));
+            Assert.IsFalse(_node2.LinkedNodesId.Contains(_node1.Id));
+        }
+
+        [Test]
         public void RemoveNodeShouldRemoveNodeWithAllLinkedChannels()
         {
             // Arrange

@@ -47,26 +47,42 @@ namespace Coursework.Gui.Drawers
 
         public void UpdateComponents()
         {
+            var linesToRemove = new List<Line>();
+
             foreach (var line in _uiElements.OfType<Line>())
             {
                 var channelDto = (ChannelDto)line.Tag;
 
                 var channel = _network.Channels
-                    .First(c => c.Id == channelDto.Id);
+                    .FirstOrDefault(c => c.Id == channelDto.Id);
 
-                line.Stroke = GetChannelBrush(channel);
+                if (channel == null)
+                {
+                    linesToRemove.Add(line);
+                }
+                else
+                {
+                    line.Stroke = GetChannelBrush(channel);
+                }
             }
+
+            RemoveRange(linesToRemove);
         }
 
         public void RemoveCreatedElements()
         {
-            foreach (var uiElement in _uiElements)
-            {
-                var parent = VisualTreeHelper.GetParent(uiElement) as Panel;
-                parent?.Children.Remove(uiElement);
-            }
+            RemoveRange(_uiElements.ToArray());
+        }
 
-            _uiElements.Clear();
+        private void RemoveRange(IEnumerable<UIElement> rangeToRemove)
+        {
+            foreach (var element in rangeToRemove)
+            {
+                var parent = VisualTreeHelper.GetParent(element) as Panel;
+                parent?.Children.Remove(element);
+
+                _uiElements.Remove(element);
+            }
         }
 
         private Line CreateLine(Channel channel, Panel panel)

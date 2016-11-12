@@ -2,7 +2,6 @@
 using System.Windows;
 using Coursework.Data.Entities;
 using Coursework.Data.Exceptions;
-using Coursework.Data.NetworkData;
 
 namespace Coursework.Gui.Dialogs
 {
@@ -13,13 +12,11 @@ namespace Coursework.Gui.Dialogs
     {
         public delegate void ChannelAddEventHandler(Channel channel);
         private event ChannelAddEventHandler ChannelAdd;
-        private readonly INetworkHandler _network;
 
-        public ChannelAddWindow(INetworkHandler network, ChannelAddEventHandler channelAddEventHandler)
+        public ChannelAddWindow(ChannelAddEventHandler channelAddEventHandler)
         {
             InitializeComponent();
 
-            _network = network;
             ChannelAdd += channelAddEventHandler;
         }
 
@@ -88,8 +85,6 @@ namespace Coursework.Gui.Dialogs
                 IsBusy = false,
                 Capacity = int.Parse(Capacity.Text)
             };
-
-            _network.AddChannel(newChannel);
 
             OnChannelAdd(newChannel);
         }

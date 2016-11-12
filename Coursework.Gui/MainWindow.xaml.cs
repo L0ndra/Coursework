@@ -28,7 +28,7 @@ namespace Coursework.Gui
         private IComponentDrawer _channelDrawer;
         private Background.BackgroundWorker _backgroundWorker;
         private readonly INetworkInfoRetriever _networkInfoRetriever;
-        private ChannelAddWindow _channelAddWindow;
+        private readonly ChannelAddWindow _channelAddWindow;
         private IMessageRouter _messageRouter;
         private IMessageCreator _messageCreator;
         private IMessageCreator _updateMatrixMessageCreator;
@@ -57,10 +57,11 @@ namespace Coursework.Gui
             _networkLocationMapRetriever = networkLocationMapRetriever;
 
             InitializeDrawers();
-            _channelAddWindow = new ChannelAddWindow(network, channel => _channelDrawer.DrawComponents(GeneratedCanvas));
+            _channelAddWindow = new ChannelAddWindow(OnChannelAddEventHandler);
 
             Loaded += OnWindowLoaded;
         }
+
 
         private void InitializeFiltrationModeComboBox()
         {
@@ -164,8 +165,6 @@ namespace Coursework.Gui
             NetworkArea.Children.Remove(GeneratedCanvas);
 
             _networkDrawer.DrawComponents(NetworkArea);
-
-            _channelAddWindow = new ChannelAddWindow(_network, channel => _channelDrawer.DrawComponents(GeneratedCanvas));
         }
 
         private void SaveNetworkLocation_OnClick(object sender, RoutedEventArgs e)
@@ -276,7 +275,7 @@ namespace Coursework.Gui
             _negativeResponseMessageCreator = new NegativeResponseCreator(_network, _messageRouter);
             _updateMatrixMessageCreator = new UpdateMatrixMessageCreator(_network, _messageRouter);
 
-            _messageHandler = new MessageHandler(_network, _messageCreator, 
+            _messageHandler = new MessageHandler(_network, _messageCreator,
                 _updateMatrixMessageCreator, _positiveResponseMessageCreator);
             _messageReceiver = new MessageReceiver(_messageHandler, _negativeResponseMessageCreator);
             _messageExchanger = new MessageExchanger(_network, _messageReceiver);
@@ -383,9 +382,15 @@ namespace Coursework.Gui
             messageAddWindow.Show();
         }
 
+        private void OnChannelAddEventHandler(Channel channel)
+        {
+            _network.AddChannel(channel);
+            _channelDrawer.DrawComponents(GeneratedCanvas);
+        }
+
         private void MessageCreate(MessageInitializer messageInitializer)
         {
-            var messages = _messageCreator.CreateMessages(messageInitializer);
+            var messages = _messageCreator?.CreateMessages(messageInitializer);
 
             if (messages != null)
             {
@@ -398,6 +403,34 @@ namespace Coursework.Gui
                     MessageBoxResult.OK,
                     MessageBoxOptions.None);
             }
+        }
+
+        private void RemoveNode_OnClick(object sender, RoutedEventArgs e)
+        {
+            var nodeRemoveWindow = new NodeRemoveWindow(NodeRemoveEventHandler);
+
+            nodeRemoveWindow.Show();
+        }
+
+        private void NodeRemoveEventHandler(uint nodeId)
+        {
+            _network.RemoveNode(nodeId);
+
+            _networkDrawer.UpdateComponents();
+        }
+
+        private void RemoveChannel_OnClick(object sender, RoutedEventArgs e)
+        {
+            var channelRemoveWindow = new ChannelRemoveWindow(ChannelRemoveEventHandler);
+
+            channelRemoveWindow.Show();
+        }
+
+        private void ChannelRemoveEventHandler(uint firstNodeId, uint secondNodeId)
+        {
+            _network.RemoveChannel(firstNodeId, secondNodeId);
+
+            _channelDrawer.UpdateComponents();
         }
     }
 }

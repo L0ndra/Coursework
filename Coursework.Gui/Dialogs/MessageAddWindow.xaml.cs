@@ -38,6 +38,10 @@ namespace Coursework.Gui.Dialogs
                 };
 
                 OnMessageCreateEvent(messageInitializer);
+
+                MessageBox.Show("Message Created", "Ok", MessageBoxButton.OK, MessageBoxImage.Information,
+                   MessageBoxResult.OK,
+                   MessageBoxOptions.None);
             }
             catch (Exception ex) when (ex is ChannelException || ex is NodeException ||
                 ex is ArgumentNullException || ex is FormatException || ex is OverflowException)
@@ -48,7 +52,7 @@ namespace Coursework.Gui.Dialogs
             }
         }
 
-        private void Cancel_OnClick(object sender, RoutedEventArgs e)
+        private void Exit_OnClick(object sender, RoutedEventArgs e)
         {
             Close();
         }

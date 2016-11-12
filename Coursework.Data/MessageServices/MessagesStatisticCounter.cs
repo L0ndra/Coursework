@@ -16,35 +16,19 @@ namespace Coursework.Data.MessageServices
 
         public MessagesStatistic Count()
         {
-            var allMessages = _messageRepository
-                .GetAllMessages()
-                .ToArray();
+            var allMessages = GetAllMessages();
 
-            var receivedMessages = allMessages
-                .Where(m => m.IsReceived && allMessages
-                    .Where(m1 => m1.ParentId == m.ParentId)
-                    .All(m1 => m1.IsReceived || m1.IsCanceled))
-                .ToArray();
+            var receivedMessages = GetReceivedMessages(allMessages);
 
-            var generalReceivedMessages = receivedMessages
-                .Where(m => m.MessageType == MessageType.General)
-                .ToArray();
+            var generalReceivedMessages = GetGeneralReceivedMessages(receivedMessages);
 
-            var avarageDeliveryTime = receivedMessages
-                .GroupBy(m => m.ParentId)
-                .Sum(m => _messageRegistrator.MessagesEndTimes[m.Key]
-                            - _messageRegistrator.MessagesStartTimes[m.Key])
-                        / (double)receivedMessages.GroupBy(m => m.ParentId).Count();
+            var avarageDeliveryTime = CountAvarageDeliveryTime(receivedMessages);
 
-            var avarageGeneralMessagesDeliveryTime = generalReceivedMessages
-                .GroupBy(m => m.ParentId)
-                .Sum(m => _messageRegistrator.MessagesEndTimes[m.Key]
-                            - _messageRegistrator.MessagesStartTimes[m.Key])
-                        / (double)generalReceivedMessages.GroupBy(m => m.ParentId).Count();
+            var avarageGeneralMessagesDeliveryTime = CountAvarageGeneralMessagesDeliveryTime(generalReceivedMessages);
 
-            var receivedSize = receivedMessages.Sum(m => m.Size);
+            var receivedSize = CountReceivedSize(receivedMessages);
 
-            var receivedDataSize = receivedMessages.Sum(m => m.DataSize);
+            var receivedDataSize = CountReceivedDataSize(receivedMessages);
 
             var messageStatistic = new MessagesStatistic
             {
@@ -58,6 +42,64 @@ namespace Coursework.Data.MessageServices
             };
 
             return messageStatistic;
+        }
+
+        protected virtual int CountReceivedDataSize(Message[] receivedMessages)
+        {
+            var receivedDataSize = receivedMessages.Sum(m => m.DataSize);
+            return receivedDataSize;
+        }
+
+        protected virtual int CountReceivedSize(Message[] receivedMessages)
+        {
+            var receivedSize = receivedMessages.Sum(m => m.Size);
+            return receivedSize;
+        }
+
+        protected virtual double CountAvarageGeneralMessagesDeliveryTime(Message[] generalReceivedMessages)
+        {
+            var avarageGeneralMessagesDeliveryTime = generalReceivedMessages
+                .GroupBy(m => m.ParentId)
+                .Sum(m => _messageRegistrator.MessagesEndTimes[m.Key]
+                          - _messageRegistrator.MessagesStartTimes[m.Key])
+                                                     /(double) generalReceivedMessages.GroupBy(m => m.ParentId).Count();
+            return avarageGeneralMessagesDeliveryTime;
+        }
+
+        protected virtual double CountAvarageDeliveryTime(Message[] receivedMessages)
+        {
+            var avarageDeliveryTime = receivedMessages
+                .GroupBy(m => m.ParentId)
+                .Sum(m => _messageRegistrator.MessagesEndTimes[m.Key]
+                          - _messageRegistrator.MessagesStartTimes[m.Key])
+                                      /(double) receivedMessages.GroupBy(m => m.ParentId).Count();
+            return avarageDeliveryTime;
+        }
+
+        protected virtual Message[] GetGeneralReceivedMessages(Message[] receivedMessages)
+        {
+            var generalReceivedMessages = receivedMessages
+                .Where(m => m.MessageType == MessageType.General)
+                .ToArray();
+            return generalReceivedMessages;
+        }
+
+        protected virtual Message[] GetReceivedMessages(Message[] allMessages)
+        {
+            var receivedMessages = allMessages
+                .Where(m => m.IsReceived && allMessages
+                    .Where(m1 => m1.ParentId == m.ParentId)
+                    .All(m1 => m1.IsReceived || m1.IsCanceled))
+                .ToArray();
+            return receivedMessages;
+        }
+
+        protected virtual Message[] GetAllMessages()
+        {
+            var allMessages = _messageRepository
+                .GetAllMessages()
+                .ToArray();
+            return allMessages;
         }
     }
 }

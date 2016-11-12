@@ -5,105 +5,103 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="ChannelAddWindow" Height="300" Width="400" WindowStyle="None">
-    <Grid>
-        <Grid Margin="20">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-            </Grid.RowDefinitions>
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"></ColumnDefinition>
-                    <ColumnDefinition Width="3*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Price: "></TextBlock>
-                <TextBox Grid.Column="1" VerticalAlignment="Center" Name="Price" Margin="10 0"></TextBox>
-            </Grid>
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Price: "></TextBlock>
+            <TextBox Grid.Column="1" VerticalAlignment="Center" Name="Price" Margin="10 0"></TextBox>
+        </Grid>
 
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"></ColumnDefinition>
-                    <ColumnDefinition Width="3*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Error Chance: "></TextBlock>
-                <TextBox Grid.Column="1" VerticalAlignment="Center" Name="ErrorChance" Margin="10 0"></TextBox>
-            </Grid>
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Error Chance: "></TextBlock>
+            <TextBox Grid.Column="1" VerticalAlignment="Center" Name="ErrorChance" Margin="10 0"></TextBox>
+        </Grid>
 
-            <Grid Grid.Row="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"></ColumnDefinition>
-                    <ColumnDefinition Width="3*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="First Node: "></TextBlock>
-                <TextBox Grid.Column="1" VerticalAlignment="Center" Name="FirstNodeId" Margin="10 0"></TextBox>
-            </Grid>
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="First Node: "></TextBlock>
+            <TextBox Grid.Column="1" VerticalAlignment="Center" Name="FirstNodeId" Margin="10 0"></TextBox>
+        </Grid>
 
-            <Grid Grid.Row="3">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"></ColumnDefinition>
-                    <ColumnDefinition Width="3*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Second Node: "></TextBlock>
-                <TextBox Grid.Column="1" VerticalAlignment="Center" Name="SecondNodeId" Margin="10 0"></TextBox>
-            </Grid>
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Second Node: "></TextBlock>
+            <TextBox Grid.Column="1" VerticalAlignment="Center" Name="SecondNodeId" Margin="10 0"></TextBox>
+        </Grid>
 
-            <Grid Grid.Row="4">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"></ColumnDefinition>
-                    <ColumnDefinition Width="3*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Connection Type: "></TextBlock>
-                <ComboBox Grid.Column="1" VerticalAlignment="Center" Name="ConnectionType" Margin="10 0">
-                    <ComboBoxItem Content="Duplex" Name="DuplexItem"></ComboBoxItem>
-                    <ComboBoxItem Content="Halfduplex" Name="HalfduplexItem"></ComboBoxItem>
-                </ComboBox>
-            </Grid>
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Connection Type: "></TextBlock>
+            <ComboBox Grid.Column="1" VerticalAlignment="Center" Name="ConnectionType" Margin="10 0">
+                <ComboBoxItem Content="Duplex" Name="DuplexItem"></ComboBoxItem>
+                <ComboBoxItem Content="Halfduplex" Name="HalfduplexItem"></ComboBoxItem>
+            </ComboBox>
+        </Grid>
 
-            <Grid Grid.Row="5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"></ColumnDefinition>
-                    <ColumnDefinition Width="3*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+        <Grid Grid.Row="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Channel Type: "></TextBlock>
-                <ComboBox Grid.Column="1" VerticalAlignment="Center" Name="ChannelType" Margin="10 0">
-                    <ComboBoxItem Content="Sattelite" Name="SatteliteItem"></ComboBoxItem>
-                    <ComboBoxItem Content="Ground" Name="GroundItem"></ComboBoxItem>
-                </ComboBox>
-            </Grid>
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Channel Type: "></TextBlock>
+            <ComboBox Grid.Column="1" VerticalAlignment="Center" Name="ChannelType" Margin="10 0">
+                <ComboBoxItem Content="Sattelite" Name="SatteliteItem"></ComboBoxItem>
+                <ComboBoxItem Content="Ground" Name="GroundItem"></ComboBoxItem>
+            </ComboBox>
+        </Grid>
 
-            <Grid Grid.Row="6">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"></ColumnDefinition>
-                    <ColumnDefinition Width="3*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+        <Grid Grid.Row="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Capacity: "></TextBlock>
-                <TextBox Grid.Column="1" VerticalAlignment="Center" Name="Capacity" Margin="10 0"></TextBox>
-            </Grid>
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Capacity: "></TextBlock>
+            <TextBox Grid.Column="1" VerticalAlignment="Center" Name="Capacity" Margin="10 0"></TextBox>
+        </Grid>
 
-            <Grid Grid.Row="7">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Add" Width="100"
+        <Grid Grid.Row="7">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Add" Width="100"
                         Click="AddChannel_OnClick"></Button>
-                <Button Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Cancel" Width="100"
+            <Button Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Cancel" Width="100"
                         Click="Cancel_OnClick"></Button>
-            </Grid>
         </Grid>
     </Grid>
 </Window>

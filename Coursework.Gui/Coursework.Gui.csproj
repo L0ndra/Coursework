@@ -70,6 +70,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Dialogs\ChannelRemoveWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\MessageAddWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -83,6 +87,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\NodeNetworkMatrix.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\NodeRemoveWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -105,6 +113,9 @@
     <Compile Include="Dialogs\ChannelInfoWindow.xaml.cs">
       <DependentUpon>ChannelInfoWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\ChannelRemoveWindow.xaml.cs">
+      <DependentUpon>ChannelRemoveWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\MessageAddWindow.xaml.cs">
       <DependentUpon>MessageAddWindow.xaml</DependentUpon>
     </Compile>
@@ -116,6 +127,9 @@
     </Compile>
     <Compile Include="Dialogs\NodeNetworkMatrix.xaml.cs">
       <DependentUpon>NodeNetworkMatrix.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\NodeRemoveWindow.xaml.cs">
+      <DependentUpon>NodeRemoveWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\SimulationOptionsDialog.xaml.cs">
       <DependentUpon>SimulationOptionsDialog.xaml</DependentUpon>

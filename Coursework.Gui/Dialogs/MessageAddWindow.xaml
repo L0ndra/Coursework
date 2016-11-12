@@ -51,8 +51,8 @@
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Create" Width="100"
                         Click="CreateMessage_OnClick"></Button>
-                <Button Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Cancel" Width="100"
-                        Click="Cancel_OnClick"></Button>
+                <Button Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Exit" Width="100"
+                        Click="Exit_OnClick"></Button>
             </Grid>
         </Grid>
     </Grid>

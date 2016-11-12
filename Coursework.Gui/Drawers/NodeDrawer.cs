@@ -44,26 +44,32 @@ namespace Coursework.Gui.Drawers
 
         public virtual void UpdateComponents()
         {
+            var elementsToRemove = new List<Grid>();
+
             foreach (var createdGrid in CreatedGrids)
             {
                 var nodeDto = (NodeDto)createdGrid.Tag;
                 var node = Network.GetNodeById(nodeDto.Id);
-                createdGrid.Tag = Mapper.Map<Node, NodeDto>(node);
-                nodeDto = (NodeDto)createdGrid.Tag;
 
-                createdGrid.Background = GetBackground(nodeDto);
+                if (node == null)
+                {
+                    elementsToRemove.Add(createdGrid);
+                }
+                else
+                {
+                    createdGrid.Tag = Mapper.Map<Node, NodeDto>(node);
+                    nodeDto = (NodeDto)createdGrid.Tag;
+
+                    createdGrid.Background = GetBackground(nodeDto);
+                }
             }
+
+            RemoveRange(elementsToRemove);
         }
 
         public virtual void RemoveCreatedElements()
         {
-            foreach (var uiElement in CreatedGrids)
-            {
-                var parent = VisualTreeHelper.GetParent(uiElement) as Panel;
-                parent?.Children.Remove(uiElement);
-            }
-
-            CreatedGrids.Clear();
+            RemoveRange(CreatedGrids.ToArray());
         }
 
         protected virtual TextBlock CreateTextBlock(string name)
@@ -157,6 +163,16 @@ namespace Coursework.Gui.Drawers
                     Canvas.SetTop(parent, currentYPosition);
                     Canvas.SetLeft(parent, currentXPosition);
                 }
+            }
+        }
+        private void RemoveRange(IEnumerable<Grid> rangeToRemove)
+        {
+            foreach (var element in rangeToRemove)
+            {
+                var parent = VisualTreeHelper.GetParent(element) as Panel;
+                parent?.Children.Remove(element);
+
+                CreatedGrids.Remove(element);
             }
         }
 
