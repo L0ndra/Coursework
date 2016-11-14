@@ -67,9 +67,7 @@ namespace Coursework.Tests
         public void HandleReceivedMessageShouldCallHandleMessageFromHandlerOnceIfNodeIsReceiver()
         {
             // Arrange
-            _message.Route = _message.Route
-                .Skip(1)
-                .ToArray();
+            _message.ReceiverId = _node.Id;
 
             // Act
             _messageReceiver.HandleReceivedMessage(_node, _message);

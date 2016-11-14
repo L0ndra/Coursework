@@ -71,7 +71,6 @@
     <Compile Include="MessageServices\NegativeResponseCreator.cs" />
     <Compile Include="MessageServices\PositiveResponseCreator.cs" />
     <Compile Include="MessageServices\ResponseCreator.cs" />
-    <Compile Include="MessageServices\UpdateMatrixMessageCreator.cs" />
     <Compile Include="MessageServices\RequestMessageCreator.cs" />
     <Compile Include="NetworkData\NetworkMatrix.cs" />
     <Compile Include="Entities\NodeType.cs" />

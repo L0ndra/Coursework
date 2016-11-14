@@ -155,12 +155,12 @@ namespace Coursework.Tests
                 ReceiverId = 2,
                 SenderId = 0,
                 Data = null,
-                Size = AllConstants.MaxMessageSize
+                Size = AllConstants.MaxMessageSize + 1
             };
         }
 
         [Test]
-        public void GenerateShouldGenerateNewMessages()
+        public void GenerateShouldGenerateNewGeneralMessages()
         {
             // Arrange
             // Act
@@ -176,6 +176,27 @@ namespace Coursework.Tests
             Assert.That(messages.All(m => m.ServiceSize == AllConstants.ServicePartSize));
             Assert.That(messages.Where((message, i) => i != messages.Length - 1)
                 .All(m => m.DataSize == AllConstants.PackageSize));
+        }
+
+        [Test]
+        public void GenerateShouldGenerateNewServiceMessages()
+        {
+            // Arrange
+            _messageInitializer.MessageType = MessageType.SendingRequest;
+
+            // Act
+            var messages = _messageCreator.CreateMessages(_messageInitializer);
+            var firstMessage = messages.First();
+
+            // Assert
+            Assert.That(messages.Length, Is.GreaterThanOrEqualTo(1));
+            Assert.That(firstMessage.ReceiverId, Is.EqualTo(_messageInitializer.ReceiverId));
+            Assert.That(firstMessage.SenderId, Is.EqualTo(_messageInitializer.SenderId));
+            Assert.That(firstMessage.Data, Is.EqualTo(_messageInitializer.Data));
+            Assert.That(firstMessage.MessageType, Is.EqualTo(_messageInitializer.MessageType));
+            Assert.That(messages.All(m => m.DataSize == 0));
+            Assert.That(messages.Where((message, i) => i != messages.Length - 1)
+                .All(m => m.ServiceSize == AllConstants.PackageSize + AllConstants.ServicePartSize));
         }
 
         [Test]

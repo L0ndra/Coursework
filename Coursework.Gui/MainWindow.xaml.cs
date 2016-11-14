@@ -31,7 +31,6 @@ namespace Coursework.Gui
         private readonly ChannelAddWindow _channelAddWindow;
         private IMessageRouter _messageRouter;
         private IMessageCreator _messageCreator;
-        private IMessageCreator _updateMatrixMessageCreator;
         private IMessageCreator _positiveResponseMessageCreator;
         private IMessageCreator _negativeResponseMessageCreator;
         private IMessageHandler _messageHandler;
@@ -249,6 +248,10 @@ namespace Coursework.Gui
 
         private void Start_OnClick(object sender, RoutedEventArgs e)
         {
+            _backgroundWorker?.Stop();
+
+            _backgroundWorker = null;
+
             _network.ClearMessages();
             _network.Reset();
 
@@ -273,10 +276,8 @@ namespace Coursework.Gui
 
             _positiveResponseMessageCreator = new PositiveResponseCreator(_network, _messageRouter);
             _negativeResponseMessageCreator = new NegativeResponseCreator(_network, _messageRouter);
-            _updateMatrixMessageCreator = new UpdateMatrixMessageCreator(_network, _messageRouter);
 
-            _messageHandler = new MessageHandler(_network, _messageCreator,
-                _updateMatrixMessageCreator, _positiveResponseMessageCreator);
+            _messageHandler = new MessageHandler(_network, _messageCreator, _positiveResponseMessageCreator);
             _messageReceiver = new MessageReceiver(_messageHandler, _negativeResponseMessageCreator);
             _messageExchanger = new MessageExchanger(_network, _messageReceiver);
 

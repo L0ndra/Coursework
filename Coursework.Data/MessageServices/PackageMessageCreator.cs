@@ -27,8 +27,8 @@ namespace Coursework.Data.MessageServices
 
         private Message[] DivideIntoPackages(Message currentMessage)
         {
-            var messageCount = currentMessage.DataSize / AllConstants.PackageSize
-                + (currentMessage.DataSize % AllConstants.PackageSize == 0 ? 0 : 1);
+            var messageCount = currentMessage.Size / AllConstants.PackageSize
+                + (currentMessage.Size % AllConstants.PackageSize == 0 ? 0 : 1);
 
             var messages = new List<Message>();
 
@@ -43,12 +43,19 @@ namespace Coursework.Data.MessageServices
                 }
 
                 var message = CreateMessage(currentMessage, route, i);
-                message.ServiceSize = AllConstants.ServicePartSize;
 
                 if (i == messageCount - 1
-                    && currentMessage.DataSize % AllConstants.PackageSize != 0)
+                    && currentMessage.Size % AllConstants.PackageSize != 0)
                 {
-                    message.DataSize = currentMessage.DataSize % AllConstants.PackageSize;
+                    if (currentMessage.MessageType == MessageType.General)
+                    {
+                        message.DataSize = currentMessage.DataSize % AllConstants.PackageSize;
+                    }
+                    else
+                    {
+                        message.ServiceSize = currentMessage.ServiceSize % AllConstants.PackageSize 
+                            + AllConstants.ServicePartSize;
+                    }
                 }
 
                 messages.Add(message);
@@ -61,7 +68,31 @@ namespace Coursework.Data.MessageServices
 
             RemoveFromQueue(messages.Where(m => m.Route.Length != 0)
                 .ToArray(), currentMessage.SenderId);
+
             return messages.ToArray();
+        }
+
+        private int GetDataSize(Message messageInitializer)
+        {
+            if (messageInitializer.MessageType == MessageType.General)
+            {
+                return AllConstants.PackageSize;
+            }
+
+            return 0;
+        }
+
+        private int GetServiceSize(Message messageInitializer)
+        {
+            if (messageInitializer.MessageType == MessageType.MatrixUpdateMessage
+                || messageInitializer.MessageType == MessageType.NegativeSendingResponse
+                || messageInitializer.MessageType == MessageType.PositiveSendingResponse
+                || messageInitializer.MessageType == MessageType.SendingRequest)
+            {
+                return AllConstants.PackageSize;
+            }
+
+            return 0;
         }
 
         private Message CreateMessage(Message currentMessage, Channel[] route, int number)
@@ -75,8 +106,8 @@ namespace Coursework.Data.MessageServices
                 ReceiverId = currentMessage.ReceiverId,
                 SendAttempts = currentMessage.SendAttempts,
                 SenderId = currentMessage.SenderId,
-                DataSize = AllConstants.PackageSize,
-                ServiceSize = AllConstants.ServicePartSize,
+                DataSize = GetDataSize(currentMessage),
+                ServiceSize = GetServiceSize(currentMessage) + AllConstants.ServicePartSize,
                 Route = route,
                 NumberInPackage = number
             };

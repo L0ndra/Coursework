@@ -84,6 +84,7 @@ namespace Coursework.Gui.Drawers
 
             textBlock.MouseMove += Node_OnMouseMove;
             textBlock.MouseLeave += Node_OnMouseLeave;
+            textBlock.MouseRightButtonUp += Node_OnMouseRightButtonUp;
 
             return textBlock;
         }
@@ -165,6 +166,24 @@ namespace Coursework.Gui.Drawers
                 }
             }
         }
+
+        private void Node_OnMouseRightButtonUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+        {
+            var concreteSender = (FrameworkElement)sender;
+            var parent = (FrameworkElement)concreteSender?.Parent;
+
+            if (parent != null)
+            {
+                var nodeDto = (NodeDto)parent.Tag;
+
+                var node = Network.GetNodeById(nodeDto.Id);
+
+                node.IsActive = !node.IsActive;
+            }
+
+            UpdateComponents();
+        }
+
         private void RemoveRange(IEnumerable<Grid> rangeToRemove)
         {
             foreach (var element in rangeToRemove)

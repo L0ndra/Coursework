@@ -23,16 +23,14 @@ namespace Coursework.Data.MessageServices
             var centralMachine = Network.Nodes
                 .FirstOrDefault(n => n.NodeType == NodeType.CentralMachine);
 
-            if (centralMachine != null)
+            if (centralMachine != null && centralMachine.IsActive)
             {
-                centralMachine.IsActive = true;
-
                 var networkMatrises = CreateNetworkMatrises();
-
-                CreateInitializeMessages(centralMachine, networkMatrises);
 
                 centralMachine.NetworkMatrix = networkMatrises[centralMachine.Id];
                 centralMachine.IsTableUpdated = true;
+
+                CreateInitializeMessages(centralMachine, networkMatrises);
             }
         }
 
@@ -71,15 +69,34 @@ namespace Coursework.Data.MessageServices
         {
             foreach (var linkedNodeId in centralMachine.LinkedNodesId)
             {
-                var initializeMessage = CreateInitializeMessage(centralMachine.Id, linkedNodeId,
-                    networkMatrises);
+                var linkedNode = Network.GetNodeById(linkedNodeId);
 
-                var channel = initializeMessage.Route.First();
+                if (!linkedNode.IsActive)
+                {
+                    continue;
+                }
 
-                var messageQueue = centralMachine.MessageQueueHandlers
-                    .First(m => m.ChannelId == channel.Id);
+                var messageInitializer = new MessageInitializer
+                {
+                    Size = AllConstants.InitializeMessageSize,
+                    MessageType = MessageType.MatrixUpdateMessage,
+                    ReceiverId = linkedNodeId,
+                    SenderId = centralMachine.Id,
+                    Data = networkMatrises
+                };
 
-                messageQueue.AddMessageInStart(initializeMessage);
+                var messages = CreateMessages(messageInitializer);
+
+                if (messages != null)
+                {
+                    foreach (var message in messages)
+                    {
+                        var messageQueue = centralMachine.MessageQueueHandlers
+                            .First(m => m.ChannelId == message.Route[0].Id);
+
+                        messageQueue.AddMessageInStart(message);
+                    }
+                }
             }
         }
 
@@ -108,31 +125,34 @@ namespace Coursework.Data.MessageServices
                 Route = route,
                 SenderId = messageInitializer.SenderId,
                 Data = messageInitializer.Data,
-                DataSize = messageInitializer.Size,
-                ServiceSize = 0,
+                DataSize = GetDataSize(messageInitializer),
+                ServiceSize = GetServiceSize(messageInitializer),
                 ParentId = Guid.NewGuid(),
                 SendAttempts = 0
             };
         }
 
-        private Message CreateInitializeMessage(uint senderId, uint receiverId,
-            IDictionary<uint, NetworkMatrix> networkMatrises)
+        private int GetDataSize(MessageInitializer messageInitializer)
         {
-            var channel = Network.GetChannel(senderId, receiverId);
-
-            return new Message
+            if (messageInitializer.MessageType == MessageType.General)
             {
-                MessageType = MessageType.MatrixUpdateMessage,
-                ReceiverId = receiverId,
-                SenderId = senderId,
-                Data = networkMatrises,
-                DataSize = 0,
-                ServiceSize = AllConstants.InitializeMessageSize,
-                LastTransferNodeId = senderId,
-                Route = new[] { channel },
-                ParentId = Guid.NewGuid(),
-                SendAttempts = 0
-            };
+                return messageInitializer.Size;
+            }
+
+            return 0;
+        }
+
+        private int GetServiceSize(MessageInitializer messageInitializer)
+        {
+            if (messageInitializer.MessageType == MessageType.MatrixUpdateMessage
+                || messageInitializer.MessageType == MessageType.NegativeSendingResponse
+                || messageInitializer.MessageType == MessageType.PositiveSendingResponse
+                || messageInitializer.MessageType == MessageType.SendingRequest)
+            {
+                return messageInitializer.Size;
+            }
+
+            return 0;
         }
     }
 }

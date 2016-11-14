@@ -93,7 +93,7 @@ namespace Coursework.Data.NetworkData
         {
             foreach (var node in _nodes)
             {
-                node.IsActive = false;
+                node.IsTableUpdated = false;
             }
 
             foreach (var channel in _channels)

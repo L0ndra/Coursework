@@ -61,7 +61,6 @@ namespace Coursework.Data.MessageServices
         private void HandleChannelMessage(Channel channel, Message message, ref int slotReceivedDataSize)
         {
             slotReceivedDataSize += channel.Capacity;
-            MakeChannelBusy(message);
 
             if (slotReceivedDataSize < message.Size)
             {
@@ -120,8 +119,6 @@ namespace Coursework.Data.MessageServices
 
         private void HandleMessagesInNodeQueues(Node node)
         {
-            ClenoutMessagesInNode(node);
-
             foreach (var messageQueueHandler in node.MessageQueueHandlers)
             {
                 var currentMessage = messageQueueHandler.Messages
@@ -174,23 +171,6 @@ namespace Coursework.Data.MessageServices
             }
         }
 
-        private void ClenoutMessagesInNode(Node node)
-        {
-            foreach (var messageQueueHandler in node.MessageQueueHandlers)
-            {
-                var outdatedMessages = messageQueueHandler.Messages
-                    .Where(message => message.MessageType == MessageType.MatrixUpdateMessage)
-                    .Where(message => _network.GetNodeById(message.ReceiverId).IsTableUpdated);
-
-                foreach (var message in outdatedMessages)
-                {
-                    message.IsCanceled = true;
-                    messageQueueHandler.RemoveMessage(message);
-                    node.CanceledMessages.Add(message);
-                }
-            }
-        }
-
         private bool TryMoveMessageToChannel(Channel channel, Message message)
         {
             if (channel.IsBusy && channel.MessageOwnerId != message.ParentId)
@@ -214,11 +194,13 @@ namespace Coursework.Data.MessageServices
             if (channel.FirstMessage == null
                 && channel.FirstNodeId == message.LastTransferNodeId)
             {
+                MakeChannelBusy(message);
                 channel.FirstMessage = message;
             }
             else if (channel.SecondMessage == null
                 && channel.SecondNodeId == message.LastTransferNodeId)
             {
+                MakeChannelBusy(message);
                 channel.SecondMessage = message;
             }
             else
@@ -245,7 +227,8 @@ namespace Coursework.Data.MessageServices
             var channel = message.Route.First();
 
             if (message.MessageType == MessageType.General
-                || message.MessageType == MessageType.NegativeSendingResponse)
+                || message.MessageType == MessageType.NegativeSendingResponse
+                || message.MessageType == MessageType.MatrixUpdateMessage)
             {
                 channel.IsBusy = false;
             }

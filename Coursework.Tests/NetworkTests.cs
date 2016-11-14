@@ -540,7 +540,7 @@ namespace Coursework.Tests
             _network.Reset();
 
             // Assert
-            Assert.IsTrue(_network.Nodes.All(n => !n.IsActive));
+            Assert.IsTrue(_network.Nodes.All(n => !n.IsTableUpdated));
             Assert.IsTrue(_network.Channels.All(n => !n.IsBusy));
         }
     }

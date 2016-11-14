@@ -59,7 +59,7 @@ namespace Coursework.Data.IONetwork
                     LinkedNodesId = new SortedSet<uint>(),
                     MessageQueueHandlers = new List<MessageQueueHandler>(),
                     NodeType = (NodeType)(int)nodeInfo["NodeType"],
-                    IsActive = false,
+                    IsActive = true,
                     ReceivedMessages = new List<Message>(),
                     CanceledMessages = new List<Message>()
                 };

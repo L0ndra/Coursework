@@ -76,7 +76,6 @@
     <Compile Include="MessagesStatisticCounterTests.cs" />
     <Compile Include="NegativeResponseCreatorTests.cs" />
     <Compile Include="PositiveResponseCreatorTests.cs" />
-    <Compile Include="UpdateMatrixMessageCreatorTests.cs" />
     <Compile Include="MessageQueueHandlerTests.cs" />
     <Compile Include="MessageReceiverTests.cs" />
     <Compile Include="MessageRepositoryTests.cs" />

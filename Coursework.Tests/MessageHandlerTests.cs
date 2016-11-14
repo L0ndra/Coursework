@@ -14,7 +14,6 @@ namespace Coursework.Tests
     {
         private Mock<INetworkHandler> _networkMock;
         private Mock<IMessageCreator> _generalMessageCreatorMock;
-        private Mock<IMessageCreator> _updateMatrixMessageCreatorMock;
         private Mock<IMessageCreator> _positiveResponseMessageCreatorMock;
         private MessageHandler _messageHandler;
         private Channel[] _channels;
@@ -27,11 +26,9 @@ namespace Coursework.Tests
         {
             _networkMock = new Mock<INetworkHandler>();
             _generalMessageCreatorMock = new Mock<IMessageCreator>();
-            _updateMatrixMessageCreatorMock = new Mock<IMessageCreator>();
             _positiveResponseMessageCreatorMock = new Mock<IMessageCreator>();
 
             _messageHandler = new MessageHandler(_networkMock.Object, _generalMessageCreatorMock.Object,
-                _updateMatrixMessageCreatorMock.Object,
                 _positiveResponseMessageCreatorMock.Object);
 
 
@@ -90,7 +87,7 @@ namespace Coursework.Tests
                         new MessageQueueHandler(_channels[0].Id),
                         new MessageQueueHandler(_channels[1].Id)
                     },
-                    IsActive = false,
+                    IsActive = true,
                     NodeType = NodeType.CentralMachine,
                     ReceivedMessages = new List<Message>(),
                     CanceledMessages = new List<Message>()
@@ -104,7 +101,7 @@ namespace Coursework.Tests
                         new MessageQueueHandler(_channels[0].Id),
                         new MessageQueueHandler(_channels[2].Id)
                     },
-                    IsActive = false,
+                    IsActive = true,
                     ReceivedMessages = new List<Message>(),
                     CanceledMessages = new List<Message>()
                 },
@@ -117,7 +114,7 @@ namespace Coursework.Tests
                         new MessageQueueHandler(_channels[1].Id),
                         new MessageQueueHandler(_channels[3].Id)
                     },
-                    IsActive = false,
+                    IsActive = true,
                     ReceivedMessages = new List<Message>(),
                     CanceledMessages = new List<Message>()
                 },
@@ -130,7 +127,7 @@ namespace Coursework.Tests
                         new MessageQueueHandler(_channels[2].Id),
                         new MessageQueueHandler(_channels[3].Id)
                     },
-                    IsActive = false,
+                    IsActive = true,
                     ReceivedMessages = new List<Message>(),
                     CanceledMessages = new List<Message>()
                 },
@@ -139,7 +136,7 @@ namespace Coursework.Tests
                     Id = 4,
                     LinkedNodesId = new SortedSet<uint>(),
                     MessageQueueHandlers = new List<MessageQueueHandler>(),
-                    IsActive = false,
+                    IsActive = true,
                     ReceivedMessages = new List<Message>(),
                     CanceledMessages = new List<Message>()
                 }
@@ -214,14 +211,47 @@ namespace Coursework.Tests
             _messageHandler.HandleMessage(_message);
 
             // Assert
-            _updateMatrixMessageCreatorMock.Verify(c => c.CreateMessages(It.Is<MessageInitializer>
+            _generalMessageCreatorMock.Verify(c => c.CreateMessages(It.Is<MessageInitializer>
                 (m => m.MessageType == MessageType.MatrixUpdateMessage)), Times.Exactly(linkedNodeCount));
 
-            _updateMatrixMessageCreatorMock.Verify(c => c.AddInQueue(It.Is<Message[]>
+            _generalMessageCreatorMock.Verify(c => c.AddInQueue(It.Is<Message[]>
                 (m => m.All(m1 => m1.MessageType == MessageType.MatrixUpdateMessage)), Receiver.Id),
                 Times.Exactly(linkedNodeCount));
 
-            Assert.IsTrue(Receiver.IsActive);
+            Assert.IsTrue(Receiver.IsTableUpdated);
+            Assert.That(Receiver.NetworkMatrix,
+                Is.EqualTo(((Dictionary<uint, NetworkMatrix>)_message.Data)[0]));
+        }
+
+        [Test]
+        public void HandleMessageShouldCreateInitializeMessagesOnlyForActiveNodes()
+        {
+            // Arrange
+            _message.MessageType = MessageType.MatrixUpdateMessage;
+            _message.Data = new Dictionary<uint, NetworkMatrix>
+            {
+                [0] = NetworkMatrix.Initialize(_networkMock.Object),
+                [1] = NetworkMatrix.Initialize(_networkMock.Object),
+                [2] = NetworkMatrix.Initialize(_networkMock.Object),
+                [3] = NetworkMatrix.Initialize(_networkMock.Object),
+                [4] = NetworkMatrix.Initialize(_networkMock.Object),
+            };
+
+            _nodes[1].IsActive = false;
+
+            var linkedNodeCount = Receiver.LinkedNodesId.Count;
+
+            // Act
+            _messageHandler.HandleMessage(_message);
+
+            // Assert
+            _generalMessageCreatorMock.Verify(c => c.CreateMessages(It.Is<MessageInitializer>
+                (m => m.MessageType == MessageType.MatrixUpdateMessage)), Times.Exactly(linkedNodeCount - 1));
+
+            _generalMessageCreatorMock.Verify(c => c.AddInQueue(It.Is<Message[]>
+                (m => m.All(m1 => m1.MessageType == MessageType.MatrixUpdateMessage)), Receiver.Id),
+                Times.Exactly(linkedNodeCount - 1));
+            
             Assert.That(Receiver.NetworkMatrix,
                 Is.EqualTo(((Dictionary<uint, NetworkMatrix>)_message.Data)[0]));
         }

@@ -174,7 +174,7 @@ namespace Coursework.Tests
                 .Count(m => m.MessageType == MessageType.MatrixUpdateMessage);
 
             // Assert
-            Assert.That(messageCount, Is.EqualTo(messageCount));
+            Assert.That(messageCount, Is.EqualTo(centralMachine.LinkedNodesId.Count));
 
             Assert.IsTrue(centralMachine.IsActive);
         }
@@ -190,6 +190,42 @@ namespace Coursework.Tests
             Assert.IsTrue(_nodes
                 .Where(n => n.NodeType != NodeType.CentralMachine)
                 .All(n => !n.IsTableUpdated));
+        }
+
+        [Test]
+        public void UpdateTablesShouldDoNothingIfCentralMachineIsUnactive()
+        {
+            // Arrange
+            var centralMachine = _nodes.First(n => n.NodeType == NodeType.CentralMachine);
+            centralMachine.IsActive = false;
+
+            // Act
+            _messageCreator.UpdateTables();
+
+            var messageCount = centralMachine.MessageQueueHandlers
+                .SelectMany(m => m.Messages)
+                .Count(m => m.MessageType == MessageType.MatrixUpdateMessage);
+
+            // Assert
+            Assert.That(messageCount, Is.Zero);
+        }
+
+        [Test]
+        public void UpdateTablesShouldSendMessageOnlyToActiveMachines()
+        {
+            // Arrange
+            var centralMachine = _nodes.First(n => n.NodeType == NodeType.CentralMachine);
+            _nodes[1].IsActive = false;
+
+            // Act
+            _messageCreator.UpdateTables();
+
+            var messageCount = centralMachine.MessageQueueHandlers
+                .SelectMany(m => m.Messages)
+                .Count(m => m.MessageType == MessageType.MatrixUpdateMessage);
+
+            // Assert
+            Assert.That(messageCount, Is.EqualTo(centralMachine.LinkedNodesId.Count - 1));
         }
 
         [Test]

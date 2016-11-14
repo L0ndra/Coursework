@@ -24,7 +24,7 @@ namespace Coursework.Data.MessageServices
 
             oldMessageQueue.RemoveMessage(message);
 
-            if (message.Route.Length != 1)
+            if (message.ReceiverId != node.Id)
             {
                 if (message.MessageType == MessageType.SendingRequest
                     && passedChannel.IsBusy && passedChannel.MessageOwnerId != message.ParentId)

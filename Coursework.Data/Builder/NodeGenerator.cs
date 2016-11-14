@@ -33,7 +33,7 @@ namespace Coursework.Data.Builder
                 Id = (uint)id,
                 MessageQueueHandlers = new List<MessageQueueHandler>(),
                 LinkedNodesId = new SortedSet<uint>(),
-                IsActive = false,
+                IsActive = true,
                 ReceivedMessages = new List<Message>(),
                 CanceledMessages = new List<Message>()
             };

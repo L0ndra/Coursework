@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.NetworkData;
 
@@ -10,16 +11,13 @@ namespace Coursework.Data.MessageServices
     {
         private readonly INetworkHandler _network;
         private readonly IMessageCreator _generalMessageCreator;
-        private readonly IMessageCreator _updateMatrixMessageCreator;
         private readonly IMessageCreator _positiveResponseMessageCreator;
 
         public MessageHandler(INetworkHandler network, IMessageCreator generalMessageCreator,
-            IMessageCreator updateMatrixMessageCreator,
             IMessageCreator positiveResponseMessageCreator)
         {
             _network = network;
             _generalMessageCreator = generalMessageCreator;
-            _updateMatrixMessageCreator = updateMatrixMessageCreator;
             _positiveResponseMessageCreator = positiveResponseMessageCreator;
         }
 
@@ -79,7 +77,8 @@ namespace Coursework.Data.MessageServices
                 MessageType = firstMessage.MessageType,
                 ReceiverId = firstMessage.ReceiverId,
                 SenderId = firstMessage.SenderId,
-                Size = sumSize
+                Size = sumSize,
+                Data = firstMessage.Data
             };
 
             var messages = _generalMessageCreator.CreateMessages(messageInitializer);
@@ -129,7 +128,6 @@ namespace Coursework.Data.MessageServices
 
             var networkMatrises = (IDictionary<uint, NetworkMatrix>)message.Data;
 
-            currentNode.IsActive = true;
             currentNode.IsTableUpdated = true;
             currentNode.NetworkMatrix = networkMatrises[currentNode.Id];
 
@@ -159,7 +157,7 @@ namespace Coursework.Data.MessageServices
             {
                 var linkedNode = _network.GetNodeById(linkedNodeId);
 
-                if (linkedNode.IsTableUpdated)
+                if (!linkedNode.IsActive || linkedNode.IsTableUpdated)
                 {
                     continue;
                 }
@@ -170,11 +168,15 @@ namespace Coursework.Data.MessageServices
                     MessageType = MessageType.MatrixUpdateMessage,
                     ReceiverId = linkedNodeId,
                     SenderId = node.Id,
+                    Size = AllConstants.InitializeMessageSize
                 };
 
-                var initializeMessage = _updateMatrixMessageCreator.CreateMessages(messageInitializer);
+                var initializeMessage = _generalMessageCreator.CreateMessages(messageInitializer);
 
-                _updateMatrixMessageCreator.AddInQueue(initializeMessage, node.Id);
+                if (initializeMessage != null)
+                {
+                    _generalMessageCreator.AddInQueue(initializeMessage, node.Id);
+                }
             }
         }
     }
