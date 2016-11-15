@@ -175,7 +175,9 @@ namespace Coursework.Data.MessageServices
 
                 if (initializeMessage != null)
                 {
-                    _generalMessageCreator.AddInQueue(initializeMessage, node.Id);
+                    _generalMessageCreator.AddInQueue(initializeMessage
+                        .Where(m => m.Route.Length == 1)
+                        .ToArray(), node.Id);
                 }
             }
         }
