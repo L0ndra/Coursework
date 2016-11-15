@@ -130,25 +130,8 @@ namespace Coursework.Data.MessageServices
 
             currentNode.IsTableUpdated = true;
             currentNode.NetworkMatrix = networkMatrises[currentNode.Id];
-
-            RemoveInitializeMessages(currentNode);
+            
             InitializeLinkedNodes(currentNode, networkMatrises);
-        }
-
-        private void RemoveInitializeMessages(Node node)
-        {
-            foreach (var messageQueueHandler in node.MessageQueueHandlers)
-            {
-                var outdatedMessages = messageQueueHandler.Messages
-                    .Where(m => m.MessageType == MessageType.MatrixUpdateMessage);
-
-                foreach (var message in outdatedMessages)
-                {
-                    message.IsCanceled = true;
-                    messageQueueHandler.RemoveMessage(message);
-                    node.CanceledMessages.Add(message);
-                }
-            }
         }
 
         private void InitializeLinkedNodes(Node node, IDictionary<uint, NetworkMatrix> networkMatrises)

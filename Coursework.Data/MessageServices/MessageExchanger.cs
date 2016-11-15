@@ -148,22 +148,21 @@ namespace Coursework.Data.MessageServices
         private void ReplaceMessageInChannel(Channel channel, Message message,
             IMessageQueueHandler messageQueueHandler)
         {
-            if (channel.IsBusy && channel.MessageOwnerId != message.ParentId
-                && message.MessageType == MessageType.SendingRequest)
-            {
-                var sender = _network.GetNodeById(message.LastTransferNodeId);
-                _messageReceiver.HandleReceivedMessage(sender, message);
-
-                return;
-            }
-
             var isSuccess = TryMoveMessageToChannel(channel, message);
 
             messageQueueHandler.RemoveMessage(message);
 
             if (!isSuccess)
             {
-                messageQueueHandler.AppendMessage(message);
+                if (message.MessageType == MessageType.SendingRequest)
+                {
+                    var sender = _network.GetNodeById(message.LastTransferNodeId);
+                    _messageReceiver.HandleReceivedMessage(sender, message);
+                }
+                else
+                {
+                    messageQueueHandler.AppendMessage(message);
+                }
             }
             else
             {
@@ -178,17 +177,16 @@ namespace Coursework.Data.MessageServices
                 return false;
             }
 
-            if (channel.ConnectionType == ConnectionType.HalfDuplex && channel.FirstMessage == null)
+            if (channel.ConnectionType == ConnectionType.HalfDuplex)
             {
+                if (channel.FirstMessage != null)
+                {
+                    return false;
+                }
+
+                MakeChannelBusy(message);
                 channel.FirstMessage = message;
                 return true;
-            }
-
-            if (channel.ConnectionType != ConnectionType.Duplex
-                || channel.FirstMessage?.LastTransferNodeId == message.LastTransferNodeId
-                || channel.SecondMessage?.LastTransferNodeId == message.LastTransferNodeId)
-            {
-                return false;
             }
 
             if (channel.FirstMessage == null
