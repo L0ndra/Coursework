@@ -58,10 +58,8 @@ namespace Coursework.Gui.Dialogs
 
             _nodeGenerator.ResetAccumulator();
 
-            _simpleNetworkBuilder = new NetworkBuilder(_nodeGenerator, metropolitanNodesCount, networkPower, 
-                AllConstants.GroundChannelCapacity);
-            _networkBuilder = new WideAreaNetworkBuilder(_simpleNetworkBuilder, metropolitanNetworksCount, 
-                AllConstants.SatelliteChannelCapacity);
+            _simpleNetworkBuilder = new NetworkBuilder(_nodeGenerator, metropolitanNodesCount, networkPower);
+            _networkBuilder = new WideAreaNetworkBuilder(_simpleNetworkBuilder, metropolitanNetworksCount);
 
             var network = _networkBuilder.Build();
 

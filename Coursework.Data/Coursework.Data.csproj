@@ -55,7 +55,7 @@
     <Compile Include="Builder\WideAreaNetworkBuilder.cs" />
     <Compile Include="Builder\NetworkBuilder.cs" />
     <Compile Include="Builder\NodeGenerator.cs" />
-    <Compile Include="Builder\PriceGenerator.cs" />
+    <Compile Include="Builder\ChannelParamsGenerator.cs" />
     <Compile Include="Constants\AllConstants.cs" />
     <Compile Include="Entities\MessageFiltrationMode.cs" />
     <Compile Include="Entities\MessageInitializer.cs" />

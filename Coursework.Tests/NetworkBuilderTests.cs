@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Coursework.Data.Builder;
+using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.MessageServices;
 using Moq;
@@ -22,7 +23,7 @@ namespace Coursework.Tests
         {
             _nodeGeneratorMock = new Mock<INodeGenerator>();
 
-            _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, 5, 2.0, 10);
+            _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, 5, 2.0);
 
             var closureCounter = 0;
 
@@ -58,7 +59,7 @@ namespace Coursework.Tests
             for (var i = 0; i < TimesToCreateNetwork; i++)
             {
                 // Arrange
-                _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, networkPower, 10);
+                _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, networkPower);
 
                 // Act
                 var network = _networkBuilder.Build();
@@ -85,7 +86,7 @@ namespace Coursework.Tests
 
             // Act
             TestDelegate testDelegate = () => _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, 5, 
-                nodePower, 10);
+                nodePower);
 
             // Assert
             Assert.That(testDelegate, Throws.ArgumentException);
@@ -99,35 +100,7 @@ namespace Coursework.Tests
 
             // Act
             TestDelegate testDelegate = () => _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, 
-                1.0, 10);
-
-            // Assert
-            Assert.That(testDelegate, Throws.ArgumentException);
-        }
-
-        [Test]
-        public void ConstrcutorShouldThrowExceptionIfCapacityIsZero()
-        {
-            // Arrange
-            var capacity = 0;
-
-            // Act
-            TestDelegate testDelegate = () => _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, 5,
-                1.0, capacity);
-
-            // Assert
-            Assert.That(testDelegate, Throws.ArgumentException);
-        }
-
-        [Test]
-        public void ConstrcutorShouldThrowExceptionIfCapacityLessThanZero()
-        {
-            // Arrange
-            var capacity = -2;
-
-            // Act
-            TestDelegate testDelegate = () => _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, 5,
-                1.0, capacity);
+                1.0);
 
             // Assert
             Assert.That(testDelegate, Throws.ArgumentException);
@@ -141,7 +114,7 @@ namespace Coursework.Tests
 
             // Act
             TestDelegate testDelegate = () => _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, 
-                1.0, 10);
+                1.0);
 
             // Assert
             Assert.That(testDelegate, Throws.ArgumentException);
@@ -152,7 +125,7 @@ namespace Coursework.Tests
         public void BuildShouldTwoNetworksWithDifferentIds(int nodeCount, double networkPower)
         {
             // Arrange
-            _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, networkPower, 10);
+            _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, nodeCount, networkPower);
             var firstNetwork = _networkBuilder.Build();
 
             // Act
@@ -177,18 +150,20 @@ namespace Coursework.Tests
         }
 
         [Test]
-        public void BuildShouldCreateChannelsWithSpecifiedParams()
+        public void BuildShouldReturnNetworkWithCorrectCapacities()
         {
             // Arrange
-            const int channelCapacity = 10;
-
-            _networkBuilder = new NetworkBuilder(_nodeGeneratorMock.Object, 10, 2.0, channelCapacity);
-
             // Act
             var result = _networkBuilder.Build();
 
             // Assert
-            Assert.That(result.Channels.All(c => c.Capacity == channelCapacity));
+            foreach (var channel in result.Channels)
+            {
+                var index = AllConstants.AllPrices.IndexOf(channel.Price);
+
+                Assert.That(channel.Capacity, Is.EqualTo(AllConstants.AllCapacities[index]));
+                Assert.That(channel.Capacity, Is.Not.Zero);
+            }
         }
 
         private static void LogResult(int testNumber, double networkPower, double currentPower)

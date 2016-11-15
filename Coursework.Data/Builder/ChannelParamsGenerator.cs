@@ -4,7 +4,7 @@ using Coursework.Data.Constants;
 
 namespace Coursework.Data.Builder
 {
-    public static class PriceGenerator
+    public static class ChannelParamsGenerator
     {
         private static SortedSet<int> UsedPrices { get; } = new SortedSet<int>();
 
@@ -23,6 +23,13 @@ namespace Coursework.Data.Builder
             UsedPrices.Add(price);
 
             return price;
+        }
+
+        public static int GetCapactity(int price)
+        {
+            var index = AllConstants.AllPrices.IndexOf(price);
+
+            return AllConstants.AllCapacities[index];
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Coursework.Data.Builder;
+using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.MessageServices;
 using Coursework.Data.NetworkData;
@@ -16,7 +17,6 @@ namespace Coursework.Tests
         private Mock<INetworkBuilder> _simpleNetworkBuilderMock;
         private WideAreaNetworkBuilder _wideAreaNetworkBuilder;
         private int _numberOfMetropolitanNetworks;
-        private int _satelliteChannelCapacity;
         private int _nodesCount;
         private uint _lastId;
 
@@ -27,10 +27,9 @@ namespace Coursework.Tests
 
             _numberOfMetropolitanNetworks = 5;
             _nodesCount = 5;
-            _satelliteChannelCapacity = 10;
 
             _wideAreaNetworkBuilder = new WideAreaNetworkBuilder(_simpleNetworkBuilderMock.Object,
-                _numberOfMetropolitanNetworks, _satelliteChannelCapacity);
+                _numberOfMetropolitanNetworks);
 
             _simpleNetworkBuilderMock.Setup(n => n.Build())
                 .Returns(() => GenerateNetworkMockForTests(_nodesCount).Object);
@@ -50,7 +49,7 @@ namespace Coursework.Tests
                 .Select(n => n.Key);
 
             Assert.That(resultWithoutDublicates.Count(), Is.EqualTo(result.Nodes.Length));
-            Assert.That(result.Channels.Count(c => c.ChannelType == ChannelType.Satellite), 
+            Assert.That(result.Channels.Count(c => c.ChannelType == ChannelType.Satellite),
                 Is.EqualTo(_numberOfMetropolitanNetworks));
         }
 
@@ -73,49 +72,25 @@ namespace Coursework.Tests
             var result = _wideAreaNetworkBuilder.Build();
 
             // Assert
-            Assert.That(result.Nodes.Count(n => n.NodeType == NodeType.MainMetropolitanMachine), 
+            Assert.That(result.Nodes.Count(n => n.NodeType == NodeType.MainMetropolitanMachine),
                 Is.EqualTo(_numberOfMetropolitanNetworks));
         }
 
         [Test]
-        public void ConstrcutorShouldThrowExceptionIfCapacityIsZeroZero()
-        {
-            // Arrange
-            const int capacity = 0;
-
-            // Act
-            TestDelegate testDelegate = () => _wideAreaNetworkBuilder = new WideAreaNetworkBuilder
-            (_simpleNetworkBuilderMock.Object, _numberOfMetropolitanNetworks, capacity);
-
-            // Assert
-            Assert.That(testDelegate, Throws.ArgumentException);
-        }
-
-        [Test]
-        public void ConstrcutorShouldThrowExceptionIfCapacityLessThanZero()
-        {
-            // Arrange
-            const int capacity = -2;
-
-            // Act
-            TestDelegate testDelegate = () => _wideAreaNetworkBuilder = new WideAreaNetworkBuilder
-            (_simpleNetworkBuilderMock.Object, _numberOfMetropolitanNetworks, capacity);
-
-            // Assert
-            Assert.That(testDelegate, Throws.ArgumentException);
-        }
-
-        [Test]
-        public void BuildShouldCreateChannelsWithSpecifiedParams()
+        public void BuildShouldReturnNetworkWithCorrectCapacities()
         {
             // Arrange
             // Act
             var result = _wideAreaNetworkBuilder.Build();
 
             // Assert
-            Assert.That(result.Channels
-                .Where(m => m.ChannelType == ChannelType.Satellite)
-                .All(c => c.Capacity == _satelliteChannelCapacity));
+            foreach (var channel in result.Channels.Where(c => c.ChannelType == ChannelType.Satellite))
+            {
+                var index = AllConstants.AllPrices.IndexOf(channel.Price);
+
+                Assert.That(channel.Capacity, Is.EqualTo(AllConstants.AllCapacities[index] / 3));
+                Assert.That(channel.Capacity, Is.Not.Zero);
+            }
         }
 
         private Mock<INetworkHandler> GenerateNetworkMockForTests(int count)
@@ -141,7 +116,7 @@ namespace Coursework.Tests
                 .Returns(nodes.ToArray());
 
             networkMock.Setup(n => n.Channels)
-                .Returns(new []
+                .Returns(new[]
                 {
                     new Channel
                     {

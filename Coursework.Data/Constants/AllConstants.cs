@@ -11,8 +11,6 @@ namespace Coursework.Data.Constants
         public const int MetropolitanNetworkNodesInRow = 3;
         public const double NetworkPower = 5.0;
         public const double TimerInterval = 500.0;
-        public const int GroundChannelCapacity = 15;
-        public const int SatelliteChannelCapacity = 5;
         public const double SquareSize = 30.0;
         public const double LineThickness = 2.0;
         public const double Eps = 0.002;
@@ -45,6 +43,7 @@ namespace Coursework.Data.Constants
         public static readonly Brush UnreceivedMessagesForeground = Brushes.Black;
         public static readonly Brush CanceledMessagesForeground = Brushes.Red;
         public static readonly Random RandomGenerator = new Random((int)(DateTime.Now.Ticks & 0xFFFF));
-        public static readonly ImmutableSortedSet<int> AllPrices = new[] { 2, 4, 7, 8, 11, 15, 17, 20, 24, 25, 28 }.ToImmutableSortedSet();
+        public static readonly ImmutableArray<int> AllPrices = new[] { 2, 4, 7, 8, 11, 15, 17, 20, 24, 25, 28 }.ToImmutableArray();
+        public static readonly ImmutableArray<int> AllCapacities = new[] { 25, 23, 20, 18, 15, 13, 10, 8, 6, 5, 3}.ToImmutableArray();
     }
 }
