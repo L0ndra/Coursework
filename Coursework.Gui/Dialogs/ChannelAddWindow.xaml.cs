@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
+using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.Exceptions;
 
@@ -18,6 +20,8 @@ namespace Coursework.Gui.Dialogs
             InitializeComponent();
 
             ChannelAdd += channelAddEventHandler;
+
+            InitializeCapacityField();
         }
 
         private void AddChannel_OnClick(object sender, RoutedEventArgs e)
@@ -33,6 +37,14 @@ namespace Coursework.Gui.Dialogs
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error,
                     MessageBoxResult.OK,
                     MessageBoxOptions.None);
+            }
+        }
+
+        private void InitializeCapacityField()
+        {
+            foreach (var price in AllConstants.AllPrices)
+            {
+                Price.Items.Add(price);
             }
         }
 
@@ -76,17 +88,29 @@ namespace Coursework.Gui.Dialogs
             var newChannel = new Channel
             {
                 Id = Guid.NewGuid(),
-                Price = int.Parse(Price.Text),
+                Price = (int)Price.SelectedItem,
                 ErrorChance = double.Parse(ErrorChance.Text),
                 ConnectionType = GetNewConnectionType(),
                 ChannelType = GetNewChannelType(),
                 FirstNodeId = uint.Parse(FirstNodeId.Text),
                 SecondNodeId = uint.Parse(SecondNodeId.Text),
                 IsBusy = false,
-                Capacity = int.Parse(Capacity.Text)
+                Capacity = int.Parse(Capacity.Text),
             };
 
             OnChannelAdd(newChannel);
+        }
+
+        private void Price_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var index = Price.SelectedIndex;
+
+            if (index > -1)
+            {
+                Capacity.Text = ChannelType.SelectedItem != null && ChannelType.SelectedItem.Equals(GroundItem)
+                ? AllConstants.AllCapacities[index].ToString()
+                : (AllConstants.AllCapacities[index] / 3).ToString();
+            }
         }
 
         protected virtual void OnChannelAdd(Channel channel)

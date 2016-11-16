@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Coursework.Data.Entities;
+using Coursework.Data.Exceptions;
 using Coursework.Data.IONetwork;
 using Coursework.Data.MessageServices;
 using Coursework.Data.NetworkData;
@@ -400,9 +401,7 @@ namespace Coursework.Gui
             }
             else
             {
-                MessageBox.Show("Message Cannot Be Created", "Error", MessageBoxButton.OK, MessageBoxImage.Error,
-                    MessageBoxResult.OK,
-                    MessageBoxOptions.None);
+                throw new MessageException("Message Cannot Be Created");
             }
         }
 

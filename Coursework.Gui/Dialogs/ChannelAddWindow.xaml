@@ -24,7 +24,8 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Price: "></TextBlock>
-            <TextBox Grid.Column="1" VerticalAlignment="Center" Name="Price" Margin="10 0"></TextBox>
+            <ComboBox Grid.Column="1" VerticalAlignment="Center" Name="Price" Margin="10 0" 
+                      SelectionChanged="Price_OnSelectionChanged"></ComboBox>
         </Grid>
 
         <Grid Grid.Row="1">
@@ -77,7 +78,8 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Channel Type: "></TextBlock>
-            <ComboBox Grid.Column="1" VerticalAlignment="Center" Name="ChannelType" Margin="10 0">
+            <ComboBox Grid.Column="1" VerticalAlignment="Center" Name="ChannelType" Margin="10 0"
+                      SelectionChanged="Price_OnSelectionChanged">
                 <ComboBoxItem Content="Sattelite" Name="SatteliteItem"></ComboBoxItem>
                 <ComboBoxItem Content="Ground" Name="GroundItem"></ComboBoxItem>
             </ComboBox>
@@ -90,7 +92,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Capacity: "></TextBlock>
-            <TextBox Grid.Column="1" VerticalAlignment="Center" Name="Capacity" Margin="10 0"></TextBox>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="Capacity" Margin="10 0"></TextBlock>
         </Grid>
 
         <Grid Grid.Row="7">

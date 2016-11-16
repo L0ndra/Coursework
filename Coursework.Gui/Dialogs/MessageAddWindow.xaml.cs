@@ -44,7 +44,8 @@ namespace Coursework.Gui.Dialogs
                    MessageBoxOptions.None);
             }
             catch (Exception ex) when (ex is ChannelException || ex is NodeException ||
-                ex is ArgumentNullException || ex is FormatException || ex is OverflowException)
+                ex is ArgumentNullException || ex is FormatException || ex is OverflowException
+                || ex is MessageException)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error,
                     MessageBoxResult.OK,
