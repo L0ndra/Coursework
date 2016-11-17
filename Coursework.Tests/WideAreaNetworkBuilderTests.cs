@@ -124,7 +124,8 @@ namespace Coursework.Tests
                         FirstNodeId = nodes.First().Id,
                         SecondNodeId = nodes.First().Id + 1,
                         Price = 10,
-                        ChannelType = ChannelType.Ground
+                        ChannelType = ChannelType.Ground,
+                        Capacity = 5
                     }
                 });
 

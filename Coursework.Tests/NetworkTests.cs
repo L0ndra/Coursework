@@ -48,7 +48,8 @@ namespace Coursework.Tests
                 Price = AllConstants.AllPrices.ElementAt(0),
                 ChannelType = ChannelType.Ground,
                 ErrorChance = 0.6,
-                ConnectionType = ConnectionType.Duplex
+                ConnectionType = ConnectionType.Duplex,
+                Capacity = 1
             };
         }
 
@@ -170,6 +171,20 @@ namespace Coursework.Tests
             // Arrange
             CreateTwoNodesForTests();
             _channel.Price = -1;
+
+            // Act
+            TestDelegate testDelegate = () => _network.AddChannel(_channel);
+
+            // Assert
+            Assert.That(testDelegate, Throws.TypeOf(typeof(ChannelException)));
+        }
+
+        [Test]
+        public void AddChannelShouldThrowExceptionIfCapacityIsLessOrEqualToZero()
+        {
+            // Arrange
+            CreateTwoNodesForTests();
+            _channel.Capacity = 0;
 
             // Act
             TestDelegate testDelegate = () => _network.AddChannel(_channel);

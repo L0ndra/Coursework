@@ -10,7 +10,8 @@ namespace Coursework.Gui.Dialogs
     /// </summary>
     public partial class SimulationOptionsDialog
     {
-        public delegate void SimulationStarter(double messageGenerateChance, int tableUpdatePeriod, bool isPackageMode);
+        public delegate void SimulationStarter(double messageGenerateChance, int tableUpdatePeriod, bool isPackageMode,
+            bool isRouterStupid);
         private event SimulationStarter SimulationStart;
 
         public SimulationOptionsDialog(SimulationStarter simulationStarter)
@@ -30,8 +31,9 @@ namespace Coursework.Gui.Dialogs
                 var messageGenerateChance = double.Parse(MessageGenerateChance.Text);
                 var tableUpdatePeriod = int.Parse(TableUpdatePeriod.Text);
                 var isPackageMode = IsPackageMode.IsChecked != null && IsPackageMode.IsChecked.Value;
+                var isRouterStupid = IsMessageRouterStupid.IsChecked != null && IsMessageRouterStupid.IsChecked.Value;
 
-                OnSimulationStart(messageGenerateChance, tableUpdatePeriod, isPackageMode);
+                OnSimulationStart(messageGenerateChance, tableUpdatePeriod, isPackageMode, isRouterStupid);
 
                 Close();
             }
@@ -51,9 +53,9 @@ namespace Coursework.Gui.Dialogs
         }
 
         protected virtual void OnSimulationStart(double messageGenerateChance, int tableUpdatePeriod, 
-            bool isPackageMode)
+            bool isPackageMode, bool isRouterStupid)
         {
-            SimulationStart?.Invoke(messageGenerateChance, tableUpdatePeriod, isPackageMode);
+            SimulationStart?.Invoke(messageGenerateChance, tableUpdatePeriod, isPackageMode, isRouterStupid);
         }
     }
 }

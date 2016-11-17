@@ -41,30 +41,35 @@ namespace Coursework.Tests
                         {
                             LastTransferNodeId = 1,
                             ReceiverId = 1,
-                            IsReceived = true
+                            IsReceived = true,
+                            Route = new Channel[0]
                         },
                         new Message
                         {
                             LastTransferNodeId = 1,
                             ReceiverId = 1,
-                            IsReceived = true
+                            IsReceived = true,
+                            Route = new Channel[0]
                         },
                         new Message
                         {
                             LastTransferNodeId = 1,
                             ReceiverId = 1,
-                            IsReceived = true
+                            IsReceived = true,
+                            Route = new Channel[0]
                         },
                     },
                     CanceledMessages = new List<Message>
                     {
                         new Message
                         {
-                            IsCanceled = true
+                            IsCanceled = true,
+                            Route = new Channel[0]
                         },
                         new Message
                         {
-                            IsCanceled = true
+                            IsCanceled = true,
+                            Route = new Channel[0]
                         }
                     }
                 }
@@ -79,6 +84,7 @@ namespace Coursework.Tests
                     SecondNodeId = 1,
                     FirstMessage = new Message(),
                     SecondMessage = null,
+                    Capacity = 2
                 }
             };
 
@@ -91,10 +97,10 @@ namespace Coursework.Tests
             _networkMock.Setup(n => n.GetNodeById(FirstNode.Id))
                 .Returns(FirstNode);
 
-            FirstNode.MessageQueueHandlers.First().AppendMessage(new Message());
-            FirstNode.MessageQueueHandlers.First().AppendMessage(new Message());
-            FirstNode.MessageQueueHandlers.First().AppendMessage(new Message());
-            FirstNode.MessageQueueHandlers.First().AppendMessage(new Message());
+            FirstNode.MessageQueueHandlers.First().AppendMessage(new Message { Route = new Channel[0] });
+            FirstNode.MessageQueueHandlers.First().AppendMessage(new Message { Route = new Channel[0] });
+            FirstNode.MessageQueueHandlers.First().AppendMessage(new Message { Route = new Channel[0] });
+            FirstNode.MessageQueueHandlers.First().AppendMessage(new Message { Route = new Channel[0] });
         }
 
         [Test]

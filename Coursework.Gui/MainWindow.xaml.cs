@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using Coursework.Data.Entities;
 using Coursework.Data.Exceptions;
 using Coursework.Data.IONetwork;
@@ -43,6 +44,7 @@ namespace Coursework.Gui
         private IMessageViewUpdater _messageViewUpdater;
         private IMessagesStatisticCounter _messagesStatisticCounter;
         private readonly INetworkLocationMapRetriever _networkLocationMapRetriever;
+        private DispatcherTimer _headerUpdater;
         private Canvas GeneratedCanvas => NetworkArea.Children.OfType<Canvas>().First();
 
         public MainWindow(INetworkHandler network, INetworkInfoRetriever networkInfoRetriever,
@@ -147,6 +149,10 @@ namespace Coursework.Gui
                     MessageBoxResult.OK,
                     MessageBoxOptions.None);
 
+                _headerUpdater?.Stop();
+
+                _headerUpdater = null;
+
                 _backgroundWorker?.Stop();
 
                 _backgroundWorker = null;
@@ -249,6 +255,10 @@ namespace Coursework.Gui
 
         private void Start_OnClick(object sender, RoutedEventArgs e)
         {
+            _headerUpdater?.Stop();
+
+            _headerUpdater = null;
+
             _backgroundWorker?.Stop();
 
             _backgroundWorker = null;
@@ -262,9 +272,17 @@ namespace Coursework.Gui
         }
 
         private void InitializeAllServices(double messageGenerateChance, int tableUpdatePeriod,
-            bool isPackageMode)
+            bool isPackageMode, bool isRouterStupid)
         {
-            _messageRouter = new MessageRouter(_network);
+            if (isRouterStupid)
+            {
+                _messageRouter = new IndependentMessageRouter(_network);
+            }
+            else
+            {
+                _messageRouter = new MessageRouter(_network);
+            }
+            
 
             if (isPackageMode)
             {
@@ -301,6 +319,15 @@ namespace Coursework.Gui
             _backgroundWorker.Run();
 
             _backgroundWorker.Interval = IntervalSlider.Value;
+
+            _headerUpdater = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(IntervalSlider.Value)
+            };
+
+            _headerUpdater.Tick += (sender, args) => Title = "Coursework (time: " + _backgroundWorker.Ticks + ")";
+
+            _headerUpdater.Start();
         }
 
         private void Pause_OnClick(object sender, RoutedEventArgs e)
@@ -352,6 +379,10 @@ namespace Coursework.Gui
         {
             if (_backgroundWorker != null)
             {
+                _headerUpdater?.Stop();
+
+                _headerUpdater = null;
+
                 _backgroundWorker.Stop();
 
                 _backgroundWorker = null;
@@ -369,6 +400,8 @@ namespace Coursework.Gui
             if (_backgroundWorker != null)
             {
                 _backgroundWorker.Interval = IntervalSlider.Value;
+
+                _headerUpdater.Interval = TimeSpan.FromMilliseconds(IntervalSlider.Value);
             }
 
             if (IntervalValue != null)

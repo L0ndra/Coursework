@@ -68,6 +68,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BackgroundWorkerTests.cs" />
+    <Compile Include="IndependentMessageRouterTests.cs" />
     <Compile Include="MessageGeneratorTests.cs" />
     <Compile Include="ChannelDrawerTests.cs" />
     <Compile Include="MessageExchangerTests.cs" />

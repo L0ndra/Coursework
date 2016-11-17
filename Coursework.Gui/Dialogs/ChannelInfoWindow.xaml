@@ -80,7 +80,8 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Channel Type: "></TextBlock>
-            <ComboBox Grid.Column="1" VerticalAlignment="Center" Name="ChannelType" Margin="10 0">
+            <ComboBox Grid.Column="1" VerticalAlignment="Center" Name="ChannelType" Margin="10 0"
+                      SelectionChanged="Price_OnSelectionChanged">
                 <ComboBoxItem Content="Sattelite" Name="SatteliteItem"></ComboBoxItem>
                 <ComboBoxItem Content="Ground" Name="GroundItem"></ComboBoxItem>
             </ComboBox>

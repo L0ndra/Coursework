@@ -161,7 +161,7 @@ namespace Coursework.Data.MessageServices
                 }
                 else
                 {
-                    messageQueueHandler.AppendMessage(message);
+                    messageQueueHandler.AddMessageInStart(message);
                 }
             }
             else

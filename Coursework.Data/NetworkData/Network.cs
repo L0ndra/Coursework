@@ -223,6 +223,15 @@ namespace Coursework.Data.NetworkData
             ThrowExceptionIfNodeNotExists(channel.SecondNodeId);
             ThrowExceptionIfPriceIsIncorrect(channel.Price);
             ThrowExceptionIfErrorChanceIsIncorrect(channel.ErrorChance);
+            ThrowExceptionIfCapacityIsLessOrEqualThanZero(channel.Capacity);
+        }
+
+        private void ThrowExceptionIfCapacityIsLessOrEqualThanZero(int capacity)
+        {
+            if (capacity <= 0)
+            {
+                throw new ChannelException("Channel capacity is less or equal to zero");
+            }
         }
 
         private void ThrowExceptionIfChannelWithSameIdExists(Guid channelId)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Coursework.Data.Entities;
+using Coursework.Data.Exceptions;
 using Coursework.Data.MessageServices;
 using NUnit.Framework;
 
@@ -17,7 +18,12 @@ namespace Coursework.Tests
         {
             _messageQueueHandler = new MessageQueueHandler(Guid.Empty);
 
-            _message = new Message();
+            _message = new Message
+            {
+                DataSize = 1,
+                ServiceSize = 1,
+                Route = new Channel[0]
+            };
         }
 
         [Test]
@@ -32,6 +38,32 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(resultSize - initialSize, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void AppendMessageShouldThrowExceptionIfDataSizeIsLessThanZero()
+        {
+            // Arrange
+            _message.DataSize = -1;
+
+            // Act
+            TestDelegate testDelegate = () => _messageQueueHandler.AppendMessage(_message);
+
+            // Assert
+            Assert.That(testDelegate, Throws.TypeOf(typeof(MessageException)));
+        }
+
+        [Test]
+        public void AppendMessageShouldThrowExceptionIfServiceSizeIsLessThanZero()
+        {
+            // Arrange
+            _message.ServiceSize = -2;
+
+            // Act
+            TestDelegate testDelegate = () => _messageQueueHandler.AppendMessage(_message);
+
+            // Assert
+            Assert.That(testDelegate, Throws.TypeOf(typeof(MessageException)));
         }
 
         [Test]
@@ -69,7 +101,12 @@ namespace Coursework.Tests
         public void AddMessageInStartShouldAddMessageOnZeroPosition()
         {
             // Arrange
-            var newMessage = new Message();
+            var newMessage = new Message
+            {
+                DataSize = 1,
+                ServiceSize = 1,
+                Route = new Channel[0]
+            };
 
             _messageQueueHandler.AppendMessage(newMessage);
 
@@ -83,6 +120,19 @@ namespace Coursework.Tests
             // Assert
             Assert.That(resultSize - initialSize, Is.EqualTo(1));
             Assert.That(_messageQueueHandler.Messages.First(), Is.EqualTo(_message));
+        }
+
+        [Test]
+        public void AddMessageShouldThrowExceptionIfMessageRouteIsNull()
+        {
+            // Arrange
+            _message.Route = null;
+
+            // Act
+            TestDelegate testDelegate = () => _messageQueueHandler.AppendMessage(_message);
+
+            // Assert
+            Assert.That(testDelegate, Throws.TypeOf(typeof(MessageException)));
         }
     }
 }
