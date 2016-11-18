@@ -202,7 +202,7 @@ namespace Coursework.Tests
         }
 
         [Test]
-        public void CountPriceShouldReturnCorrectPrice()
+        public void CountPriceShouldReturnCorrectPriceForGroundChannel()
         {
             // Arrange
             var channel = _channels.First();
@@ -213,6 +213,29 @@ namespace Coursework.Tests
                 .First(m => m.ChannelId == channel.Id);
 
             var realPrice = channel.Price
+                            * (channel.ErrorChance + 0.1)
+                            * (messageQueue.Messages.Length + 1.0);
+
+            // Act
+            var result = _messageRouter.CountPrice(channel.FirstNodeId, channel.SecondNodeId);
+
+            // Assert
+            Assert.That(Math.Abs(result - realPrice), Is.LessThanOrEqualTo(AllConstants.Eps));
+        }
+
+        [Test]
+        public void CountPriceShouldReturnCorrectPriceForSatelliteChannel()
+        {
+            // Arrange
+            var channel = _channels.First();
+            channel.ChannelType = ChannelType.Satellite;
+
+            var firstNode = _nodes.First(n => n.Id == channel.FirstNodeId);
+
+            var messageQueue = firstNode.MessageQueueHandlers
+                .First(m => m.ChannelId == channel.Id);
+
+            var realPrice = 3.0 * channel.Price
                             * (channel.ErrorChance + 0.1)
                             * (messageQueue.Messages.Length + 1.0);
 

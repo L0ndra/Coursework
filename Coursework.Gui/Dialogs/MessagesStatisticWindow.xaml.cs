@@ -19,9 +19,9 @@ namespace Coursework.Gui.Dialogs
         {
             MessagesCount.Text = messagesStatistic.MessagesCount.ToString();
             ReceivedMessagesCount.Text = messagesStatistic.ReceivedMessagesCount.ToString();
-            GeneralMessagesReceivedCount.Text = messagesStatistic.GeneralMessagesReceivedCount.ToString();
-            AvarageDeliveryTime.Text = messagesStatistic.AvarageDeliveryTime.ToString("N");
-            GeneralMessagesAvarageDeliveryTime.Text = messagesStatistic.AvarageGeneralMessagesDeliveryTime.ToString("N");
+            GeneralReceivedMessagesCount.Text = messagesStatistic.GeneralMessagesReceivedCount.ToString();
+            AverageDeliveryTime.Text = messagesStatistic.AvarageDeliveryTime.ToString("N");
+            GeneralMessagesAverageDeliveryTime.Text = messagesStatistic.AvarageGeneralMessagesDeliveryTime.ToString("N");
             TotalReceivedMessagesSize.Text = messagesStatistic.TotalReceivedMessagesSize.ToString();
             TotalReceivedDataSize.Text = messagesStatistic.TotalReceivedDataSize.ToString();
         }

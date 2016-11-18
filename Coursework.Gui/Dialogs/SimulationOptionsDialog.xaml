@@ -42,7 +42,7 @@
                 <ColumnDefinition Width="3*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             
-            <CheckBox Grid.Column="1" Content="Package Mode" Name="IsPackageMode" Margin="10 0"></CheckBox>
+            <CheckBox Grid.Column="1" Content="Datagram Mode" Name="IsDatagramMode" Margin="10 0"></CheckBox>
         </Grid>
 
         <Grid Grid.Row="3">

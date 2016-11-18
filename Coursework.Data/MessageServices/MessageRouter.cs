@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Coursework.Data.Constants;
+using Coursework.Data.Entities;
 using Coursework.Data.NetworkData;
 
 namespace Coursework.Data.MessageServices
@@ -28,8 +29,9 @@ namespace Coursework.Data.MessageServices
                 .First(m => m.ChannelId == channel.Id);
 
             return channel.Price
-                    * (channel.ErrorChance + 0.1)
-                    * (startMessageQueue.MessagesCount + 1.0);
+                   * (channel.ErrorChance + 0.1)
+                   * (startMessageQueue.MessagesCount + 1.0)
+                   * (channel.ChannelType == ChannelType.Ground ? 1.0 : 3.0);
         }
     }
 }

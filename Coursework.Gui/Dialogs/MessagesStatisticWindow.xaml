@@ -23,7 +23,7 @@
                 <ColumnDefinition Width="3*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Messages Count: "></TextBlock>
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Messages Amount: "></TextBlock>
             <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="MessagesCount" Margin="10 0"></TextBlock>
         </Grid>
 
@@ -34,9 +34,9 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
-                       Text="General Messages Received Count: "
+                       Text="Received Messages Amount: "
                        TextWrapping="Wrap"></TextBlock>
-            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="GeneralMessagesReceivedCount" Margin="10 0"></TextBlock>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="ReceivedMessagesCount" Margin="10 0"></TextBlock>
         </Grid>
 
         <Grid Grid.Row="2">
@@ -46,9 +46,9 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
-                       Text="Received Messages Count: "
+                       Text="General Received Messages Amount: "
                        TextWrapping="Wrap"></TextBlock>
-            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="ReceivedMessagesCount" Margin="10 0"></TextBlock>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="GeneralReceivedMessagesCount" Margin="10 0"></TextBlock>
         </Grid>
 
         <Grid Grid.Row="3">
@@ -58,9 +58,9 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
-                       Text="Avarage Delivery Time: "
+                       Text="Average Delivery Time: "
                        TextWrapping="Wrap"></TextBlock>
-            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="AvarageDeliveryTime" Margin="10 0"></TextBlock>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="AverageDeliveryTime" Margin="10 0"></TextBlock>
         </Grid>
 
         <Grid Grid.Row="4">
@@ -70,9 +70,9 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
-                       Text="General Messages Avarage Delivery Time: "
+                       Text="General Messages Average Delivery Time: "
                        TextWrapping="Wrap"></TextBlock>
-            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="GeneralMessagesAvarageDeliveryTime" Margin="10 0"></TextBlock>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="GeneralMessagesAverageDeliveryTime" Margin="10 0"></TextBlock>
         </Grid>
 
         <Grid Grid.Row="5">
