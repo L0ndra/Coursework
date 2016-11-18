@@ -94,6 +94,7 @@ namespace Coursework.Data.NetworkData
             foreach (var node in _nodes)
             {
                 node.IsTableUpdated = false;
+                node.NetworkMatrix = null;
             }
 
             foreach (var channel in _channels)

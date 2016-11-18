@@ -38,15 +38,10 @@ namespace Coursework.Data.MessageServices
             return route.ToArray();
         }
 
-        public NetworkMatrix CountPriceMatrix(uint currentId, NetworkMatrix matrix = null,
+        public NetworkMatrix CountPriceMatrix(uint currentId, uint? startId, NetworkMatrix matrix = null,
             SortedSet<uint> visitedNodes = null)
         {
-            if (visitedNodes == null || matrix == null)
-            {
-                matrix = NetworkMatrix.Initialize(Network);
-                matrix.NodeIdWithCurrentPrice[currentId] = 0.0;
-                visitedNodes = new SortedSet<uint>();
-            }
+            StartCountingPriceProcess(currentId, startId, ref matrix, ref visitedNodes);
 
             if (visitedNodes.Contains(currentId))
             {
@@ -59,7 +54,10 @@ namespace Coursework.Data.MessageServices
 
             foreach (var linkedNodeId in currentNode.LinkedNodesId)
             {
-                matrix.PriceMatrix[currentId][linkedNodeId] = CountPrice(currentId, linkedNodeId);
+                if (!startId.HasValue || startId.Value == currentId)
+                {
+                    matrix.PriceMatrix[currentId][linkedNodeId] = CountPrice(currentId, linkedNodeId);
+                }
 
                 var currentPrice = matrix.NodeIdWithCurrentPrice[currentId]
                     + matrix.PriceMatrix[currentId][linkedNodeId];
@@ -73,13 +71,13 @@ namespace Coursework.Data.MessageServices
             if (!Network.Nodes.All(n => visitedNodes.Contains(n.Id)))
             {
                 var nextNodeId = matrix.NodeIdWithCurrentPrice
-                .Where(kv => !visitedNodes.Contains(kv.Key))
-                .Aggregate((l, r) => l.Value < r.Value ? l : r)
-                .Key;
+                    .Where(kv => !visitedNodes.Contains(kv.Key))
+                    .Aggregate((l, r) => l.Value < r.Value ? l : r)
+                    .Key;
 
                 if (!double.IsInfinity(matrix.NodeIdWithCurrentPrice[nextNodeId]))
                 {
-                    return CountPriceMatrix(nextNodeId, matrix, visitedNodes);
+                    return CountPriceMatrix(nextNodeId, startId, matrix, visitedNodes);
                 }
             }
 
@@ -105,6 +103,31 @@ namespace Coursework.Data.MessageServices
             }
 
             return 1.0;
+        }
+
+        private void StartCountingPriceProcess(uint currentId, uint? startId, ref NetworkMatrix matrix,
+            ref SortedSet<uint> visitedNodes)
+        {
+            if (visitedNodes == null)
+            {
+                visitedNodes = new SortedSet<uint>();
+            }
+
+            if (matrix == null)
+            {
+                matrix = NetworkMatrix.Initialize(Network);
+                matrix.NodeIdWithCurrentPrice[currentId] = 0.0;
+            }
+
+            if (startId.HasValue && currentId == startId.Value)
+            {
+                foreach (var key in matrix.NodeIdWithCurrentPrice.Keys.ToArray())
+                {
+                    matrix.NodeIdWithCurrentPrice[key] = double.PositiveInfinity;
+                }
+
+                matrix.NodeIdWithCurrentPrice[startId.Value] = 0.0;
+            }
         }
 
         private List<Channel> BuildRoute(NetworkMatrix networkMatrix, uint senderId, uint receiverId)

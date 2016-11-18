@@ -9,6 +9,7 @@ using AutoMapper;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
 using Coursework.Data.NetworkData;
+using Coursework.Gui.Dialogs;
 using Coursework.Gui.Dto;
 
 namespace Coursework.Gui.Drawers
@@ -85,8 +86,27 @@ namespace Coursework.Gui.Drawers
             textBlock.MouseMove += Node_OnMouseMove;
             textBlock.MouseLeave += Node_OnMouseLeave;
             textBlock.MouseRightButtonUp += Node_OnMouseRightButtonUp;
+            textBlock.MouseDown += Node_OnMouseDown;
 
             return textBlock;
+        }
+
+        private void Node_OnMouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+        {
+            var concreteSender = (FrameworkElement)sender;
+            var parent = (FrameworkElement)concreteSender?.Parent;
+
+            if (parent != null)
+            {
+                var nodeDto = (NodeDto)parent.Tag;
+
+                if (mouseButtonEventArgs.ClickCount == 2)
+                {
+                    var nodeNetwrokMatrix = new NodeNetworkMatrix(Network, nodeDto.Id);
+
+                    nodeNetwrokMatrix.Show();
+                }
+            }
         }
 
         protected virtual Grid CreateGrid(FrameworkElement parent, NodeDto nodeDto, params UIElement[] childs)

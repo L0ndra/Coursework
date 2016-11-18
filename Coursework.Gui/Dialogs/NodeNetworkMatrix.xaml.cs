@@ -3,7 +3,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Coursework.Data.Entities;
 using Coursework.Data.NetworkData;
 
 namespace Coursework.Gui.Dialogs
@@ -15,7 +14,7 @@ namespace Coursework.Gui.Dialogs
     {
         private const double Size = 50.0;
 
-        public NodeNetworkMatrix(INetwork network)
+        public NodeNetworkMatrix(INetwork network, uint nodeId)
         {
             InitializeComponent();
 
@@ -23,13 +22,15 @@ namespace Coursework.Gui.Dialogs
 
             CreateHeaders(network);
 
-            FillMatrix(network);
+            FillMatrix(network, nodeId);
+
+            Title = $"Network matrix (node {nodeId})";
         }
 
-        private void FillMatrix(INetwork network)
+        private void FillMatrix(INetwork network, uint nodeId)
         {
             var networkMatrix = network.Nodes
-                .First(n => n.NodeType == NodeType.CentralMachine)
+                .First(n => n.Id == nodeId)
                 .NetworkMatrix
                 .PriceMatrix;
 
@@ -45,7 +46,7 @@ namespace Coursework.Gui.Dialogs
 
                     Table.Children.Add(border);
 
-                    Table.Children.Add(CreateText(networkMatrix[rowNode.Id][columnNode.Id].ToString("N", CultureInfo.InvariantCulture), 
+                    Table.Children.Add(CreateText(networkMatrix[rowNode.Id][columnNode.Id].ToString("N", CultureInfo.InvariantCulture),
                         i + 1, j + 1));
                 }
             }

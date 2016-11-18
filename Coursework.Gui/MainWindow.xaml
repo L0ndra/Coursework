@@ -17,8 +17,6 @@
                 <Separator />
                 <MenuItem Header="_Save location map to file..." Click="SaveNetworkLocation_OnClick"></MenuItem>
                 <MenuItem Header="_Read location map from file..." Click="ReadNetworkLocation_OnClick"></MenuItem>
-                <Separator />
-                <MenuItem Header="_Show network matrix" Click="ShowNetworkMatrises_Click"></MenuItem>
             </MenuItem>
             <MenuItem Header="_Add">
                 <MenuItem Header="_Node" Click="AddNode_OnClick"/>

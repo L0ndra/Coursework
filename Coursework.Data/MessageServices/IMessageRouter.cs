@@ -7,8 +7,8 @@ namespace Coursework.Data.MessageServices
     public interface IMessageRouter
     {
         Channel[] GetRoute(uint senderId, uint receiverId);
-        NetworkMatrix CountPriceMatrix(uint currentId, NetworkMatrix matrix = null, 
-            SortedSet<uint> visitedNodes = null);
+        NetworkMatrix CountPriceMatrix(uint currentId, uint? startId, 
+            NetworkMatrix matrix = null, SortedSet<uint> visitedNodes = null);
         double CountPrice(uint senderId, uint receiverId);
     }
 }

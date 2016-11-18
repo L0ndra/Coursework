@@ -149,7 +149,7 @@ namespace Coursework.Tests
             // Arrange
             var firstNode = _nodes.First();
 
-            firstNode.NetworkMatrix = _messageRouter.CountPriceMatrix(firstNode.Id);
+            firstNode.NetworkMatrix = _messageRouter.CountPriceMatrix(firstNode.Id, null);
 
             // Act
             var result = _messageRouter.GetRoute(0, 3);
@@ -166,7 +166,7 @@ namespace Coursework.Tests
             // Arrange
             var firstNode = _nodes.First();
 
-            firstNode.NetworkMatrix = _messageRouter.CountPriceMatrix(firstNode.Id);
+            firstNode.NetworkMatrix = _messageRouter.CountPriceMatrix(firstNode.Id, null);
 
             // Act
             var result = _messageRouter.GetRoute(0, 4);
@@ -190,10 +190,8 @@ namespace Coursework.Tests
         public void CountPriceMatrixShouldReturnCorrectNetworkMatrix()
         {
             // Arrange
-            var networkMatrix = NetworkMatrix.Initialize(_networkMock.Object);
-
             // Act
-            var matrix = _messageRouter.CountPriceMatrix(0, networkMatrix);
+            var matrix = _messageRouter.CountPriceMatrix(0, null);
 
             // Assert
             Assert.IsTrue(matrix.NodeIdWithCurrentPrice
@@ -250,6 +248,19 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(result, Is.Zero);
+        }
+
+        [Test]
+        public void CountPriceMatrixShouldUpdateInitialMatrix()
+        {
+            // Arrange
+            var initialMatrix = _messageRouter.CountPriceMatrix(0, 0);
+
+            // Act
+            var matrix = _messageRouter.CountPriceMatrix(0, 0, initialMatrix);
+
+            // Assert
+            Assert.IsTrue(ReferenceEquals(matrix, initialMatrix));
         }
     }
 }

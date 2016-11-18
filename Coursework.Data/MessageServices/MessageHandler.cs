@@ -31,7 +31,7 @@ namespace Coursework.Data.MessageServices
             {
                 case MessageType.General:
                     {
-                        _network.RemoveFromQueue(message, message.ReceiverId);
+                        _generalMessageCreator.RemoveFromQueue(new[] { message }, message.ReceiverId);
                         break;
                     }
                 case MessageType.MatrixUpdateMessage:
@@ -87,19 +87,16 @@ namespace Coursework.Data.MessageServices
                 _generalMessageCreator.AddInQueue(messages, firstMessage.SenderId);
             }
 
-            _network.RemoveFromQueue(response, response.ReceiverId);
+            _generalMessageCreator.RemoveFromQueue(new[] { response }, response.ReceiverId);
         }
 
         private void HandlePositiveSendingResponse(Message response)
         {
             var messages = (Message[])response.Data;
 
-            foreach (var message in messages)
-            {
-                _network.AddInQueue(message, response.ReceiverId);
-            }
+            _generalMessageCreator.AddInQueue(messages, response.ReceiverId);
 
-            _network.RemoveFromQueue(response, response.ReceiverId);
+            _generalMessageCreator.RemoveFromQueue(new[] { response }, response.ReceiverId);
         }
 
         private void HandleSendingRequest(Message request)
@@ -130,7 +127,7 @@ namespace Coursework.Data.MessageServices
 
             currentNode.IsTableUpdated = true;
             currentNode.NetworkMatrix = networkMatrises[currentNode.Id];
-            
+
             InitializeLinkedNodes(currentNode, networkMatrises);
         }
 

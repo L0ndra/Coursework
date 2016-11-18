@@ -294,7 +294,8 @@ namespace Coursework.Tests
             _messageHandler.HandleMessage(_message);
 
             // Assert
-            _networkMock.Verify(n => n.RemoveFromQueue(_message, 0), Times.Once());
+            _generalMessageCreatorMock.Verify(n => n.RemoveFromQueue(It.Is<Message[]>(m => m.Contains(_message)), 
+                0), Times.Once());
         }
 
         [Test]
@@ -358,10 +359,12 @@ namespace Coursework.Tests
             _messageHandler.HandleMessage(_message);
 
             // Assert
-            _networkMock.Verify(n => n.AddInQueue(It.Is<Message>(m => m.MessageType == MessageType.General),
+            _generalMessageCreatorMock.Verify(n => n.AddInQueue(It.Is<Message[]>
+                (m => m.All(m1 => m1.MessageType == MessageType.General)),
                 _message.ReceiverId), Times.Once());
 
-            _networkMock.Verify(n => n.RemoveFromQueue(_message, _message.ReceiverId), Times.Once);
+            _generalMessageCreatorMock.Verify(n => n.RemoveFromQueue(It.IsAny<Message[]>(), 
+                _message.ReceiverId), Times.Once);
         }
 
         [Test]

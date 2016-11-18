@@ -276,6 +276,21 @@ namespace Coursework.Tests
         }
 
         [Test]
+        public void AddInQueueShouldCallRecountMatrixFromRouter()
+        {
+            // Arrange
+            var messages = _messageCreator.CreateMessages(_messageInitializer);
+
+            // Act
+            _messageCreator.AddInQueue(messages, 0);
+
+            // Assert
+            _messageRouterMock.Verify(n => n.CountPriceMatrix(It.IsAny<uint>(), It.IsAny<uint?>(), 
+                It.IsAny<NetworkMatrix>(), It.IsAny<SortedSet<uint>>()),
+                Times.Once);
+        }
+
+        [Test]
         public void RemoveFromQueueShouldDoIt()
         {
             // Arrange
@@ -288,6 +303,22 @@ namespace Coursework.Tests
             // Assert
             _networkMock.Verify(n => n.RemoveFromQueue(It.IsAny<Message>(), It.IsAny<uint>()), 
                 Times.Exactly(messages.Length));
+        }
+
+        [Test]
+        public void RemoveQueueShouldCallRecountMatrixFromRouter()
+        {
+            // Arrange
+            var messages = _messageCreator.CreateMessages(_messageInitializer);
+            _messageCreator.AddInQueue(messages, 0);
+
+            // Act
+            _messageCreator.RemoveFromQueue(messages, 0);
+
+            // Assert
+            _messageRouterMock.Verify(n => n.CountPriceMatrix(It.IsAny<uint>(), It.IsAny<uint?>(), 
+                It.IsAny<NetworkMatrix>(), It.IsAny<SortedSet<uint>>()),
+                Times.Exactly(2));
         }
     }
 }

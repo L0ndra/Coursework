@@ -325,7 +325,7 @@ namespace Coursework.Gui
                 Interval = TimeSpan.FromMilliseconds(IntervalSlider.Value)
             };
 
-            _headerUpdater.Tick += (sender, args) => Title = "Coursework (time: " + _backgroundWorker.Ticks + ")";
+            _headerUpdater.Tick += (sender, args) => Title = $"Coursework (time: {_backgroundWorker.Ticks})";
 
             _headerUpdater.Start();
         }
@@ -348,13 +348,6 @@ namespace Coursework.Gui
 
                 _messageViewUpdater.Show();
             }
-        }
-
-        private void ShowNetworkMatrises_Click(object sender, RoutedEventArgs e)
-        {
-            var networkMatrisesWindow = new NodeNetworkMatrix(_network);
-
-            networkMatrisesWindow.Show();
         }
 
         private void CreateNewNetwork_OnClick(object sender, RoutedEventArgs e)

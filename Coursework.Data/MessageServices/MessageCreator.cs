@@ -55,6 +55,9 @@ namespace Coursework.Data.MessageServices
             {
                 Network.AddInQueue(message, nodeId);
             }
+
+            var node = Network.GetNodeById(nodeId);
+            node.NetworkMatrix = MessageRouter.CountPriceMatrix(nodeId, nodeId, node.NetworkMatrix);
         }
 
         public void RemoveFromQueue(Message[] messages, uint nodeId)
@@ -63,6 +66,9 @@ namespace Coursework.Data.MessageServices
             {
                 Network.RemoveFromQueue(message, nodeId);
             }
+
+            var node = Network.GetNodeById(nodeId);
+            node.NetworkMatrix = MessageRouter.CountPriceMatrix(nodeId, nodeId, node.NetworkMatrix);
         }
 
         private void CreateInitializeMessages(Node centralMachine, Dictionary<uint, NetworkMatrix> networkMatrises)
@@ -106,7 +112,7 @@ namespace Coursework.Data.MessageServices
 
             foreach (var node in Network.Nodes)
             {
-                var networkMatrix = MessageRouter.CountPriceMatrix(node.Id);
+                var networkMatrix = MessageRouter.CountPriceMatrix(node.Id, null);
 
                 node.IsTableUpdated = false;
                 networkMatrises[node.Id] = networkMatrix;

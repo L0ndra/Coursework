@@ -558,5 +558,20 @@ namespace Coursework.Tests
             Assert.IsTrue(_network.Nodes.All(n => !n.IsTableUpdated));
             Assert.IsTrue(_network.Channels.All(n => !n.IsBusy));
         }
+
+        [Test]
+        public void ResetShouldRemoveAllTables()
+        {
+            // Arrange
+            _network.AddNode(_node1);
+
+            _node1.NetworkMatrix = NetworkMatrix.Initialize(_network);
+
+            // Act
+            _network.Reset();
+
+            // Assert
+            Assert.IsNull(_node1.NetworkMatrix);
+        }
     }
 }

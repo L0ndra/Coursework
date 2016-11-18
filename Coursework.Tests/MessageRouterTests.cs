@@ -149,7 +149,7 @@ namespace Coursework.Tests
             // Arrange
             var firstNode = _nodes.First();
 
-            firstNode.NetworkMatrix = _messageRouter.CountPriceMatrix(firstNode.Id);
+            firstNode.NetworkMatrix = _messageRouter.CountPriceMatrix(firstNode.Id, null);
 
             // Act
             var result = _messageRouter.GetRoute(0, 3);
@@ -166,7 +166,7 @@ namespace Coursework.Tests
             // Arrange
             var firstNode = _nodes.First();
 
-            firstNode.NetworkMatrix = _messageRouter.CountPriceMatrix(firstNode.Id);
+            firstNode.NetworkMatrix = _messageRouter.CountPriceMatrix(firstNode.Id, null);
 
             // Act
             var result = _messageRouter.GetRoute(0, 4);

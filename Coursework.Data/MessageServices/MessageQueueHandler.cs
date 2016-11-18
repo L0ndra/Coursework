@@ -44,6 +44,11 @@ namespace Coursework.Data.MessageServices
 
         private static void ThrowExceptionIfRouteIsNull(Message message)
         {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
             if (message.Route == null)
             {
                 throw new MessageException("Message route is incorrect");
@@ -52,6 +57,11 @@ namespace Coursework.Data.MessageServices
 
         private static void ThrowExceptionIfSizeIsLessThanZero(Message message)
         {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
             if (message.DataSize < 0 || message.ServiceSize < 0)
             {
                 throw new MessageException("Message size is less or equal than zero");
