@@ -158,7 +158,7 @@ namespace Coursework.Data.MessageServices
                 return messageInitializer.Size;
             }
 
-            return 0;
+            return AllConstants.ServicePartSize;
         }
     }
 }

@@ -182,7 +182,7 @@ namespace Coursework.Tests
             Assert.That(innerMessage.SenderId, Is.EqualTo(_messageInitializer.SenderId));
             Assert.That(innerMessage.ReceiverId, Is.EqualTo(_messageInitializer.ReceiverId));
             Assert.That(innerMessage.DataSize, Is.EqualTo(_messageInitializer.Size));
-            Assert.That(innerMessage.ServiceSize, Is.Zero);
+            Assert.That(innerMessage.ServiceSize, Is.EqualTo(AllConstants.ServicePartSize));
 
             Assert.That(firstMessage.ParentId, Is.EqualTo(innerMessage.ParentId));
         }

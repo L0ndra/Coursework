@@ -17,12 +17,12 @@ namespace Coursework.Data.Constants
         public const double MessageGenerateChance = 0.1;
         public const int LineZIndex = int.MaxValue - 2;
         public const int PriceZIndex = int.MaxValue - 1;
-        public const int MaxMessageSize = 100;
-        public const int PackageSize = 15;
-        public const int ServicePartSize = 5;
-        public const int InitializeMessageSize = 10;
-        public const int SendingRequestMessageSize = 10;
-        public const int SendingResponseMessageSize = 10;
+        public const int MaxMessageSize = 2048;
+        public const int PackageSize = 128;
+        public const int ServicePartSize = 32;
+        public const int InitializeMessageSize = 32;
+        public const int SendingRequestMessageSize = 32;
+        public const int SendingResponseMessageSize = 32;
         public static int UpdateTablePeriod = 40;
         public static readonly DoubleCollection StrokeDashArrayForSatteliteConnection = new DoubleCollection(new[]{ 2.0, 2.0 });
         public static readonly DoubleCollection StrokeDashArrayForGroundConnection = new DoubleCollection(new[] { 1.0, 0.0 });
@@ -44,6 +44,6 @@ namespace Coursework.Data.Constants
         public static readonly Brush CanceledMessagesForeground = Brushes.Red;
         public static readonly Random RandomGenerator = new Random((int)(DateTime.Now.Ticks & 0xFFFF));
         public static readonly ImmutableArray<int> AllPrices = new[] { 2, 4, 7, 8, 11, 15, 17, 20, 24, 25, 28 }.ToImmutableArray();
-        public static readonly ImmutableArray<int> AllCapacities = new[] { 25, 23, 20, 18, 15, 13, 10, 8, 6, 5, 3}.ToImmutableArray();
+        public static readonly ImmutableArray<int> AllCapacities = new[] { 132, 120, 108, 96, 84, 72, 60, 48, 36, 24, 12}.ToImmutableArray();
     }
 }
