@@ -34,6 +34,12 @@ namespace Coursework.Gui.Dialogs
                 .NetworkMatrix
                 .PriceMatrix;
 
+            if (networkMatrix == null)
+            {
+                Close();
+                return;
+            }
+
             for (var i = 0; i < network.Nodes.Length; i++)
             {
                 var rowNode = network.Nodes[i];

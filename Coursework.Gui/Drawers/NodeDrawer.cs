@@ -91,24 +91,6 @@ namespace Coursework.Gui.Drawers
             return textBlock;
         }
 
-        private void Node_OnMouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
-        {
-            var concreteSender = (FrameworkElement)sender;
-            var parent = (FrameworkElement)concreteSender?.Parent;
-
-            if (parent != null)
-            {
-                var nodeDto = (NodeDto)parent.Tag;
-
-                if (mouseButtonEventArgs.ClickCount == 2)
-                {
-                    var nodeNetwrokMatrix = new NodeNetworkMatrix(Network, nodeDto.Id);
-
-                    nodeNetwrokMatrix.Show();
-                }
-            }
-        }
-
         protected virtual Grid CreateGrid(FrameworkElement parent, NodeDto nodeDto, params UIElement[] childs)
         {
             var grid = new Grid
@@ -162,6 +144,24 @@ namespace Coursework.Gui.Drawers
                     {
                         throw new ArgumentOutOfRangeException(nameof(nodeDto));
                     }
+            }
+        }
+
+        private void Node_OnMouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+        {
+            var concreteSender = (FrameworkElement)sender;
+            var parent = (FrameworkElement)concreteSender?.Parent;
+
+            if (parent != null)
+            {
+                var nodeDto = (NodeDto)parent.Tag;
+
+                if (mouseButtonEventArgs.ClickCount == 2)
+                {
+                    var nodeNetwrokMatrix = new NodeNetworkMatrix(Network, nodeDto.Id);
+
+                    nodeNetwrokMatrix.Show();
+                }
             }
         }
 

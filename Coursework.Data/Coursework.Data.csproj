@@ -112,6 +112,8 @@
     <Compile Include="Entities\ConnectionType.cs" />
     <Compile Include="Exceptions\NodeException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ExceptionCatcher.cs" />
+    <Compile Include="Services\IExceptionDecorator.cs" />
     <Compile Include="Services\IWideAreaNetworkService.cs" />
     <Compile Include="Services\WideAreaNetworkService.cs" />
     <Compile Include="Util\EnumHelper.cs" />

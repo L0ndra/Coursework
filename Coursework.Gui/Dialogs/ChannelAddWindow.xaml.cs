@@ -3,7 +3,8 @@ using System.Windows;
 using System.Windows.Controls;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
-using Coursework.Data.Exceptions;
+using Coursework.Data.Services;
+using Coursework.Gui.Helpers;
 
 namespace Coursework.Gui.Dialogs
 {
@@ -14,6 +15,7 @@ namespace Coursework.Gui.Dialogs
     {
         public delegate void ChannelAddEventHandler(Channel channel);
         private event ChannelAddEventHandler ChannelAdd;
+        private readonly IExceptionDecorator _exceptionCatcher;
 
         public ChannelAddWindow(ChannelAddEventHandler channelAddEventHandler)
         {
@@ -22,22 +24,19 @@ namespace Coursework.Gui.Dialogs
             ChannelAdd += channelAddEventHandler;
 
             InitializeCapacityField();
+
+            _exceptionCatcher = new ExceptionCatcher();
         }
 
         private void AddChannel_OnClick(object sender, RoutedEventArgs e)
         {
-            try
+            Action action = () =>
             {
                 SaveDto();
                 Hide();
-            }
-            catch (Exception ex) when (ex is ChannelException || ex is NodeException ||
-                ex is ArgumentNullException || ex is FormatException || ex is OverflowException)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error,
-                    MessageBoxResult.OK,
-                    MessageBoxOptions.None);
-            }
+            };
+
+            _exceptionCatcher.Decorate(action, ExceptionMessageBox.Show);
         }
 
         private void InitializeCapacityField()

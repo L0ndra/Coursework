@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows;
 using Coursework.Data.Constants;
-using Coursework.Data.Exceptions;
+using Coursework.Data.Services;
+using Coursework.Gui.Helpers;
 
 namespace Coursework.Gui.Dialogs
 {
@@ -13,6 +14,7 @@ namespace Coursework.Gui.Dialogs
         public delegate void SimulationStarter(double messageGenerateChance, int tableUpdatePeriod, bool isDatagramMode,
             bool isRouterStupid);
         private event SimulationStarter SimulationStart;
+        private readonly IExceptionDecorator _exceptionCatcher;
 
         public SimulationOptionsDialog(SimulationStarter simulationStarter)
         {
@@ -22,11 +24,13 @@ namespace Coursework.Gui.Dialogs
 
             MessageGenerateChance.Text = AllConstants.MessageGenerateChance.ToString("N");
             TableUpdatePeriod.Text = AllConstants.UpdateTablePeriod.ToString();
+
+            _exceptionCatcher = new ExceptionCatcher();
         }
 
         private void Start_OnClick(object sender, RoutedEventArgs e)
         {
-            try
+            Action action = () =>
             {
                 var messageGenerateChance = double.Parse(MessageGenerateChance.Text);
                 var tableUpdatePeriod = int.Parse(TableUpdatePeriod.Text);
@@ -36,15 +40,9 @@ namespace Coursework.Gui.Dialogs
                 OnSimulationStart(messageGenerateChance, tableUpdatePeriod, isDatagramMode, isRouterStupid);
 
                 Close();
-            }
-            catch (Exception ex) when (ex is ChannelException || ex is NodeException ||
-                ex is ArgumentNullException || ex is FormatException || ex is OverflowException ||
-                ex is ArgumentException)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error,
-                    MessageBoxResult.OK,
-                    MessageBoxOptions.None);
-            }
+            };
+
+            _exceptionCatcher.Decorate(action, ExceptionMessageBox.Show);
         }
 
         private void Cancel_OnClick(object sender, RoutedEventArgs e)

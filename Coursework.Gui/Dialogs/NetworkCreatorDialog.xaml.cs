@@ -2,8 +2,11 @@
 using System.Windows;
 using Coursework.Data.Builder;
 using Coursework.Data.Constants;
+using Coursework.Data.Entities;
 using Coursework.Data.Exceptions;
 using Coursework.Data.NetworkData;
+using Coursework.Data.Services;
+using Coursework.Gui.Helpers;
 
 namespace Coursework.Gui.Dialogs
 {
@@ -17,6 +20,7 @@ namespace Coursework.Gui.Dialogs
         private INetworkBuilder _networkBuilder;
         private INetworkBuilder _simpleNetworkBuilder;
         private INodeGenerator _nodeGenerator;
+        private readonly IExceptionDecorator _exceptionCatcher;
 
         public NetworkCreatorDialog(NetworkUpdateHandler networkUpdateHandler)
         {
@@ -27,25 +31,22 @@ namespace Coursework.Gui.Dialogs
             MetropolitanNodesNumber.Text = AllConstants.NodeCountInMetropolitanNetwork.ToString();
             MetropolitanNetworksCount.Text = AllConstants.MetropolitanNetworksCount.ToString();
             NetworkPower.Text = AllConstants.NetworkPower.ToString("N");
+
+            _exceptionCatcher = new ExceptionCatcher();
         }
 
         private void Create_OnClick(object sender, RoutedEventArgs e)
         {
-            try
+            Action action = () =>
             {
                 var network = CreateNetwork();
 
                 OnNetworkUpdateEvent(network);
 
                 Close();
-            }
-            catch (Exception ex) when (ex is ChannelException || ex is NodeException ||
-                ex is ArgumentNullException || ex is FormatException || ex is OverflowException)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error,
-                    MessageBoxResult.OK,
-                    MessageBoxOptions.None);
-            }
+            };
+
+            _exceptionCatcher.Decorate(action, ExceptionMessageBox.Show);
         }
 
         private INetworkHandler CreateNetwork()

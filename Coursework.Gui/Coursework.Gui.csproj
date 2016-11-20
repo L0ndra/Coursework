@@ -146,6 +146,7 @@
     <Compile Include="Drawers\NodeDrawer.cs" />
     <Compile Include="Dto\ChannelDto.cs" />
     <Compile Include="Dto\NodeDto.cs" />
+    <Compile Include="Helpers\ExceptionMessageBox.cs" />
     <Compile Include="Initializers\MapperInitializer.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

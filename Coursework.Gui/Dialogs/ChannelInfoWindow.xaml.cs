@@ -3,8 +3,9 @@ using System.Windows;
 using System.Windows.Controls;
 using Coursework.Data.Constants;
 using Coursework.Data.Entities;
-using Coursework.Data.Exceptions;
+using Coursework.Data.Services;
 using Coursework.Gui.Dto;
+using Coursework.Gui.Helpers;
 
 namespace Coursework.Gui.Dialogs
 {
@@ -16,12 +17,15 @@ namespace Coursework.Gui.Dialogs
         public delegate void ChannelChangeEventHandler(ChannelDto newChannelParams);
         private ChannelChangeEventHandler _onChangeChannelInfoHandler;
         private Guid _lastLineId;
+        private readonly IExceptionDecorator _exceptionCatcher;
 
         public ChannelInfoWindow()
         {
             InitializeComponent();
 
             InitializeCapacityField();
+
+            _exceptionCatcher = new ExceptionCatcher();
         }
 
         public void BindChannelInfo(ChannelDto channelDto, ChannelChangeEventHandler onChangeChannelInfoHandler)
@@ -105,18 +109,13 @@ namespace Coursework.Gui.Dialogs
 
         private void Ok_OnClick(object sender, RoutedEventArgs e)
         {
-            try
+            Action action = () =>
             {
                 SaveDto();
                 Close();
-            }
-            catch (Exception ex) when (ex is ChannelException || ex is NodeException ||
-                ex is ArgumentNullException || ex is FormatException || ex is OverflowException)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error,
-                    MessageBoxResult.OK,
-                    MessageBoxOptions.None);
-            }
+            };
+
+            _exceptionCatcher.Decorate(action, ExceptionMessageBox.Show);
         }
 
         private void Price_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

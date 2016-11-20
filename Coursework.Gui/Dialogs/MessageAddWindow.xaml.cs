@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows;
 using Coursework.Data.Entities;
-using Coursework.Data.Exceptions;
+using Coursework.Data.Services;
+using Coursework.Gui.Helpers;
 
 namespace Coursework.Gui.Dialogs
 {
@@ -12,17 +13,20 @@ namespace Coursework.Gui.Dialogs
     {
         public delegate void MessageCreateHandler(MessageInitializer messageInitializer);
         private event MessageCreateHandler MessageCreateEvent;
+        private readonly IExceptionDecorator _exceptionCatcher;
 
         public MessageAddWindow(MessageCreateHandler messageCreateHandler)
         {
             InitializeComponent();
 
             MessageCreateEvent += messageCreateHandler;
+
+            _exceptionCatcher = new ExceptionCatcher();
         }
 
         private void CreateMessage_OnClick(object sender, RoutedEventArgs e)
         {
-            try
+            Action action = () =>
             {
                 var senderId = uint.Parse(SenderId.Text);
                 var receiverId = uint.Parse(ReceiverId.Text);
@@ -42,15 +46,9 @@ namespace Coursework.Gui.Dialogs
                 MessageBox.Show("Message Created", "Ok", MessageBoxButton.OK, MessageBoxImage.Information,
                    MessageBoxResult.OK,
                    MessageBoxOptions.None);
-            }
-            catch (Exception ex) when (ex is ChannelException || ex is NodeException ||
-                ex is ArgumentNullException || ex is FormatException || ex is OverflowException
-                || ex is MessageException)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error,
-                    MessageBoxResult.OK,
-                    MessageBoxOptions.None);
-            }
+            };
+
+            _exceptionCatcher.Decorate(action, ExceptionMessageBox.Show);
         }
 
         private void Exit_OnClick(object sender, RoutedEventArgs e)

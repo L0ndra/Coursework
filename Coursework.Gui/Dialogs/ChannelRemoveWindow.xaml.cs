@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
-using Coursework.Data.Exceptions;
+using Coursework.Data.Services;
+using Coursework.Gui.Helpers;
 
 namespace Coursework.Gui.Dialogs
 {
@@ -11,17 +12,20 @@ namespace Coursework.Gui.Dialogs
     {
         public delegate void ChannelRemoveEventHandler(uint firstNodeId, uint secondNodeId);
         private event ChannelRemoveEventHandler ChannelRemove;
+        private readonly IExceptionDecorator _exceptionCatcher;
 
         public ChannelRemoveWindow(ChannelRemoveEventHandler channelRemoveEventHandler)
         {
             InitializeComponent();
 
             ChannelRemove += channelRemoveEventHandler;
+
+            _exceptionCatcher = new ExceptionCatcher();
         }
 
         private void RemoveChannel_OnClick(object sender, RoutedEventArgs e)
         {
-            try
+            Action action = () =>
             {
                 var firstNodeId = uint.Parse(FirstNodeId.Text);
                 var secondNodeId = uint.Parse(SecondNodeId.Text);
@@ -29,14 +33,9 @@ namespace Coursework.Gui.Dialogs
                 OnChannelRemove(firstNodeId, secondNodeId);
 
                 Close();
-            }
-            catch (Exception ex) when (ex is ChannelException || ex is NodeException ||
-                ex is ArgumentNullException || ex is FormatException || ex is OverflowException)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error,
-                    MessageBoxResult.OK,
-                    MessageBoxOptions.None);
-            }
+            };
+
+            _exceptionCatcher.Decorate(action, ExceptionMessageBox.Show);
         }
 
         private void Cancel_OnClick(object sender, RoutedEventArgs e)
