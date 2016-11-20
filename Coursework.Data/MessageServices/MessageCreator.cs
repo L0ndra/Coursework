@@ -155,7 +155,7 @@ namespace Coursework.Data.MessageServices
                 || messageInitializer.MessageType == MessageType.PositiveSendingResponse
                 || messageInitializer.MessageType == MessageType.SendingRequest)
             {
-                return messageInitializer.Size;
+                return messageInitializer.Size + AllConstants.ServicePartSize;
             }
 
             return AllConstants.ServicePartSize;

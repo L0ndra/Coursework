@@ -27,8 +27,10 @@ namespace Coursework.Data.MessageServices
 
         private Message[] DivideIntoPackages(Message currentMessage)
         {
-            var messageCount = currentMessage.Size / AllConstants.PackageSize
-                + (currentMessage.Size % AllConstants.PackageSize == 0 ? 0 : 1);
+            var messageSize = currentMessage.Size - AllConstants.ServicePartSize;
+
+            var messageCount = messageSize / AllConstants.PackageSize
+                + (messageSize % AllConstants.PackageSize == 0 ? 0 : 1);
 
             var messages = new List<Message>();
 
@@ -45,7 +47,7 @@ namespace Coursework.Data.MessageServices
                 var message = CreateMessage(currentMessage, route, i);
 
                 if (i == messageCount - 1
-                    && currentMessage.Size % AllConstants.PackageSize != 0)
+                    && messageSize % AllConstants.PackageSize != 0)
                 {
                     if (currentMessage.MessageType == MessageType.General)
                     {
@@ -53,7 +55,8 @@ namespace Coursework.Data.MessageServices
                     }
                     else
                     {
-                        message.ServiceSize = currentMessage.ServiceSize % AllConstants.PackageSize 
+                        message.ServiceSize = (currentMessage.ServiceSize - AllConstants.ServicePartSize) 
+                            % AllConstants.PackageSize 
                             + AllConstants.ServicePartSize;
                     }
                 }
