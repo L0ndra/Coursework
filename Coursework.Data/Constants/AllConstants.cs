@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Windows.Media;
+using Coursework.Data.Util;
+using Fasterflect;
 
 namespace Coursework.Data.Constants
 {
@@ -17,14 +22,14 @@ namespace Coursework.Data.Constants
         public const double MessageGenerateChance = 0.1;
         public const int LineZIndex = int.MaxValue - 2;
         public const int PriceZIndex = int.MaxValue - 1;
-        public const int MaxMessageSize = 2048;
-        public const int PackageSize = 128;
-        public const int ServicePartSize = 32;
-        public const int InitializeMessageSize = 32;
-        public const int SendingRequestMessageSize = 32;
-        public const int SendingResponseMessageSize = 32;
+        public static readonly int MaxMessageSize = 4096;
+        public static readonly int PackageSize = 256;
+        public static readonly int ServicePartSize = 32;
+        public static readonly int InitializeMessageSize = 32;
+        public static readonly int SendingRequestMessageSize = 32;
+        public static readonly int SendingResponseMessageSize = 32;
         public static int UpdateTablePeriod = 40;
-        public static readonly DoubleCollection StrokeDashArrayForSatteliteConnection = new DoubleCollection(new[]{ 2.0, 2.0 });
+        public static readonly DoubleCollection StrokeDashArrayForSatteliteConnection = new DoubleCollection(new[] { 2.0, 2.0 });
         public static readonly DoubleCollection StrokeDashArrayForGroundConnection = new DoubleCollection(new[] { 1.0, 0.0 });
         public static readonly Brush SimpleNodeBrush = Brushes.Aqua;
         public static readonly Brush CentralMachineBrush = Brushes.LightSeaGreen;
@@ -44,6 +49,26 @@ namespace Coursework.Data.Constants
         public static readonly Brush CanceledMessagesForeground = Brushes.Red;
         public static readonly Random RandomGenerator = new Random((int)(DateTime.Now.Ticks & 0xFFFF));
         public static readonly ImmutableArray<int> AllPrices = new[] { 2, 4, 7, 8, 11, 15, 17, 20, 24, 25, 28 }.ToImmutableArray();
-        public static readonly ImmutableArray<int> AllCapacities = new[] { 132, 120, 108, 96, 84, 72, 60, 48, 36, 24, 12}.ToImmutableArray();
+        public static readonly ImmutableArray<int> AllCapacities = new[] { 132, 120, 108, 96, 84, 72, 60, 48, 36, 24, 12 }.ToImmutableArray();
+
+        static AllConstants()
+        {
+            InitializeFields();
+        }
+
+        private static void InitializeFields()
+        {
+            var parameters = File.ReadAllLines(PathUtils.GetFileFullPath(@"Configuration"
+                                                                         + Path.DirectorySeparatorChar 
+                                                                         + "messagedefaults.dat"))
+                .Select(l => l.Split('='))
+                .ToDictionary(s => s[0].Trim(), s => s[1].Trim());
+
+            foreach (var keyValue in parameters)
+            {
+                var type = MethodBase.GetCurrentMethod().DeclaringType;
+                type.SetFieldValue(keyValue.Key, int.Parse(keyValue.Value));
+            }
+        }
     }
 }
