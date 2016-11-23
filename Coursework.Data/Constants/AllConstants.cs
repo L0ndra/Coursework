@@ -28,7 +28,7 @@ namespace Coursework.Data.Constants
         public static readonly int InitializeMessageSize = 32;
         public static readonly int SendingRequestMessageSize = 32;
         public static readonly int SendingResponseMessageSize = 32;
-        public static int UpdateTablePeriod = 40;
+        public static readonly int UpdateTablePeriod = 40;
         public static readonly DoubleCollection StrokeDashArrayForSatteliteConnection = new DoubleCollection(new[] { 2.0, 2.0 });
         public static readonly DoubleCollection StrokeDashArrayForGroundConnection = new DoubleCollection(new[] { 1.0, 0.0 });
         public static readonly Brush SimpleNodeBrush = Brushes.Aqua;
@@ -59,14 +59,15 @@ namespace Coursework.Data.Constants
         private static void InitializeFields()
         {
             var parameters = File.ReadAllLines(PathUtils.GetFileFullPath(@"Configuration"
-                                                                         + Path.DirectorySeparatorChar 
+                                                                         + Path.DirectorySeparatorChar
                                                                          + "messagedefaults.dat"))
                 .Select(l => l.Split('='))
                 .ToDictionary(s => s[0].Trim(), s => s[1].Trim());
 
+            var type = MethodBase.GetCurrentMethod().DeclaringType;
+
             foreach (var keyValue in parameters)
             {
-                var type = MethodBase.GetCurrentMethod().DeclaringType;
                 type.SetFieldValue(keyValue.Key, int.Parse(keyValue.Value));
             }
         }
