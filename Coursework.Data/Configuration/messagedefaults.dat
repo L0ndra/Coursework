@@ -4,3 +4,4 @@ ServicePartSize = 32
 InitializeMessageSize = 32
 SendingRequestMessageSize = 32
 SendingResponseMessageSize = 32
+ReceiveResponseMessageSize = 32

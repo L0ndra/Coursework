@@ -5,7 +5,7 @@ using Coursework.Data.NetworkData;
 
 namespace Coursework.Data.MessageServices
 {
-    public class RequestMessageCreator : MessageCreator
+    public class RequestMessageCreator : PackageMessageCreator
     {
         public RequestMessageCreator(INetworkHandler network, IMessageRouter messageRouter)
             : base(network, messageRouter)
@@ -18,9 +18,14 @@ namespace Coursework.Data.MessageServices
 
             if (messages != null)
             {
-                var message = CreateRequestMessage(messages);
+                foreach (var message in messages)
+                {
+                    message.Route = messages[0].Route.ToArray();
+                }
 
-                return message;
+                var request = CreateRequestMessage(messages);
+
+                return request;
             }
 
             return null;

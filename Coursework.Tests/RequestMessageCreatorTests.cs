@@ -177,11 +177,11 @@ namespace Coursework.Tests
             Assert.That(firstMessage.SenderId, Is.EqualTo(_messageInitializer.SenderId));
             Assert.That(firstMessage.MessageType, Is.EqualTo(MessageType.SendingRequest));
 
-            Assert.That(innerMessage.Data, Is.EqualTo(_messageInitializer.Data));
+            Assert.That(innerMessage.Data, Is.TypeOf(typeof(Message[])));
             Assert.That(innerMessage.MessageType, Is.EqualTo(_messageInitializer.MessageType));
             Assert.That(innerMessage.SenderId, Is.EqualTo(_messageInitializer.SenderId));
             Assert.That(innerMessage.ReceiverId, Is.EqualTo(_messageInitializer.ReceiverId));
-            Assert.That(innerMessage.DataSize, Is.EqualTo(_messageInitializer.Size));
+            Assert.That(innerMessages.Sum(m => m.DataSize), Is.EqualTo(_messageInitializer.Size));
             Assert.That(innerMessage.ServiceSize, Is.EqualTo(AllConstants.ServicePartSize));
 
             Assert.That(firstMessage.ParentId, Is.EqualTo(innerMessage.ParentId));

@@ -224,7 +224,7 @@ namespace Coursework.Data.MessageServices
         {
             var channel = message.Route.First();
 
-            if (message.MessageType == MessageType.General
+            if (message.MessageType == MessageType.PositiveReceiveResponse
                 || message.MessageType == MessageType.NegativeSendingResponse
                 || message.MessageType == MessageType.MatrixUpdateMessage)
             {

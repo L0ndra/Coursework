@@ -44,7 +44,7 @@ namespace Coursework.Data.MessageServices
                     return null;
                 }
 
-                var message = CreateMessage(currentMessage, route, i);
+                var message = CreateMessage(currentMessage, route, i, messageCount);
 
                 if (i == messageCount - 1
                     && messageSize % AllConstants.PackageSize != 0)
@@ -90,7 +90,8 @@ namespace Coursework.Data.MessageServices
             if (messageInitializer.MessageType == MessageType.MatrixUpdateMessage
                 || messageInitializer.MessageType == MessageType.NegativeSendingResponse
                 || messageInitializer.MessageType == MessageType.PositiveSendingResponse
-                || messageInitializer.MessageType == MessageType.SendingRequest)
+                || messageInitializer.MessageType == MessageType.SendingRequest
+                || messageInitializer.MessageType == MessageType.PositiveReceiveResponse)
             {
                 return AllConstants.PackageSize;
             }
@@ -98,7 +99,8 @@ namespace Coursework.Data.MessageServices
             return 0;
         }
 
-        private Message CreateMessage(Message currentMessage, Channel[] route, int number)
+        private Message CreateMessage(Message currentMessage, Channel[] route, int number,
+            int packagesCount)
         {
             return new Message
             {
@@ -112,7 +114,8 @@ namespace Coursework.Data.MessageServices
                 DataSize = GetDataSize(currentMessage),
                 ServiceSize = GetServiceSize(currentMessage) + AllConstants.ServicePartSize,
                 Route = route,
-                NumberInPackage = number
+                NumberInPackage = number,
+                PackagesCount = packagesCount
             };
         }
     }

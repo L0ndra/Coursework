@@ -123,7 +123,7 @@ namespace Coursework.Data.MessageServices
 
         private Message CreateMessage(MessageInitializer messageInitializer, Channel[] route)
         {
-            return new Message
+            var message = new Message
             {
                 MessageType = messageInitializer.MessageType,
                 ReceiverId = messageInitializer.ReceiverId,
@@ -136,6 +136,36 @@ namespace Coursework.Data.MessageServices
                 ParentId = Guid.NewGuid(),
                 SendAttempts = 0
             };
+
+            if (message.MessageType == MessageType.General)
+            {
+                var positiveReceiveResponse = CreatePositiveReceiveResponse(messageInitializer, message);
+
+                message.Data = new[] {positiveReceiveResponse};
+            }
+
+            return message;
+        }
+
+        private static Message CreatePositiveReceiveResponse(MessageInitializer messageInitializer, Message message)
+        {
+            var reversedRoute = message.Route
+                .ToArray()
+                .Reverse();
+
+            var positiveReceiveResponse = new Message
+            {
+                MessageType = MessageType.PositiveReceiveResponse,
+                Data = null,
+                ReceiverId = messageInitializer.SenderId,
+                SenderId = messageInitializer.ReceiverId,
+                Route = reversedRoute.ToArray(),
+                ParentId = message.ParentId,
+                ServiceSize = AllConstants.ReceiveResponseMessageSize,
+                LastTransferNodeId = messageInitializer.ReceiverId,
+                SendAttempts = 0,
+            };
+            return positiveReceiveResponse;
         }
 
         private int GetDataSize(MessageInitializer messageInitializer)
@@ -153,7 +183,8 @@ namespace Coursework.Data.MessageServices
             if (messageInitializer.MessageType == MessageType.MatrixUpdateMessage
                 || messageInitializer.MessageType == MessageType.NegativeSendingResponse
                 || messageInitializer.MessageType == MessageType.PositiveSendingResponse
-                || messageInitializer.MessageType == MessageType.SendingRequest)
+                || messageInitializer.MessageType == MessageType.SendingRequest
+                || messageInitializer.MessageType == MessageType.PositiveReceiveResponse)
             {
                 return messageInitializer.Size + AllConstants.ServicePartSize;
             }

@@ -22,7 +22,8 @@ namespace Coursework.Data.MessageServices
 
         public void RegisterMessages()
         {
-            var messages = _messageRepository.GetAllMessages();
+            var messages = _messageRepository.GetAllMessages()
+                .ToArray();
 
             foreach (var message in messages)
             {

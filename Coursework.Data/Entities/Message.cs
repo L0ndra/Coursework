@@ -15,6 +15,7 @@ namespace Coursework.Data.Entities
         public int SendAttempts { get; set; }
         public MessageType MessageType { get; set; }
         public int NumberInPackage { get; set; }
+        public int PackagesCount { get; set; }
         public bool IsCanceled { get; set; }
         public int Size => DataSize + ServiceSize;
         public bool IsReceived { get; set; }

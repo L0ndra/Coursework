@@ -171,7 +171,7 @@ namespace Coursework.Tests
             Assert.That(messages.Length, Is.GreaterThanOrEqualTo(1));
             Assert.That(firstMessage.ReceiverId, Is.EqualTo(_messageInitializer.ReceiverId));
             Assert.That(firstMessage.SenderId, Is.EqualTo(_messageInitializer.SenderId));
-            Assert.That(firstMessage.Data, Is.EqualTo(_messageInitializer.Data));
+            Assert.That(firstMessage.Data, Is.TypeOf(typeof(Message[])));
             Assert.That(firstMessage.MessageType, Is.EqualTo(_messageInitializer.MessageType));
             Assert.That(messages.All(m => m.ServiceSize == AllConstants.ServicePartSize));
             Assert.That(messages.Where((message, i) => i != messages.Length - 1)
@@ -209,6 +209,24 @@ namespace Coursework.Tests
 
             // Assert
             Assert.IsTrue(numbers.All(n => messages.Any(m => m.NumberInPackage == n)));
+        }
+
+        [Test]
+        [TestCase(256, 1)]
+        [TestCase(255, 1)]
+        [TestCase(257, 2)]
+        [TestCase(513, 3)]
+        [TestCase(1, 1)]
+        public void GenerateShouldGenerateSpecifiedNumberOfPackages(int size, int packagesCount)
+        {
+            // Arrange
+            _messageInitializer.Size = size;
+
+            // Act
+            var messages = _messageCreator.CreateMessages(_messageInitializer);
+
+            // Assert
+            Assert.That(messages.All(m => m.PackagesCount == packagesCount));
         }
     }
 }

@@ -171,7 +171,7 @@ namespace Coursework.Tests
             );
 
             _positiveResponseMessageCreatorMock.Setup(m => m.CreateMessages(It.IsAny<MessageInitializer>()))
-                .Returns(new[] 
+                .Returns(new[]
                 {
                     new Message
                     {
@@ -251,7 +251,7 @@ namespace Coursework.Tests
             _generalMessageCreatorMock.Verify(c => c.AddInQueue(It.Is<Message[]>
                 (m => m.All(m1 => m1.MessageType == MessageType.MatrixUpdateMessage)), Receiver.Id),
                 Times.Exactly(linkedNodeCount - 1));
-            
+
             Assert.That(Receiver.NetworkMatrix,
                 Is.EqualTo(((Dictionary<uint, NetworkMatrix>)_message.Data)[0]));
         }
@@ -294,7 +294,30 @@ namespace Coursework.Tests
             _messageHandler.HandleMessage(_message);
 
             // Assert
-            _generalMessageCreatorMock.Verify(n => n.RemoveFromQueue(It.Is<Message[]>(m => m.Contains(_message)), 
+            _generalMessageCreatorMock.Verify(n => n.RemoveFromQueue(It.Is<Message[]>(m => m.Contains(_message)),
+                0), Times.Once());
+        }
+
+        [Test]
+        public void HandleMessageShouldAddReceiveResponseToQueue()
+        {
+            // Arrange
+            var response = new Message
+            {
+                MessageType = MessageType.PositiveReceiveResponse
+            };
+
+            _message.MessageType = MessageType.General;
+            _message.Route[0].IsBusy = true;
+            _message.PackagesCount = 1;
+
+            _message.Data = new[] { response };
+
+            // Act
+            _messageHandler.HandleMessage(_message);
+
+            // Assert
+            _generalMessageCreatorMock.Verify(n => n.AddInQueue(It.Is<Message[]>(m => m.Contains(response)),
                 0), Times.Once());
         }
 
@@ -363,7 +386,7 @@ namespace Coursework.Tests
                 (m => m.All(m1 => m1.MessageType == MessageType.General)),
                 _message.ReceiverId), Times.Once());
 
-            _generalMessageCreatorMock.Verify(n => n.RemoveFromQueue(It.IsAny<Message[]>(), 
+            _generalMessageCreatorMock.Verify(n => n.RemoveFromQueue(It.IsAny<Message[]>(),
                 _message.ReceiverId), Times.Once);
         }
 
@@ -381,6 +404,20 @@ namespace Coursework.Tests
             // Assert
             _generalMessageCreatorMock.Verify(m => m.CreateMessages(It.IsAny<MessageInitializer>()), Times.Once);
             _generalMessageCreatorMock.Verify(m => m.AddInQueue(It.IsAny<Message[]>(), _message.ReceiverId), Times.Once);
+        }
+
+        [Test]
+        public void HandleMessageShouldRemovePositiveReceiveResponse()
+        {
+            // Arrange
+            _message.MessageType = MessageType.PositiveReceiveResponse;
+
+            // Act
+            _messageHandler.HandleMessage(_message);
+
+            // Assert
+            _generalMessageCreatorMock.Verify(n => n.RemoveFromQueue(It.IsAny<Message[]>(),
+                _message.ReceiverId), Times.Once);
         }
     }
 }

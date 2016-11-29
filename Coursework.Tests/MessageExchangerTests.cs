@@ -453,12 +453,12 @@ namespace Coursework.Tests
         }
 
         [Test]
-        public void HandleMessagesShouldFreeChannelIfMessageTypeIsGeneral()
+        public void HandleMessagesShouldFreeChannelIfMessageTypeIsReceiveResponse()
         {
             // Arrange
             var firstNode = _nodes.First();
 
-            _message.MessageType = MessageType.General;
+            _message.MessageType = MessageType.PositiveReceiveResponse;
 
             firstNode.MessageQueueHandlers
                 .First().AppendMessage(_message);

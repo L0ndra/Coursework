@@ -31,7 +31,7 @@ namespace Coursework.Data.MessageServices
             {
                 case MessageType.General:
                     {
-                        _generalMessageCreator.RemoveFromQueue(new[] { message }, message.ReceiverId);
+                        HandleGeneralMessage(message);
                         break;
                     }
                 case MessageType.MatrixUpdateMessage:
@@ -54,6 +54,11 @@ namespace Coursework.Data.MessageServices
                         HandleNegativeSendingResponse(message);
                         break;
                     }
+                case MessageType.PositiveReceiveResponse:
+                    {
+                        HandlePositiveReceiveResponce(message);
+                        break;
+                    }
                 default:
                     {
                         throw new ArgumentOutOfRangeException();
@@ -65,12 +70,35 @@ namespace Coursework.Data.MessageServices
                     .ToArray();
         }
 
+        private void HandlePositiveReceiveResponce(Message message)
+        {
+            var receiver = _network.GetNodeById(message.ReceiverId);
+            _generalMessageCreator.RemoveFromQueue(new[] { message }, receiver.Id);
+        }
+
+        private void HandleGeneralMessage(Message message)
+        {
+            var receiver = _network.GetNodeById(message.ReceiverId);
+
+            if (receiver.ReceivedMessages
+                    .Where(m => m.MessageType == MessageType.General)
+                    .Count(m => m.ParentId == message.ParentId)
+                == message.PackagesCount)
+            {
+                var response = (Message[])message.Data;
+                _generalMessageCreator.AddInQueue(response, receiver.Id);
+            }
+
+            _generalMessageCreator.RemoveFromQueue(new[] { message }, receiver.Id);
+        }
+
         private void HandleNegativeSendingResponse(Message response)
         {
             var oldMessages = (Message[])response.Data;
             var firstMessage = oldMessages.First();
 
-            var sumSize = oldMessages.Sum(oldMessage => oldMessage.DataSize);
+            var sumSize = oldMessages.Sum(oldMessage => oldMessage.Size)
+                - oldMessages.Length * AllConstants.ServicePartSize;
 
             var messageInitializer = new MessageInitializer
             {
@@ -84,10 +112,29 @@ namespace Coursework.Data.MessageServices
             var messages = _generalMessageCreator.CreateMessages(messageInitializer);
             if (messages != null)
             {
+                UpdateMessagesParentId(messages, firstMessage.ParentId);
+
                 _generalMessageCreator.AddInQueue(messages, firstMessage.SenderId);
             }
 
             _generalMessageCreator.RemoveFromQueue(new[] { response }, response.ReceiverId);
+        }
+
+        private static void UpdateMessagesParentId(IEnumerable<Message> messages, Guid id)
+        {
+            foreach (var message in messages)
+            {
+                message.ParentId = id;
+                var innerMessages = (Message[]) message.Data;
+
+                if (innerMessages != null)
+                {
+                    foreach (var innerMessage in innerMessages)
+                    {
+                        innerMessage.ParentId = id;
+                    }
+                }
+            }
         }
 
         private void HandlePositiveSendingResponse(Message response)
