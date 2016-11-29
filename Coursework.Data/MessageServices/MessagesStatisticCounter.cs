@@ -18,6 +18,8 @@ namespace Coursework.Data.MessageServices
         {
             var allMessages = GetAllMessages();
 
+            var generalMessages = GetGeneralMessages(allMessages);
+
             var receivedMessages = GetReceivedMessages(allMessages);
 
             var generalReceivedMessages = GetGeneralReceivedMessages(receivedMessages);
@@ -33,6 +35,7 @@ namespace Coursework.Data.MessageServices
             var messageStatistic = new MessagesStatistic
             {
                 MessagesCount = allMessages.GroupBy(m => m.ParentId).Count(),
+                GeneralMessagesCount = generalMessages.GroupBy(m => m.ParentId).Count(),
                 ReceivedMessagesCount = receivedMessages.GroupBy(m => m.ParentId).Count(),
                 GeneralMessagesReceivedCount = generalReceivedMessages.GroupBy(m => m.ParentId).Count(),
                 AvarageDeliveryTime = avarageDeliveryTime,
@@ -42,6 +45,14 @@ namespace Coursework.Data.MessageServices
             };
 
             return messageStatistic;
+        }
+
+        protected virtual Message[] GetGeneralMessages(Message[] allMessages)
+        {
+            return allMessages
+                .Where(m => m.MessageType == MessageType.General
+                    || (m.Data as Message[])?.FirstOrDefault()?.MessageType == MessageType.General)
+                .ToArray();
         }
 
         protected virtual int CountReceivedDataSize(Message[] receivedMessages)

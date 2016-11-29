@@ -18,6 +18,7 @@ namespace Coursework.Gui.Dialogs
         private void ShowOnGui(MessagesStatistic messagesStatistic)
         {
             MessagesCount.Text = messagesStatistic.MessagesCount.ToString();
+            GeneralMessagesCount.Text = messagesStatistic.GeneralMessagesCount.ToString();
             ReceivedMessagesCount.Text = messagesStatistic.ReceivedMessagesCount.ToString();
             GeneralReceivedMessagesCount.Text = messagesStatistic.GeneralMessagesReceivedCount.ToString();
             AverageDeliveryTime.Text = messagesStatistic.AvarageDeliveryTime.ToString("N");

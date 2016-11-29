@@ -15,6 +15,7 @@
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
@@ -33,13 +34,23 @@
                 <ColumnDefinition Width="3*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="General Messages Amount: "></TextBlock>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="GeneralMessagesCount" Margin="10 0"></TextBlock>
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
                        Text="Received Messages Amount: "
                        TextWrapping="Wrap"></TextBlock>
             <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="ReceivedMessagesCount" Margin="10 0"></TextBlock>
         </Grid>
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
@@ -51,7 +62,7 @@
             <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="GeneralReceivedMessagesCount" Margin="10 0"></TextBlock>
         </Grid>
 
-        <Grid Grid.Row="3">
+        <Grid Grid.Row="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
@@ -63,7 +74,7 @@
             <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="AverageDeliveryTime" Margin="10 0"></TextBlock>
         </Grid>
 
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
@@ -75,7 +86,7 @@
             <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="GeneralMessagesAverageDeliveryTime" Margin="10 0"></TextBlock>
         </Grid>
 
-        <Grid Grid.Row="5">
+        <Grid Grid.Row="6">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
@@ -87,7 +98,7 @@
             <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="TotalReceivedMessagesSize" Margin="10 0"></TextBlock>
         </Grid>
 
-        <Grid Grid.Row="6">
+        <Grid Grid.Row="7">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
@@ -99,7 +110,7 @@
             <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="TotalReceivedDataSize" Margin="10 0"></TextBlock>
         </Grid>
 
-        <Grid Grid.Row="7">
+        <Grid Grid.Row="8">
             <Button HorizontalAlignment="Center" VerticalAlignment="Center" Content="OK" 
                     Width="100" Click="Ok_OnClick"></Button>
         </Grid>

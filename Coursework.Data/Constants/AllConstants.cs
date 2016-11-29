@@ -22,6 +22,7 @@ namespace Coursework.Data.Constants
         public const double MessageGenerateChance = 0.1;
         public const int LineZIndex = int.MaxValue - 2;
         public const int PriceZIndex = int.MaxValue - 1;
+        public static readonly int DefaultMessageSize = 1024;
         public static readonly int MaxMessageSize = 4096;
         public static readonly int PackageSize = 256;
         public static readonly int ServicePartSize = 32;

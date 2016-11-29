@@ -78,6 +78,7 @@
     <Compile Include="MessageServices\PositiveResponseCreator.cs" />
     <Compile Include="MessageServices\ResponseCreator.cs" />
     <Compile Include="MessageServices\RequestMessageCreator.cs" />
+    <Compile Include="MessageServices\SpecifiedSizeMessageGenerator.cs" />
     <Compile Include="NetworkData\NetworkMatrix.cs" />
     <Compile Include="Entities\NodeType.cs" />
     <Compile Include="IONetwork\ChannelIoDto.cs" />

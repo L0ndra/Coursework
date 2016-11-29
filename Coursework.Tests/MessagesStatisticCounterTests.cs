@@ -60,6 +60,7 @@ namespace Coursework.Tests
             _expectedStatistic = new MessagesStatistic
             {
                 MessagesCount = 2,
+                GeneralMessagesCount = 1,
                 AvarageDeliveryTime = avarageDeliveryTime,
                 GeneralMessagesReceivedCount = 0,
                 ReceivedMessagesCount = 1,
@@ -77,6 +78,7 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(actualStatistic.MessagesCount, Is.EqualTo(_expectedStatistic.MessagesCount));
+            Assert.That(actualStatistic.GeneralMessagesCount, Is.EqualTo(_expectedStatistic.GeneralMessagesCount));
             Assert.That(actualStatistic.AvarageDeliveryTime, Is.EqualTo(_expectedStatistic.AvarageDeliveryTime));
             Assert.That(actualStatistic.GeneralMessagesReceivedCount, Is.EqualTo(_expectedStatistic.GeneralMessagesReceivedCount));
             Assert.That(actualStatistic.ReceivedMessagesCount, Is.EqualTo(_expectedStatistic.ReceivedMessagesCount));
@@ -103,6 +105,7 @@ namespace Coursework.Tests
 
             // Assert
             Assert.That(actualStatistic.MessagesCount, Is.EqualTo(_expectedStatistic.MessagesCount));
+            Assert.That(actualStatistic.GeneralMessagesCount, Is.EqualTo(_expectedStatistic.GeneralMessagesCount));
             Assert.That(actualStatistic.AvarageDeliveryTime, Is.EqualTo(_expectedStatistic.AvarageDeliveryTime));
             Assert.That(actualStatistic.GeneralMessagesReceivedCount, Is.EqualTo(_expectedStatistic.GeneralMessagesReceivedCount + 1));
             Assert.That(actualStatistic.ReceivedMessagesCount, Is.EqualTo(_expectedStatistic.ReceivedMessagesCount + 1));

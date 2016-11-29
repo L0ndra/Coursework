@@ -92,6 +92,7 @@
     <Compile Include="MessageCreatorTests.cs" />
     <Compile Include="SmartNodeDrawerTests.cs" />
     <Compile Include="RequestMessageCreatorTests.cs" />
+    <Compile Include="SpecifiedSizeMessageGeneratorTests.cs" />
     <Compile Include="WideAreaNetworkBuilderTests.cs" />
     <Compile Include="WideAreaNetworkNodeDrawerTests.cs" />
     <Compile Include="NetworkBuilderTests.cs" />

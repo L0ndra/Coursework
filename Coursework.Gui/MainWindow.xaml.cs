@@ -272,7 +272,7 @@ namespace Coursework.Gui
         }
 
         private void InitializeAllServices(double messageGenerateChance, int tableUpdatePeriod,
-            bool isPackageMode, bool isRouterStupid)
+            bool isPackageMode, bool isRouterStupid, int messagesSize)
         {
             if (isRouterStupid)
             {
@@ -300,7 +300,16 @@ namespace Coursework.Gui
             _messageReceiver = new MessageReceiver(_messageHandler, _negativeResponseMessageCreator);
             _messageExchanger = new MessageExchanger(_network, _messageReceiver);
 
-            _messageGenerator = new MessageGenerator(_network, _messageCreator, messageGenerateChance);
+            if (messagesSize > 0)
+            {
+                _messageGenerator = new SpecifiedSizeMessageGenerator(_network, _messageCreator, messageGenerateChance, 
+                    messagesSize);
+            }
+            else
+            {
+                _messageGenerator = new MessageGenerator(_network, _messageCreator, messageGenerateChance);
+            }
+
 
             _messageRepository = new MessageRepository(_network);
             _messageViewUpdater = new MessageViewUpdater(_messageRepository, Messages);

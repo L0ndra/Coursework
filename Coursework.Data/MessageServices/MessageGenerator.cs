@@ -52,18 +52,25 @@ namespace Coursework.Data.MessageServices
             } 
         }
 
-        private void CreateRandomMessages(Node sender, Node receiver)
+        protected virtual MessageInitializer CreateMessageInitializer(uint senderId, uint receiverId)
         {
             var messageSize = AllConstants.RandomGenerator.Next(AllConstants.MaxMessageSize) + 1;
 
             var messageInitializer = new MessageInitializer
             {
-                ReceiverId = receiver.Id,
+                ReceiverId = receiverId,
                 MessageType = MessageType.General,
-                SenderId = sender.Id,
+                SenderId = senderId,
                 Data = null,
                 Size = messageSize
             };
+
+            return messageInitializer;
+        }
+
+        private void CreateRandomMessages(Node sender, Node receiver)
+        {
+            var messageInitializer = CreateMessageInitializer(sender.Id, receiver.Id);
 
             var messages = _messageCreator.CreateMessages(messageInitializer);
 
