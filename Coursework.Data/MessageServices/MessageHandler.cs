@@ -116,6 +116,12 @@ namespace Coursework.Data.MessageServices
 
             if (messages != null)
             {
+                UpdateInnerMessagesIds(messages, firstMessage.ParentId);
+
+                var receiver = _network.GetNodeById(response.ReceiverId);
+                request.IsCanceled = true;
+                receiver.CanceledMessages.Add(request);
+
                 _generalMessageCreator.AddInQueue(messages, firstMessage.SenderId);
             }
             else
@@ -127,6 +133,21 @@ namespace Coursework.Data.MessageServices
             }
 
             _generalMessageCreator.RemoveFromQueue(new[] { response }, response.ReceiverId);
+        }
+
+        private void UpdateInnerMessagesIds(Message[] messages, Guid id)
+        {
+            foreach (var message in messages)
+            {
+                message.ParentId = id;
+
+                var innerMessages = message.Data as Message[];
+
+                if (innerMessages != null)
+                {
+                    UpdateInnerMessagesIds(innerMessages, id);
+                }
+            }
         }
 
         private void HandlePositiveSendingResponse(Message response)

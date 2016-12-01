@@ -378,6 +378,8 @@ namespace Coursework.Tests
             _generalMessageCreatorMock.Verify(m => m.CreateMessages(It.IsAny<MessageInitializer>()), Times.Once);
             _generalMessageCreatorMock.Verify(m => m.AddInQueue(It.IsAny<Message[]>(), _message.ReceiverId), Times.Once);
             _generalMessageCreatorMock.Verify(m => m.RemoveFromQueue(It.IsAny<Message[]>(), _message.ReceiverId), Times.Once);
+
+            Assert.IsTrue(_nodes[0].CanceledMessages.Contains(innerMessage));
         }
 
         [Test]

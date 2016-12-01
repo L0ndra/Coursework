@@ -122,7 +122,6 @@ namespace Coursework.Tests
                 Times.Once);
 
             Assert.That(nodeMessages.All(m => m.MessageType == MessageType.NegativeSendingResponse));
-            Assert.That(_node.CanceledMessages.Contains(_message));
         }
 
         [Test]

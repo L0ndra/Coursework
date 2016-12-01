@@ -63,9 +63,7 @@ namespace Coursework.Data.MessageServices
             var responses = _negativeResponseMessageCreator.CreateMessages(responseInitializer);
 
             UpdateResponsesByRequest(responses, request);
-
-            node.CanceledMessages.Add(request);
-            request.IsCanceled = true;
+            
             _negativeResponseMessageCreator.RemoveFromQueue(new[] { request }, request.LastTransferNodeId);
         }
 
