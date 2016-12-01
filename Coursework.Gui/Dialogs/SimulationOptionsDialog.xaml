@@ -34,7 +34,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
-                       Text="Table update period: " TextWrapping="Wrap"></TextBlock>
+                       Text="Table update period (tacts): " TextWrapping="Wrap"></TextBlock>
             <TextBox Grid.Column="1" VerticalAlignment="Center" Name="TableUpdatePeriod" Margin="10 0"></TextBox>
         </Grid>
 
@@ -45,7 +45,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
-                       Text="Generated Messages Sizes: " TextWrapping="Wrap"></TextBlock>
+                       Text="Generated Messages Sizes (bytes): " TextWrapping="Wrap"></TextBlock>
             <TextBox Grid.Column="1" VerticalAlignment="Center" Name="GeneratedMessagesSizes" Margin="10 0"></TextBox>
         </Grid>
 

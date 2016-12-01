@@ -25,7 +25,7 @@
                 <ColumnDefinition Width="3*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Price: "></TextBlock>
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Channel Price: "></TextBlock>
             <ComboBox Grid.Column="1" VerticalAlignment="Center" Name="Price" Margin="10 0" 
                       SelectionChanged="Price_OnSelectionChanged"></ComboBox>
         </Grid>
@@ -46,7 +46,7 @@
                 <ColumnDefinition Width="3*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="First Node: "></TextBlock>
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="First Node ID: "></TextBlock>
             <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="FirstNodeId" Margin="10 0"></TextBlock>
         </Grid>
 
@@ -56,7 +56,7 @@
                 <ColumnDefinition Width="3*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Second Node: "></TextBlock>
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Second Node ID: "></TextBlock>
             <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="SecondNodeId" Margin="10 0"></TextBlock>
         </Grid>
 
@@ -93,7 +93,7 @@
                 <ColumnDefinition Width="3*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Capacity: "></TextBlock>
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Capacity (bytes per tact): "></TextBlock>
             <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="Capacity" Margin="10 0"></TextBlock>
         </Grid>
         <Grid Grid.Row="7">
@@ -102,7 +102,7 @@
                 <ColumnDefinition Width="3*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Message Owner ID: "></TextBlock>
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Blocked By Message: "></TextBlock>
             <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="MessageOwnerId" TextWrapping="Wrap" 
                        Margin="10 0 50 0"></TextBlock>
         </Grid>

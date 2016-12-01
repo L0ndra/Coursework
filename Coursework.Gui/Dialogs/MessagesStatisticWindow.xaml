@@ -69,7 +69,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
-                       Text="Average Delivery Time: "
+                       Text="Average Delivery Time (tacts): "
                        TextWrapping="Wrap"></TextBlock>
             <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="AverageDeliveryTime" Margin="10 0"></TextBlock>
         </Grid>
@@ -81,7 +81,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
-                       Text="General Messages Average Delivery Time: "
+                       Text="General Messages Average Delivery Time (tacts): "
                        TextWrapping="Wrap"></TextBlock>
             <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="GeneralMessagesAverageDeliveryTime" Margin="10 0"></TextBlock>
         </Grid>
@@ -93,7 +93,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
-                       Text="Total Received Messages Size: "
+                       Text="Total Received Messages Size (bytes): "
                        TextWrapping="Wrap"></TextBlock>
             <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="TotalReceivedMessagesSize" Margin="10 0"></TextBlock>
         </Grid>
@@ -105,7 +105,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
-                       Text="Total Received Data Size: "
+                       Text="Total Received Data Size (bytes): "
                        TextWrapping="Wrap"></TextBlock>
             <TextBlock Grid.Column="1" VerticalAlignment="Center" Name="TotalReceivedDataSize" Margin="10 0"></TextBlock>
         </Grid>
