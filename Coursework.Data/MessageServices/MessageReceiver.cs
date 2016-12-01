@@ -74,6 +74,7 @@ namespace Coursework.Data.MessageServices
             foreach (var response in responses)
             {
                 response.ParentId = request.ParentId;
+                response.Data = new[] { request };
 
                 response.Route = response.Route
                     .Except(request.Route)
@@ -81,12 +82,12 @@ namespace Coursework.Data.MessageServices
 
                 if (response.Route.Length == 0)
                 {
-                    response.Route = new[] {request.Route.First()};
+                    response.Route = new[] { request.Route.First() };
                     _messageHandler.HandleMessage(response);
                 }
                 else
                 {
-                    _negativeResponseMessageCreator.AddInQueue(new[] {response}, request.LastTransferNodeId);
+                    _negativeResponseMessageCreator.AddInQueue(new[] { response }, request.LastTransferNodeId);
                 }
             }
         }

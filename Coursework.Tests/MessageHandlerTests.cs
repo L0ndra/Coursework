@@ -257,34 +257,6 @@ namespace Coursework.Tests
         }
 
         [Test]
-        public void HandleMessagesShouldRemoveOldInitializeMessagesFromQueue()
-        {
-            // Arrange
-            _message.MessageType = MessageType.MatrixUpdateMessage;
-            _message.Data = new Dictionary<uint, NetworkMatrix>
-            {
-                [0] = NetworkMatrix.Initialize(_networkMock.Object),
-                [1] = NetworkMatrix.Initialize(_networkMock.Object),
-                [2] = NetworkMatrix.Initialize(_networkMock.Object),
-                [3] = NetworkMatrix.Initialize(_networkMock.Object),
-                [4] = NetworkMatrix.Initialize(_networkMock.Object),
-            };
-
-            var firstNode = _nodes.First();
-
-            // Act
-            _messageHandler.HandleMessage(_message);
-            _messageHandler.HandleMessage(_message);
-
-            var messageCount = firstNode.MessageQueueHandlers
-                .SelectMany(m => m.Messages)
-                .Count(m => m.MessageType == MessageType.MatrixUpdateMessage);
-
-            // Assert
-            Assert.That(messageCount, Is.Zero);
-        }
-
-        [Test]
         public void HandleMessageShouldRemoveItFromQueue()
         {
             // Arrange
@@ -391,11 +363,12 @@ namespace Coursework.Tests
         }
 
         [Test]
-        public void HandleMessageShouldRepeatSendingMessagesInData()
+        public void HandleMessageShouldHandleNegativeResponseCorrect()
         {
             // Arrange
             _message.MessageType = MessageType.NegativeSendingResponse;
             var innerMessage = new Message();
+            innerMessage.Data = new[] { innerMessage };
             _message.Data = new[] { innerMessage };
 
             // Act
@@ -404,6 +377,36 @@ namespace Coursework.Tests
             // Assert
             _generalMessageCreatorMock.Verify(m => m.CreateMessages(It.IsAny<MessageInitializer>()), Times.Once);
             _generalMessageCreatorMock.Verify(m => m.AddInQueue(It.IsAny<Message[]>(), _message.ReceiverId), Times.Once);
+            _generalMessageCreatorMock.Verify(m => m.RemoveFromQueue(It.IsAny<Message[]>(), _message.ReceiverId), Times.Once);
+        }
+
+        [Test]
+        public void HandleMessageShouldSendOldRequestWithUpdatedInfo()
+        {
+            // Arrange
+            _generalMessageCreatorMock.Setup(m => m.CreateMessages(It.IsAny<MessageInitializer>()))
+                .Returns((Message[])null);
+
+            _message.MessageType = MessageType.NegativeSendingResponse;
+            var innerMessage = new Message
+            {
+                LastTransferNodeId = 5,
+                Route = new Channel[1]
+            };
+
+            innerMessage.Data = new[] { innerMessage };
+            _message.Data = new[] { innerMessage };
+
+            // Act
+            _messageHandler.HandleMessage(_message);
+
+            // Assert
+            _generalMessageCreatorMock.Verify(m => m.CreateMessages(It.IsAny<MessageInitializer>()), Times.Once);
+            _generalMessageCreatorMock.Verify(m => m.AddInQueue(It.IsAny<Message[]>(), _message.ReceiverId), Times.Once);
+            _generalMessageCreatorMock.Verify(m => m.RemoveFromQueue(It.IsAny<Message[]>(), _message.ReceiverId), 
+                Times.Once);
+
+            Assert.That(innerMessage.LastTransferNodeId, Is.EqualTo(innerMessage.SenderId));
         }
 
         [Test]

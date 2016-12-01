@@ -50,8 +50,8 @@ namespace Coursework.Data.MessageServices
         protected virtual Message[] GetGeneralMessages(Message[] allMessages)
         {
             return allMessages
-                .Where(m => m.MessageType == MessageType.General
-                    || (m.Data as Message[])?.FirstOrDefault()?.MessageType == MessageType.General)
+                .Where(m => m.MessageType == MessageType.General)
+                .Distinct()
                 .ToArray();
         }
 
@@ -91,6 +91,7 @@ namespace Coursework.Data.MessageServices
         {
             var generalReceivedMessages = receivedMessages
                 .Where(m => m.MessageType == MessageType.General)
+                .Distinct()
                 .ToArray();
             return generalReceivedMessages;
         }
@@ -101,6 +102,7 @@ namespace Coursework.Data.MessageServices
                 .Where(m => m.IsReceived && allMessages
                     .Where(m1 => m1.ParentId == m.ParentId)
                     .All(m1 => m1.IsReceived || m1.IsCanceled))
+                .Distinct()
                 .ToArray();
             return receivedMessages;
         }
@@ -109,6 +111,7 @@ namespace Coursework.Data.MessageServices
         {
             var allMessages = _messageRepository
                 .GetAllMessages()
+                .Distinct()
                 .ToArray();
             return allMessages;
         }

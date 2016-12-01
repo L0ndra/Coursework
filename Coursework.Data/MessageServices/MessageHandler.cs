@@ -94,7 +94,10 @@ namespace Coursework.Data.MessageServices
 
         private void HandleNegativeSendingResponse(Message response)
         {
-            var oldMessages = (Message[])response.Data;
+            var requests = (Message[])response.Data;
+            var request = requests.First();
+
+            var oldMessages = (Message[])request.Data;
             var firstMessage = oldMessages.First();
 
             var sumSize = oldMessages.Sum(oldMessage => oldMessage.Size)
@@ -110,57 +113,20 @@ namespace Coursework.Data.MessageServices
             };
 
             var messages = _generalMessageCreator.CreateMessages(messageInitializer);
+
             if (messages != null)
             {
-                UpdateMessagesParentId(messages, firstMessage.ParentId);
-
                 _generalMessageCreator.AddInQueue(messages, firstMessage.SenderId);
-
-                _generalMessageCreator.RemoveFromQueue(new[] { response }, response.ReceiverId);
             }
             else
             {
-                var copyResponse = new Message
-                {
-                    MessageType = response.MessageType,
-                    Route = response.Route.ToArray(),
-                    ParentId = response.ParentId,
-                    ReceiverId = response.ReceiverId,
-                    SenderId = response.SenderId,
-                    Data = response.Data,
-                    LastTransferNodeId = response.Route[0].FirstNodeId == response.ReceiverId
-                        ? response.Route[0].SecondNodeId
-                        : response.Route[0].FirstNodeId,
-                    DataSize = response.DataSize,
-                    NumberInPackage = response.NumberInPackage,
-                    PackagesCount = response.PackagesCount,
-                    SendAttempts = response.SendAttempts,
-                    ServiceSize = response.ServiceSize
-                };
+                request.Route = firstMessage.Route.ToArray();
+                request.LastTransferNodeId = request.SenderId;
 
-                var receiver = _network.GetNodeById(response.ReceiverId);
-                receiver.ReceivedMessages.Remove(response);
-
-                _network.AddInQueue(copyResponse, receiver.Id);
+                _generalMessageCreator.AddInQueue(requests, firstMessage.SenderId);
             }
-        }
 
-        private static void UpdateMessagesParentId(IEnumerable<Message> messages, Guid id)
-        {
-            foreach (var message in messages)
-            {
-                message.ParentId = id;
-                var innerMessages = message.Data as Message[];
-
-                if (innerMessages != null)
-                {
-                    UpdateMessagesParentId(innerMessages, id);
-                    foreach (var innerMessage in innerMessages)
-                    {
-                        innerMessage.ParentId = id;
-                    }
-                }
-            }
+            _generalMessageCreator.RemoveFromQueue(new[] { response }, response.ReceiverId);
         }
 
         private void HandlePositiveSendingResponse(Message response)
