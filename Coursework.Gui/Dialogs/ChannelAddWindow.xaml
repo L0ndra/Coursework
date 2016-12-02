@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="ChannelAddWindow" Height="300" Width="400" WindowStyle="None">
+        Title="ChannelAddWindow" Height="300" Width="420" WindowStyle="None">
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
@@ -23,7 +23,7 @@
                 <ColumnDefinition Width="3*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Channel price: "></TextBlock>
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Channel Weight: "></TextBlock>
             <ComboBox Grid.Column="1" VerticalAlignment="Center" Name="Price" Margin="10 0" 
                       SelectionChanged="Price_OnSelectionChanged"></ComboBox>
         </Grid>
@@ -34,7 +34,7 @@
                 <ColumnDefinition Width="3*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Error Chance: "></TextBlock>
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="Error Propability: "></TextBlock>
             <TextBox Grid.Column="1" VerticalAlignment="Center" Name="ErrorChance" Margin="10 0"></TextBox>
         </Grid>
 

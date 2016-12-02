@@ -23,7 +23,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" 
-                       Text="Message generate chance: " TextWrapping="Wrap"></TextBlock>
+                       Text="Message generate propability: " TextWrapping="Wrap"></TextBlock>
             <TextBox Grid.Column="1" VerticalAlignment="Center" Name="MessageGenerateChance" Margin="10 0"></TextBox>
         </Grid>
 
